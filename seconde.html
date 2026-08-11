@@ -1,142 +1,199 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Seconde BAC PRO Maintenance Nautique | FigaroMN</title>
-
 <style>
 :root{
-  --bg:#071823;--panel:#0d2533;--panel2:#123345;--text:#f4f8fb;--muted:#b6c8d3;
-  --accent:#32c5d2;--accent2:#f6b73c;--danger:#ff7a7a;--ok:#6bd19a;
-  --line:rgba(255,255,255,.12);--shadow:0 16px 40px rgba(0,0,0,.28);--radius:20px;
+ --bg:#f3f7f9;--card:#fff;--ink:#1d2a38;--muted:#647481;--navy:#365975;
+ --blue:#eaf2f6;--accent:#1f7ea6;--green:#e8f7ef;--orange:#fff2dd;--red:#fdeaea;
+ --line:#dbe5ea;--shadow:0 10px 26px rgba(28,47,61,.08);--radius:18px
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:radial-gradient(circle at 12% 5%,rgba(50,197,210,.12),transparent 30rem),
-             linear-gradient(180deg,#06141e 0%,#091d29 100%);
-  color:var(--text);line-height:1.55;min-height:100vh
-}
-a{color:inherit}
-.fm-shell{width:min(1180px,calc(100% - 32px));margin:auto}
-.fm-topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);
-  background:rgba(6,20,30,.86);border-bottom:1px solid var(--line)}
-.fm-nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.fm-brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:850}
-.fm-logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--accent),#2e86de);font-weight:900;color:#041319}
-.fm-back{padding:10px 14px;border-radius:12px;border:1px solid var(--line);text-decoration:none;color:var(--muted)}
-.fm-back:hover,.fm-back:focus-visible{border-color:var(--accent);color:#fff;outline:none}
-.fm-hero{padding:68px 0 34px}
-.fm-kicker{display:inline-flex;padding:7px 11px;border:1px solid rgba(50,197,210,.35);
-  border-radius:999px;color:#bff7fb;background:rgba(50,197,210,.08);font-size:.88rem;font-weight:750}
-h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:18px 0;max-width:900px}
-.fm-lead{max-width:820px;color:var(--muted);font-size:clamp(1rem,2vw,1.18rem)}
-.fm-section{padding:34px 0 54px}
-.fm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.fm-card{background:linear-gradient(180deg,rgba(18,51,69,.96),rgba(13,37,51,.96));
-  border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
-.fm-card h2,.fm-card h3{margin:8px 0 10px}
-.fm-card p{color:var(--muted)}
-.fm-badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(246,183,60,.12);
-  color:#ffd990;font-size:.82rem;font-weight:850}
-.fm-btn{appearance:none;border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;
-  justify-content:center;min-height:46px;padding:0 17px;border-radius:13px;font-weight:800}
-.fm-btn-primary{background:var(--accent);color:#041319}
-.fm-btn-secondary{background:transparent;color:#fff;border:1px solid var(--line)}
-.fm-btn:hover{transform:translateY(-1px)}
-.fm-footer{padding:40px 0 52px;text-align:center;color:#91a8b5;font-size:.9rem}
-.fm-note{margin-top:18px;padding:14px 16px;border-left:4px solid var(--accent);
-  background:rgba(255,255,255,.04);border-radius:0 12px 12px 0;color:var(--muted)}
-.fm-dialog{border:1px solid var(--line);border-radius:20px;background:#0b2230;color:var(--text);
-  width:min(92vw,430px);padding:0;box-shadow:0 24px 70px rgba(0,0,0,.48)}
-.fm-dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(3px)}
-.fm-dialog-box{padding:24px}
-.fm-dialog h3{margin:0 0 8px;font-size:1.35rem}
-.fm-dialog p{color:var(--muted);margin:0 0 18px}
-.fm-field{display:grid;gap:7px}
-.fm-field input{width:100%;min-height:46px;border-radius:12px;border:1px solid var(--line);
-  background:#071823;color:#fff;padding:0 12px;font:inherit}
-.fm-field input:focus{outline:2px solid var(--accent);outline-offset:2px}
-.fm-error{min-height:24px;color:var(--danger);font-size:.9rem;margin-top:8px}
-.fm-dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
-.fm-lock{font-size:2rem;margin-bottom:12px}
-.fm-center{min-height:65vh;display:grid;place-items:center}
-.fm-placeholder{max-width:760px;text-align:center}
-@media(max-width:900px){.fm-grid{grid-template-columns:1fr}}
-@media(max-width:620px){.fm-shell{width:min(100% - 22px,1180px)}.fm-hero{padding-top:42px}.fm-nav{min-height:60px}}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+a{color:inherit}.shell{width:min(1180px,calc(100% - 28px));margin:auto}
+.top{background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:850;text-decoration:none}.back{font-weight:700;text-decoration:none;color:var(--navy)}
+.hero{padding:46px 0 26px}.eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--blue);font-weight:800;color:var(--navy);font-size:.84rem}
+h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:14px 0 12px}h2{margin:0 0 12px;font-size:1.6rem}h3{margin:0 0 8px}
+.lead{max-width:850px;color:var(--muted);font-size:1.08rem}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.pill{padding:7px 10px;border-radius:10px;background:#e9eef1;font-size:.86rem;font-weight:700}
+.section{padding:18px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.item{background:#f8fbfc;border:1px solid var(--line);border-radius:14px;padding:16px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.tab,.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.tab{background:#e9f0f4}.btn{background:var(--navy);color:#fff}.btn.alt{background:#e7eef2;color:var(--ink)}.btn.warn{background:#8a5b00}.btn.good{background:#23694a}
+.comp{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:12px;background:#f5f8fa;border:1px solid var(--line);margin:8px 0}
+.comp b{min-width:42px;color:var(--navy)}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.level{padding:8px;border-radius:10px;background:#eef3f5;font-size:.8rem;text-align:center}
+select,input,textarea{font:inherit;border:1px solid #b9c8d1;border-radius:10px;padding:10px;background:#fff;width:100%}
+textarea{min-height:90px}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.status{font-weight:800;margin-top:8px}
+.q{margin:14px 0;padding:14px;border-radius:12px;background:#f7fafb;border:1px solid var(--line)}
+.q label{display:block;margin:7px 0}.hidden{display:none!important}
+.notice{padding:14px;border-radius:12px;background:var(--orange);border:1px solid #f0d399}
+.ok{background:var(--green)!important}.bad{background:var(--red)!important}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:640px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{background:#eef3f5}
+footer{padding:34px 0 45px;text-align:center;color:var(--muted)}
+dialog{border:1px solid var(--line);border-radius:18px;padding:0;width:min(92vw,430px);box-shadow:0 24px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(0,0,0,.55)}.dlg{padding:22px}.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.bigscore{font-size:2.4rem;font-weight:900;color:var(--navy)}
+@media(max-width:900px){.grid,.grid2,.dashboard{grid-template-columns:1fr}.levels{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.shell{width:min(100% - 18px,1180px)}.card{padding:17px}.formrow{grid-template-columns:1fr}.nav{min-height:58px}}
 </style>
+</head><body>
+<header class="top"><div class="shell nav"><a class="brand" href="index.html">⚓ Base pédagogique FigaroMN</a><a class="back" href="bac-pro.html">← BAC PRO</a></div></header>
+<main>
+<section class="hero"><div class="shell"><span class="eyebrow">Niveau 1 · Seconde BAC PRO MN</span><h1>Progression annuelle en 6 périodes</h1>
+<p class="lead">Cours, widgets interactifs, exercices, ateliers, compétences, évaluations protégées, synthèse des notes et cahier de texte automatique.</p>
+<div class="tabs"><a class="tab" href="#periodes">📅 Périodes</a><a class="tab" href="#synthese">📊 Synthèse</a><a class="tab" href="#cahier">📓 Cahier de texte</a></div></div></section>
 
-</head>
-<body>
-<header class="fm-topbar"><div class="fm-shell fm-nav">
-  <a class="fm-brand" href="index.html"><span class="fm-logo">MN</span><span>Base pédagogique FigaroMN</span></a>
-  <a class="fm-back" href="bac-pro.html">← BAC PRO</a>
-</div></header>
+<section class="section" id="periodes"><div class="shell"><div class="grid2"><article class="card">
+      <span class="eyebrow">Période 1</span>
+      <h3 style="margin-top:12px">Sécurité, énergie électrique et prérequis</h3>
+      <p>Préparer une intervention électrique simple sur une embarcation en identifiant les risques, les grandeurs électriques et les ressources nécessaires.</p>
+      <div class="meta"><span class="pill">6 à 8 h</span><span class="pill">C9</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-1.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-1.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-1.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-1.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-1.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-1.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-1.html">Ouvrir la période</a>
+    </article><article class="card">
+      <span class="eyebrow">Période 2</span>
+      <h3 style="margin-top:12px">Le multimètre : mesurer et interpréter</h3>
+      <p>Choisir la fonction adaptée, brancher correctement le multimètre et interpréter une mesure électrique.</p>
+      <div class="meta"><span class="pill">8 à 10 h</span><span class="pill">C5, C7</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-2.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-2.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-2.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-2.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-2.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-2.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-2.html">Ouvrir la période</a>
+    </article><article class="card">
+      <span class="eyebrow">Période 3</span>
+      <h3 style="margin-top:12px">Installer un équipement électrique</h3>
+      <p>Analyser, préparer et réaliser l’installation d’un équipement électrique simple à bord.</p>
+      <div class="meta"><span class="pill">12 à 16 h</span><span class="pill">C9, C12</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-3.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-3.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-3.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-3.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-3.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-3.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-3.html">Ouvrir la période</a>
+    </article><article class="card">
+      <span class="eyebrow">Période 4</span>
+      <h3 style="margin-top:12px">Entretien périodique et qualité</h3>
+      <p>Préparer et réaliser une opération d’entretien simple en exploitant un dossier technique.</p>
+      <div class="meta"><span class="pill">10 à 12 h</span><span class="pill">C9, C11</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-4.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-4.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-4.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-4.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-4.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-4.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-4.html">Ouvrir la période</a>
+    </article><article class="card">
+      <span class="eyebrow">Période 5</span>
+      <h3 style="margin-top:12px">Diagnostic électrique simple</h3>
+      <p>Mettre en œuvre une démarche de diagnostic fondée sur les symptômes, les hypothèses et les mesures.</p>
+      <div class="meta"><span class="pill">12 à 16 h</span><span class="pill">C5, C6, C7, C8</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-5.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-5.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-5.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-5.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-5.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-5.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-5.html">Ouvrir la période</a>
+    </article><article class="card">
+      <span class="eyebrow">Période 6</span>
+      <h3 style="margin-top:12px">Transfert, synthèse et bilan de compétences</h3>
+      <p>Mobiliser les acquis de l’année dans une situation professionnelle globale et établir un bilan.</p>
+      <div class="meta"><span class="pill">10 à 12 h</span><span class="pill">C5, C7, C9, C11, C12</span></div>
+      <div class="tabs">
+        <a class="tab" href="periode-6.html#cours">📘 Cours</a>
+        <a class="tab" href="periode-6.html#widget">🧩 Widget</a>
+        <a class="tab" href="periode-6.html#exercices">📝 Exercices</a>
+        <a class="tab" href="periode-6.html#atelier">🔧 Atelier</a>
+        <a class="tab" href="periode-6.html#competences">🎯 Compétences</a>
+        <a class="tab" href="periode-6.html#evaluation">📊 Évaluation</a>
+      </div>
+      <a class="btn" href="periode-6.html">Ouvrir la période</a>
+    </article></div></div></section>
 
-<main id="fmProtectedContent" hidden>
-
-<section class="fm-hero"><div class="fm-shell">
-  <span class="fm-kicker">⚓ Formation professionnelle</span>
-  <h1>Seconde BAC PRO<br>Maintenance Nautique</h1>
-  <p class="fm-lead">Espace organisé en 6 périodes pour regrouper séquences, cours, activités, TP, ressources et évaluations.</p>
+<section class="section" id="synthese"><div class="shell card"><h2>📊 Synthèse des évaluations</h2>
+<div class="dashboard"><div class="item"><div class="bigscore" id="avg">— /20</div><p>Moyenne des évaluations réalisées sur ce navigateur.</p>
+<div class="tablewrap"><table><thead><tr><th>Période</th><th>Note</th></tr></thead><tbody id="noteRows"></tbody></table></div></div>
+<div class="item"><h3>Lecture rapide</h3><p id="noteComment">Aucune note enregistrée pour le moment.</p>
+<button class="btn alt" type="button" id="resetNotes">Réinitialiser les notes locales</button></div></div>
 </div></section>
-<section class="fm-section"><div class="fm-shell">
-  <div class="fm-grid">
-    <article class="fm-card"><span class="fm-badge">Période 1</span><h3>Pré-requis & sécurité électrique</h3><p>Notions utiles avant les mesures et interventions sur circuits embarqués.</p></article>
-    <article class="fm-card"><span class="fm-badge">Période 2</span><h3>Le multimètre</h3><p>Fonctions, branchement, calibre, lecture et interprétation.</p></article>
-    <article class="fm-card"><span class="fm-badge">Période 3</span><h3>Installation d'un équipement</h3><p>Câblage, protection et règles d'intervention.</p></article>
-    <article class="fm-card"><span class="fm-badge">Période 4</span><h3>TP d'apprentissage</h3><p>Feux de navigation, feu de mouillage et pompe de cale.</p></article>
-    <article class="fm-card"><span class="fm-badge">Période 5</span><h3>Transfert</h3><p>Réinvestissement de la démarche sur une nouvelle situation.</p></article>
-    <article class="fm-card"><span class="fm-badge">Période 6</span><h3>Synthèse & évaluation</h3><p>Vérification des acquis, évaluation et remédiation.</p></article>
-  </div>
+
+<section class="section"><div class="shell card"><h2>🎯 Synthèse des compétences</h2>
+<p class="lead">Les intitulés sont ceux du référentiel BAC PRO MN. Les niveaux ci-dessous sont un suivi pédagogique local : 0 non évalué, 1 en cours, 2 acquis, 3 maîtrisé.</p>
+<div class="tablewrap"><table><thead><tr><th>Code</th><th>Compétence</th><th>Niveau enregistré</th></tr></thead><tbody><tr><td><strong>C5</strong></td><td>Constater le dysfonctionnement</td><td id="sum_C5">0 · Non évalué</td></tr><tr><td><strong>C6</strong></td><td>Hiérarchiser les hypothèses en lien avec le dysfonctionnement</td><td id="sum_C6">0 · Non évalué</td></tr><tr><td><strong>C7</strong></td><td>Valider les hypothèses</td><td id="sum_C7">0 · Non évalué</td></tr><tr><td><strong>C8</strong></td><td>Identifier les éléments ou systèmes défectueux</td><td id="sum_C8">0 · Non évalué</td></tr><tr><td><strong>C9</strong></td><td>Préparer l’intervention</td><td id="sum_C9">0 · Non évalué</td></tr><tr><td><strong>C10</strong></td><td>Réparer les systèmes, les sous-ensembles, les éléments</td><td id="sum_C10">0 · Non évalué</td></tr><tr><td><strong>C11</strong></td><td>Réaliser les opérations d’entretien périodique</td><td id="sum_C11">0 · Non évalué</td></tr><tr><td><strong>C12</strong></td><td>Installer un équipement</td><td id="sum_C12">0 · Non évalué</td></tr></tbody></table></div>
 </div></section>
 
+<section class="section" id="cahier"><div class="shell card"><h2>📓 Cahier de texte automatique</h2>
+<p>Les ouvertures de périodes, changements de niveaux de compétences, évaluations et notes sont enregistrés automatiquement sur ce navigateur.</p>
+<div class="formrow"><input id="manualTitle" placeholder="Titre de la séance"><input id="manualDetail" placeholder="Travail réalisé / à faire"></div>
+<div class="tabs"><button class="btn" type="button" id="addManual">Ajouter une séance</button><button class="btn alt" type="button" id="clearLog">Vider le cahier local</button></div>
+<div class="tablewrap"><table><thead><tr><th>Date</th><th>Événement</th><th>Détail</th></tr></thead><tbody id="logRows"></tbody></table></div>
+</div></section>
+
+<section class="section"><div class="shell card"><h2>🔐 Codes des évaluations · enseignant</h2>
+<div class="notice">Cette zone est visible dans le code source d’un site statique GitHub Pages. Elle sert de barrière pédagogique, pas d’authentification forte.</div>
+<div class="grid" style="margin-top:14px">
+<div class="item"><strong>Période 1</strong><div class="bigscore" style="font-size:1.5rem">MN21</div></div><div class="item"><strong>Période 2</strong><div class="bigscore" style="font-size:1.5rem">VOLT</div></div><div class="item"><strong>Période 3</strong><div class="bigscore" style="font-size:1.5rem">CABL</div></div><div class="item"><strong>Période 4</strong><div class="bigscore" style="font-size:1.5rem">ENTR</div></div><div class="item"><strong>Période 5</strong><div class="bigscore" style="font-size:1.5rem">DIAG</div></div><div class="item"><strong>Période 6</strong><div class="bigscore" style="font-size:1.5rem">BILN</div></div>
+</div></div></section>
 </main>
+<footer><div class="shell">Base pédagogique FigaroMN · Seconde BAC PRO Maintenance Nautique</div></footer>
 
-<dialog id="fmDirectDialog" class="fm-dialog" aria-labelledby="fmDirectTitle">
-  <form method="dialog" class="fm-dialog-box" id="fmDirectForm">
-    <div class="fm-lock" aria-hidden="true">🔐</div>
-    <h3 id="fmDirectTitle">Accès protégé</h3>
-    <p>Cette page nécessite son code d'accès.</p>
-    <div class="fm-field"><label for="fmDirectPassword">Code</label>
-      <input id="fmDirectPassword" type="password" required>
-    </div>
-    <div class="fm-error" id="fmDirectError" role="alert" aria-live="polite"></div>
-    <div class="fm-dialog-actions">
-      <a class="fm-btn fm-btn-secondary" href="bac-pro.html">Retour</a>
-      <button class="fm-btn fm-btn-primary" type="submit">Ouvrir</button>
-    </div>
-  </form>
-</dialog>
-
-<footer class="fm-footer"><div class="fm-shell">Base pédagogique FigaroMN · Seconde BAC PRO Maintenance Nautique</div></footer>
 <script>
 (function(){
-  "use strict";
-  var key="figaromn_access_seconde.html";
-  var content=document.getElementById("fmProtectedContent");
-  var dialog=document.getElementById("fmDirectDialog");
-  var form=document.getElementById("fmDirectForm");
-  var input=document.getElementById("fmDirectPassword");
-  var error=document.getElementById("fmDirectError");
-
-  function grant(){
-    content.hidden=false;
-    try{sessionStorage.setItem(key,"ok");}catch(e){}
-  }
-
-  var allowed=false;
-  try{allowed=sessionStorage.getItem(key)==="ok";}catch(e){}
-  if(allowed){grant();}
-  else{dialog.showModal(); setTimeout(function(){input.focus();},50);}
-
-  form.addEventListener("submit",function(ev){
-    ev.preventDefault();
-    if(input.value==="2mn2figaro"){dialog.close();grant();}
-    else{error.textContent="Code incorrect.";input.select();}
-  });
+"use strict";
+window.FM = window.FM || {};
+FM.store=function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+FM.load=function(k,d){try{var x=localStorage.getItem(k);return x?JSON.parse(x):d;}catch(e){return d;}};
+FM.now=function(){return new Date().toLocaleString("fr-FR");};
+FM.log=function(title,detail){
+ var log=FM.load("fm_cahier",[]);
+ log.unshift({date:FM.now(),title:title,detail:detail});
+ log=log.slice(0,80); FM.store("fm_cahier",log);
+};
+FM.setComp=function(code,val){
+ var d=FM.load("fm_comp_levels",{}); d[code]=val; FM.store("fm_comp_levels",d);
+};
+FM.getComp=function(code){return FM.load("fm_comp_levels",{})[code]||"0";};
 })();
 </script>
-</body></html>
+
+<script>
+(function(){
+"use strict";
+function render(){
+ var notes=FM.load("fm_notes",{}), rows="", vals=[];
+ for(var i=1;i<=6;i++){var v=notes["p"+i]; if(typeof v==="number")vals.push(v);rows+="<tr><td>Période "+i+"</td><td>"+(typeof v==="number"?v+" / 20":"—")+"</td></tr>";}
+ document.getElementById("noteRows").innerHTML=rows;
+ if(vals.length){var a=vals.reduce(function(x,y){return x+y;},0)/vals.length;document.getElementById("avg").textContent=a.toFixed(1)+" /20";
+ document.getElementById("noteComment").textContent=a>=15?"Très bon niveau global.":a>=12?"Acquis globalement satisfaisants.":a>=10?"Résultats fragiles : cibler les compétences à renforcer.":"Remédiation prioritaire à prévoir.";}
+ else{document.getElementById("avg").textContent="— /20";document.getElementById("noteComment").textContent="Aucune note enregistrée pour le moment.";}
+ var labels={"0":"0 · Non évalué","1":"1 · En cours d’acquisition","2":"2 · Acquis","3":"3 · Maîtrisé"};
+ ["C5","C6","C7","C8","C9","C10","C11","C12"].forEach(function(c){var e=document.getElementById("sum_"+c);if(e)e.textContent=labels[FM.getComp(c)]||labels["0"];});
+ var log=FM.load("fm_cahier",[]);document.getElementById("logRows").innerHTML=log.map(function(x){return "<tr><td>"+x.date+"</td><td>"+x.title+"</td><td>"+x.detail+"</td></tr>";}).join("")||'<tr><td colspan="3">Aucune entrée.</td></tr>';
+}
+document.getElementById("addManual").onclick=function(){var t=document.getElementById("manualTitle").value.trim(),d=document.getElementById("manualDetail").value.trim();if(t){FM.log(t,d||"Séance enregistrée");render();}};
+document.getElementById("clearLog").onclick=function(){if(confirm("Vider le cahier de texte local ?")){FM.store("fm_cahier",[]);render();}};
+document.getElementById("resetNotes").onclick=function(){if(confirm("Réinitialiser les notes enregistrées sur ce navigateur ?")){FM.store("fm_notes",{});render();}};
+render();
+})();
+</script></body></html>
