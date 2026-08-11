@@ -1,0 +1,384 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Évaluation relais/trim · Première BAC PRO Maintenance Nautique</title><style>
+:root{--bg:#f4f7f9;--card:#fff;--ink:#1f2b38;--muted:#667784;--navy:#365976;--blue:#eaf2f6;--line:#dbe5ea;--warn:#fff2d8;--green:#eaf8f0;--red:#fdecec;--radius:18px}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}a{color:inherit}.shell{width:min(1220px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.nav{min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand,.back{text-decoration:none;font-weight:850}.back{color:var(--navy)}.hero{padding:42px 0 22px}.eyebrow{display:inline-block;background:var(--blue);padding:6px 10px;border-radius:999px;font-weight:850;color:var(--navy);font-size:.85rem}h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:13px 0}h2{margin:0 0 12px}h3{margin:0 0 8px}.lead{color:var(--muted);max-width:900px}.section{padding:14px 0}.card,.printblock{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.item{border:1px solid var(--line);border-radius:13px;padding:15px;background:#fafcfd}.meta,.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:6px 9px;border-radius:9px;background:#edf2f5;font-size:.83rem;font-weight:750}.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.light{background:#e8eef2;color:var(--ink)}.btn.print{background:#566b7a}.btn.warn{background:#875b00}.btn.good{background:#25694c}.session{margin:18px 0}.session-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:15px}.stype{font-size:.82rem;font-weight:900;color:var(--navy)}.notice{padding:13px;border-radius:12px;background:var(--warn);border:1px solid #edd49d}.safety{padding:13px;border-radius:12px;background:var(--red);border:1px solid #efc7c7}.widget-answers{display:grid;gap:8px;margin-top:12px}.widget-answers button{padding:10px;text-align:left;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}.feedback{font-weight:800;margin-top:10px}table{border-collapse:collapse;width:100%;min-width:760px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eef3f6}.tablewrap{overflow:auto}select,input,textarea{font:inherit;border:1px solid #bac8d1;border-radius:9px;padding:9px;width:100%;background:#fff}textarea{min-height:72px}.track-row{display:grid;grid-template-columns:150px 1fr 160px 1fr;gap:9px;align-items:start;margin:10px 0}.criterion{font-size:.88rem;margin:5px 0;display:block}.criterion input{width:auto}.studentbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}dialog{border:1px solid var(--line);border-radius:16px;width:min(92vw,430px);padding:0}dialog::backdrop{background:rgba(0,0,0,.55)}.dlg{padding:20px}.hidden{display:none!important}footer{padding:34px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}.track-row{grid-template-columns:1fr}.studentbar{grid-template-columns:1fr}}
+@media print{body{background:#fff}.top,.hero,.no-print,footer{display:none!important}body.print-mode .section,body.print-mode .session,body.print-mode .card,body.print-mode .printblock{display:none!important}body.print-mode .print-target{display:block!important;border:0;margin:0;padding:0}.print-target .no-print{display:none!important}@page{margin:12mm}}
+</style>
+<style>
+.fmn-type-nav{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:70px;z-index:12;background:#f4f7f9;padding:10px 0}
+.fmn-type-nav a{padding:9px 12px;border-radius:999px;text-decoration:none;font-weight:850;border:1px solid #dbe5ea;background:#fff}
+.session.fmn-cours{border-left:7px solid #365976}
+.session.fmn-td{border-left:7px solid #7a5a9b}
+.session.fmn-widget{border-left:7px solid #a36a16}
+.session.fmn-tp{border-left:7px solid #287458}
+.session.fmn-eval{border-left:7px solid #a44343}
+.fmn-kind{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:7px;background:#eef3f6}
+.fmn-section-title{margin:32px 0 12px;padding:12px 16px;border-radius:14px;background:#eaf2f6;border:1px solid #dbe5ea}
+@media print{.fmn-type-nav{display:none!important}}
+</style>
+<style>
+.fmn-period-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:20px 0 40px}
+.fmn-session-card{background:#fff;border:1px solid #dbe5ea;border-radius:18px;padding:22px;text-decoration:none;display:block;box-shadow:0 8px 22px rgba(20,45,60,.06)}
+.fmn-session-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(20,45,60,.10)}
+.fmn-session-card .num{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf2f6;color:#365976;font-weight:900;font-size:.8rem}
+.fmn-session-card h2{margin:10px 0 6px}.fmn-session-card p{color:#667784}
+.fmn-one-session{max-width:1100px;margin:auto}
+.fmn-session-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 24px}
+.fmn-session-nav a{padding:10px 13px;border-radius:10px;background:#e8eef2;text-decoration:none;font-weight:800}
+@media(max-width:780px){.fmn-period-menu{grid-template-columns:1fr}}
+@media print{.fmn-session-nav{display:none!important}}
+</style>
+</head><body>
+<header class="top no-print"><div class="shell nav"><a class="brand" href="premiere-periode-5.html">⚓ Période 5</a><a class="back" href="premiere-periode-5.html">← Menu de la période</a></div></header>
+<main class="shell fmn-one-session">
+<section class="hero no-print"><span class="eyebrow">Première BAC PRO Maintenance Nautique · Période 5 · Séance 6</span>
+<h1>Évaluation relais/trim</h1>
+<div class="studentbar"><label>Élève<input class="studentName"></label><label>Classe<input class="studentClass" value="1re BAC PRO MN"></label><label>Date<input class="studentDate" type="date"></label></div>
+<button type="button" class="btn good" id="saveStudent">Enregistrer l’élève</button>
+<div class="fmn-session-nav"><a href="premiere-periode-5-seance-5.html">← Séance précédente</a><a href="premiere-periode-5.html">Toutes les séances</a><a href="premiere-periode-5.html">Séance suivante →</a></div>
+</section>
+<section class="section session printblock fmn-eval fmn-tp fmn-td fmn-widget fmn-cours" id="p5s6">
+<div class="session-head">
+<div><div class="stype">Période 5 · Séance 6 · Évaluation</div><div class="fmn-kind">📊 ÉVALUATION</div><h2>Évaluation relais/trim</h2><p class="lead">Évaluer la démarche de diagnostic.</p></div>
+<button class="btn print no-print" onclick="FMN.print('p5s6')" type="button">🖨️ Imprimer la séance</button>
+</div>
+<div class="grid2">
+<div class="item"><h3>📘 Cours / ressource</h3>
+<p><strong>Objectif :</strong> Évaluer la démarche de diagnostic.</p>
+<p>L’élève part d’une situation professionnelle de maintenance nautique. Il identifie le système, les risques, les documents et les informations nécessaires avant toute action.</p>
+<p>La démarche demandée est : <strong>observer → sécuriser → consulter la documentation → préparer → contrôler/intervenir → comparer → conclure → essayer → tracer</strong>.</p>
+<p>Pour <strong>Évaluation relais/trim</strong>, l’élève doit être capable de reformuler le besoin, repérer les organes utiles sur le schéma ou l’équipement, choisir les moyens adaptés et justifier sa conclusion à partir de preuves.</p>
+<p class="notice">Toute valeur de serrage, pression, tolérance ou caractéristique précise doit être fournie par le dossier technique ou une source constructeur fiable.</p>
+</div>
+<div class="item"><h3>📝 Activité guidée</h3>
+<p><strong>Situation professionnelle :</strong> le chef d’atelier confie une embarcation ou une maquette portant sur « Évaluation relais/trim ».</p>
+<ol>
+<li>Identifier les risques et sécuriser le poste.</li>
+<li>Repérer les composants et les liaisons utiles.</li>
+<li>Consulter le schéma, la procédure et les valeurs attendues disponibles.</li>
+<li>Préparer l’outillage et les moyens de mesure.</li>
+<li>Réaliser l’activité demandée sans remplacer de pièce au hasard.</li>
+<li>Effectuer l’autocontrôle et les essais prévus.</li>
+<li>Renseigner le document de suivi et formuler une conclusion professionnelle.</li>
+</ol>
+<p><strong>Production attendue :</strong> fiche de préparation, tableau de contrôles, schéma annoté et compte rendu d’intervention.</p>
+</div>
+</div>
+<div class="item" id="p5s6-ex" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>📝 Exercices d’application</h3><button class="btn print no-print" onclick="FMN.print('p5s6-ex')" type="button">🖨️ Imprimer les exercices</button></div>
+<ol>
+<li>Distinguer <em>symptôme</em>, <em>hypothèse</em>, <em>contrôle</em>, <em>résultat</em> et <em>conclusion</em> pour « Évaluation relais/trim ».</li>
+<li>Repérer sur un schéma : source d’énergie, protections, commandes, récepteurs et liaisons.</li>
+<li>Proposer deux contrôles classés du plus simple au plus pertinent et préciser ce que chaque résultat permet de conclure.</li>
+<li>Citer trois risques ou précautions QHSE liés à l’intervention.</li>
+<li>Rédiger un compte rendu court exploitable par le chef d’atelier.</li>
+</ol>
+<details><summary><strong>Correction guidée</strong></summary>
+<p>Le symptôme décrit ce qui est observé ; l’hypothèse propose une cause possible ; le contrôle produit une preuve ; la conclusion s’appuie sur cette preuve. Les organes et valeurs exacts doivent être relevés sur le dossier fourni.</p>
+</details>
+</div>
+<div class="item" id="p5s6-widget" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>🧩 Widget interactif</h3><button class="btn print no-print" onclick="FMN.print('p5s6-widget')" type="button">🖨️ Imprimer le widget</button></div>
+<p><strong>Quelle démarche est la plus professionnelle ?</strong></p>
+<div class="widget-answers no-print">
+<button data-ok="0" type="button">Remplacer directement le composant supposé en cause.</button>
+<button data-ok="1" type="button">Identifier les risques, consulter la documentation, contrôler, comparer puis conclure.</button>
+<button data-ok="0" type="button">Mesurer sans valeur attendue ni protocole.</button>
+</div><div class="feedback"></div>
+</div>
+<div class="item agenda-box" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between">
+<h3>📅 Agenda / cahier de texte de la séance</h3>
+<button class="btn print no-print agendaPrint" type="button">🖨️ Imprimer l’agenda</button>
+</div>
+<div class="studentbar">
+<label>Date de séance<input class="agendaDate" type="date"/></label>
+<label>Durée réalisée<input class="agendaDuration" placeholder="Ex. 2 h" type="text"/></label>
+<label>Groupe / classe<input class="agendaGroup" placeholder="Ex. 1re MN" type="text"/></label>
+</div>
+<p><strong>Éléments abordés :</strong></p>
+<div class="grid3 agendaChecks">
+<label class="item"><input style="width:auto" type="checkbox" value="Cours"/> 📘 Cours</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Exercices"/> 📝 Exercices</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Widget"/> 🧩 Widget</label>
+<label class="item"><input style="width:auto" type="checkbox" value="TP/Atelier"/> 🔧 TP / Atelier</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Correction"/> ✅ Correction</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Évaluation"/> 📊 Évaluation</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Compétences évaluées"/> 🎯 Compétences évaluées</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Remédiation"/> 🛠️ Remédiation</label>
+<label class="item"><input style="width:auto" type="checkbox" value="Travail à faire"/> 🏠 Travail à faire</label>
+</div>
+<div class="grid2" style="margin-top:12px">
+<label>Résumé de la séance<textarea class="agendaSummary" placeholder="Notions, activités, TP réellement réalisés…"></textarea></label>
+<label>Travail à faire / prochaine séance<textarea class="agendaHomework" placeholder="Travail demandé, préparation, documents à apporter…"></textarea></label>
+</div>
+<div class="grid2" style="margin-top:12px">
+<label>Compétences observées<textarea class="agendaSkills" placeholder="Ex. C6 : hypothèses pertinentes ; C7 : mesures correctement interprétées"></textarea></label>
+<label>Remédiation / points à reprendre<textarea class="agendaRemed" placeholder="Difficultés rencontrées, élèves à accompagner, reprise prévue…"></textarea></label>
+</div>
+<div class="actions no-print" style="margin-top:12px">
+<button class="btn good agendaSave" type="button">Enregistrer dans l’agenda</button>
+<button class="btn light agendaClear" type="button">Réinitialiser cette séance</button>
+</div>
+<div class="feedback agendaMsg"></div>
+</div>
+<div class="item" id="p5s6-comp" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>🎯 Suivi compétences — préparation CERISE Pro</h3><button class="btn print no-print" onclick="FMN.print('p5s6-comp')" type="button">🖨️ Imprimer le suivi</button></div>
+<p class="notice">Les codes, tâches et critères ci-dessous sont issus du référentiel. L’échelle 1 à 4 reste un outil pédagogique local à transcrire selon le paramétrage CERISE Pro de l’établissement.</p>
+<div class="item track" data-comp="C5">
+<strong>C5 — Constater le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 · T2.1.1 à T2.1.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> L’état du système est identifié.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les indices sont identifiés et listés avec un minimum d’intervention sur le système.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les essais sont réalisés en respectant les règles du constructeur et les conditions d’hygiène et de sécurité du travail.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C6">
+<strong>C6 — Hiérarchiser les hypothèses en lien avec le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 / A2.2 · T2.1.4 à T2.1.6, T2.2.1</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les hypothèses émises sont pertinentes et en relation avec le dysfonctionnement constaté.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les règles de sécurité sont respectées.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> La logique d’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> La hiérarchisation des résultats est pertinente.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> La synthèse met en évidence une démarche de diagnostic pertinente et logique.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C7">
+<strong>C7 — Valider les hypothèses</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.2 · T2.2.2 à T2.2.5</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Le choix des valeurs collectées est pertinent au regard du processus de diagnostic.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Le protocole de mesure respecte les règles de sécurité.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les choix du matériel de mesure et des grandeurs relevées sont judicieux.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> Les résultats, relevés ou observations sont correctement interprétés.</label><label class="criterion"><input class="crit" data-i="5" type="checkbox"/> La réflexion et le discernement permettent d’expliquer la cause première de la défaillance.</label><label class="criterion"><input class="crit" data-i="6" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C8">
+<strong>C8 — Identifier les éléments ou systèmes défectueux</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.3 · T2.3.1 à T2.3.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les éléments défectueux sont identifiés à partir des hypothèses.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> La nature de l’intervention est identifiée.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les conséquences sur les autres éléments et sur la maintenance sont identifiées.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<button class="btn good no-print saveTrack" type="button">Enregistrer le suivi</button><span class="feedback saveMsg"></span>
+</div>
+</section>
+<section class="section card" id="eval-p5">
+<div class="actions" style="justify-content:space-between"><h2>📊 Évaluation de période</h2><button class="btn print no-print" onclick="FMN.print('eval-p5')" type="button">🖨️ Imprimer l’évaluation</button></div>
+<div class="notice eval-lock"><strong>Accès protégé.</strong> <button class="btn warn no-print unlockEval" data-code="1E5S" type="button">Ouvrir l’évaluation</button></div>
+<div class="eval-zone hidden">
+<h3>Relais, trim et systèmes réversibles — /20</h3>
+<p>Questions : 10 points. Partie professionnelle/TP : 10 points.</p>
+<form class="evalForm" data-answers="[0, 0, 0, 0, 0]"><div class="item" style="margin:8px 0"><strong>1. Avant un contrôle ou une intervention, il faut d’abord :</strong><label style="display:block;margin:6px 0"><input name="q1" style="width:auto" type="radio" value="0"/> Identifier les risques et consulter le dossier</label><label style="display:block;margin:6px 0"><input name="q1" style="width:auto" type="radio" value="1"/> Remplacer la pièce</label><label style="display:block;margin:6px 0"><input name="q1" style="width:auto" type="radio" value="2"/> Mettre sous tension sans vérifier</label></div><div class="item" style="margin:8px 0"><strong>2. Une hypothèse de panne doit être :</strong><label style="display:block;margin:6px 0"><input name="q2" style="width:auto" type="radio" value="0"/> Validée par un contrôle pertinent</label><label style="display:block;margin:6px 0"><input name="q2" style="width:auto" type="radio" value="1"/> Considérée comme vraie</label><label style="display:block;margin:6px 0"><input name="q2" style="width:auto" type="radio" value="2"/> Écartée sans mesure</label></div><div class="item" style="margin:8px 0"><strong>3. Une valeur technique absente doit être :</strong><label style="display:block;margin:6px 0"><input name="q3" style="width:auto" type="radio" value="0"/> Recherchée dans une source fiable</label><label style="display:block;margin:6px 0"><input name="q3" style="width:auto" type="radio" value="1"/> Inventée</label><label style="display:block;margin:6px 0"><input name="q3" style="width:auto" type="radio" value="2"/> Copiée d’un autre modèle</label></div><div class="item" style="margin:8px 0"><strong>4. Après l’intervention, il faut :</strong><label style="display:block;margin:6px 0"><input name="q4" style="width:auto" type="radio" value="0"/> Autocontrôler, essayer et tracer</label><label style="display:block;margin:6px 0"><input name="q4" style="width:auto" type="radio" value="1"/> Quitter le poste</label><label style="display:block;margin:6px 0"><input name="q4" style="width:auto" type="radio" value="2"/> Supprimer les résultats</label></div><div class="item" style="margin:8px 0"><strong>5. Une conclusion professionnelle repose sur :</strong><label style="display:block;margin:6px 0"><input name="q5" style="width:auto" type="radio" value="0"/> Les résultats observés ou mesurés</label><label style="display:block;margin:6px 0"><input name="q5" style="width:auto" type="radio" value="1"/> Une intuition</label><label style="display:block;margin:6px 0"><input name="q5" style="width:auto" type="radio" value="2"/> Le prix des pièces</label></div><button class="btn good no-print" type="submit">Corriger les questions</button></form>
+<div class="feedback evalResult"></div>
+<div class="item" style="margin-top:12px"><h3>Barème professionnel /10</h3><p>0 à 2 pts pour : sécurité/QHSE ; exploitation documentaire ; méthode ; qualité des contrôles/intervention ; essais et traçabilité.</p><label>Points professionnels<input class="proScore" max="10" min="0" step="0.5" type="number"/></label><button class="btn good no-print saveFinalScore" type="button">Enregistrer la note finale</button><div class="feedback finalScoreMsg"></div></div>
+<div class="item" style="margin-top:12px"><h3>Compétences évaluées</h3>
+<div class="item track" data-comp="C6">
+<strong>C6 — Hiérarchiser les hypothèses en lien avec le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 / A2.2 · T2.1.4 à T2.1.6, T2.2.1</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les hypothèses émises sont pertinentes et en relation avec le dysfonctionnement constaté.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les règles de sécurité sont respectées.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> La logique d’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> La hiérarchisation des résultats est pertinente.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> La synthèse met en évidence une démarche de diagnostic pertinente et logique.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C7">
+<strong>C7 — Valider les hypothèses</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.2 · T2.2.2 à T2.2.5</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Le choix des valeurs collectées est pertinent au regard du processus de diagnostic.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Le protocole de mesure respecte les règles de sécurité.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les choix du matériel de mesure et des grandeurs relevées sont judicieux.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> Les résultats, relevés ou observations sont correctement interprétés.</label><label class="criterion"><input class="crit" data-i="5" type="checkbox"/> La réflexion et le discernement permettent d’expliquer la cause première de la défaillance.</label><label class="criterion"><input class="crit" data-i="6" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C5">
+<strong>C5 — Constater le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 · T2.1.1 à T2.1.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> L’état du système est identifié.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les indices sont identifiés et listés avec un minimum d’intervention sur le système.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les essais sont réalisés en respectant les règles du constructeur et les conditions d’hygiène et de sécurité du travail.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C8">
+<strong>C8 — Identifier les éléments ou systèmes défectueux</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.3 · T2.3.1 à T2.3.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les éléments défectueux sont identifiés à partir des hypothèses.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> La nature de l’intervention est identifiée.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les conséquences sur les autres éléments et sur la maintenance sont identifiées.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C9">
+<strong>C9 — Préparer l’intervention</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A3.1 · T3.1.1 à T3.1.5</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> L’ensemble des documents et des ressources nécessaires est identifié, recueilli et exploité.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les différentes étapes sont ordonnées et énoncées.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les règles QHSE et le tri des déchets sont respectés.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> Les consignes de sécurité sont appliquées.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C10">
+<strong>C10 — Réparer les systèmes, les sous-ensembles, les éléments</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A3.2 · T3.2.1 à T3.2.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les sous-ensembles ou éléments de l’embarcation sont remis en conformité.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Le barème de temps de réalisation des opérations est respecté.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les réglages et paramétrages sont conformes aux données constructeur.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> Les essais appropriés à l’intervention sont réalisés.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> Les indicateurs de maintenance sont réinitialisés.</label><label class="criterion"><input class="crit" data-i="5" type="checkbox"/> Tous les documents de suivi sont intégralement renseignés.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div></div>
+</div>
+</section><dialog class="codeDialog"><form class="dlg codeForm" method="dialog"><h3>Code d’évaluation</h3><input class="codeInput" maxlength="4" required=""/><div class="feedback codeErr"></div><div class="actions"><button class="btn light cancelCode" type="button">Annuler</button><button class="btn" type="submit">Valider</button></div></form></dialog>
+</main><footer>Base pédagogique FigaroMN · Première BAC PRO Maintenance Nautique</footer>
+
+<script>
+(function(){
+"use strict";
+window.FMN=window.FMN||{};
+FMN.j=function(k,d){try{var x=localStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}};
+FMN.s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+FMN.student=function(){return FMN.j("fmn_student",{})||{}};
+FMN.setStudent=function(o){FMN.s("fmn_student",o)};
+FMN.print=function(id){
+ var el=document.getElementById(id);if(!el)return;
+ document.body.classList.add("print-mode");el.classList.add("print-target");
+ window.print();
+ setTimeout(function(){el.classList.remove("print-target");document.body.classList.remove("print-mode")},250);
+};
+FMN.log=function(level,title,detail){
+ var a=FMN.j("fmn_log_"+level,[]);
+ a.unshift({date:new Date().toLocaleString("fr-FR"),title:title,detail:detail||""});
+ FMN.s("fmn_log_"+level,a.slice(0,160));
+};
+})();
+</script>
+
+<script>
+(function(){var s=FMN.student();document.querySelector(".studentName").value=s.name||"";document.querySelector(".studentClass").value=s.class||"1re BAC PRO MN";document.querySelector(".studentDate").value=s.date||new Date().toISOString().slice(0,10);document.getElementById("saveStudent").onclick=function(){FMN.setStudent({name:document.querySelector(".studentName").value.trim(),class:document.querySelector(".studentClass").value.trim(),date:document.querySelector(".studentDate").value});location.reload();};})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var L="premiere", P=5;
+var student=FMN.student();
+
+document.querySelectorAll(".widget-answers button").forEach(function(b){
+ b.onclick=function(){
+   var box=b.closest(".item"),f=box?box.querySelector(".feedback"):null;
+   if(f)f.textContent=b.dataset.ok==="1"?"Bonne réponse.":"Réponse à revoir : reprends la méthode professionnelle.";
+ };
+});
+
+function trackKey(box,c){
+ var s=FMN.student(),sess=box.closest(".session");
+ return "fmn_track|"+L+"|"+(s.name||"sans_nom")+"|"+P+"|"+(sess?sess.id:"eval")+"|"+c;
+}
+document.querySelectorAll(".track").forEach(function(box){
+ var c=box.dataset.comp,d=FMN.j(trackKey(box,c),{});
+ var sel=box.querySelector(".levelSelect"),ev=box.querySelector(".evidence"),dt=box.querySelector(".obsdate"),cm=box.querySelector(".comment");
+ if(sel)sel.value=d.level||"";if(ev)ev.value=d.evidence||"";if(dt)dt.value=d.date||"";if(cm)cm.value=d.comment||"";
+ (d.criteria||[]).forEach(function(i){var q=box.querySelector('.crit[data-i="'+i+'"]');if(q)q.checked=true;});
+});
+document.querySelectorAll(".saveTrack").forEach(function(btn){
+ btn.onclick=function(){
+  var area=btn.closest(".item")||document;
+  area.querySelectorAll(".track").forEach(function(box){
+   var c=box.dataset.comp,criteria=[];
+   box.querySelectorAll(".crit:checked").forEach(function(x){criteria.push(Number(x.dataset.i));});
+   FMN.s(trackKey(box,c),{
+    level:box.querySelector(".levelSelect")?box.querySelector(".levelSelect").value:"",
+    evidence:box.querySelector(".evidence")?box.querySelector(".evidence").value:"",
+    date:box.querySelector(".obsdate")?box.querySelector(".obsdate").value:"",
+    comment:box.querySelector(".comment")?box.querySelector(".comment").value:"",
+    criteria:criteria
+   });
+  });
+  var m=area.querySelector(".saveMsg");if(m)m.textContent="Suivi enregistré.";
+ };
+});
+
+document.querySelectorAll(".agenda-box").forEach(function(box){
+ var sess=box.closest(".session"),sid=sess?sess.id:"session",s=FMN.student();
+ var k="fmn_agenda|"+L+"|"+P+"|"+sid,d=FMN.j(k,{});
+ var q=function(sel){return box.querySelector(sel)};
+ if(q(".agendaDate"))q(".agendaDate").value=d.date||new Date().toISOString().slice(0,10);
+ if(q(".agendaDuration"))q(".agendaDuration").value=d.duration||"";
+ if(q(".agendaGroup"))q(".agendaGroup").value=d.group||(s.class||"");
+ if(q(".agendaSummary"))q(".agendaSummary").value=d.summary||"";
+ if(q(".agendaHomework"))q(".agendaHomework").value=d.homework||"";
+ if(q(".agendaSkills"))q(".agendaSkills").value=d.skills||"";
+ if(q(".agendaRemed"))q(".agendaRemed").value=d.remed||"";
+ (d.items||[]).forEach(function(v){Array.from(box.querySelectorAll(".agendaChecks input")).forEach(function(x){if(x.value===v)x.checked=true;});});
+ var ps=q(".agendaPrint");if(ps)ps.onclick=function(){FMN.print(sess.id)};
+ var sv=q(".agendaSave");if(sv)sv.onclick=function(){
+   var items=[];box.querySelectorAll(".agendaChecks input:checked").forEach(function(x){items.push(x.value)});
+   var data={date:q(".agendaDate").value,duration:q(".agendaDuration").value,group:q(".agendaGroup").value,items:items,summary:q(".agendaSummary").value,homework:q(".agendaHomework").value,skills:q(".agendaSkills").value,remed:q(".agendaRemed").value,title:sess?sess.querySelector("h2").textContent:"Séance"};
+   FMN.s(k,data);
+   var log=FMN.j("fmn_agenda_log_"+L,[]),idx=log.findIndex(function(x){return x.key===k});
+   var row={key:k,date:data.date,period:P,session:sid,title:data.title,items:items.join(", "),summary:data.summary,homework:data.homework,skills:data.skills,remed:data.remed,duration:data.duration,group:data.group};
+   if(idx>=0)log[idx]=row;else log.unshift(row);
+   FMN.s("fmn_agenda_log_"+L,log.slice(0,250));
+   var msg=q(".agendaMsg");if(msg)msg.textContent="Agenda enregistré.";
+ };
+ var cl=q(".agendaClear");if(cl)cl.onclick=function(){
+   if(confirm("Réinitialiser l’agenda de cette séance ?")){localStorage.removeItem(k);location.reload();}
+ };
+});
+
+document.querySelectorAll(".unlockEval").forEach(function(b){
+ b.onclick=function(){
+   var sec=b.closest("section"),dlg=sec.nextElementSibling;
+   if(!dlg||!dlg.showModal)return;
+   dlg.showModal();
+   var cancel=dlg.querySelector(".cancelCode");if(cancel)cancel.onclick=function(){dlg.close();};
+   var form=dlg.querySelector(".codeForm");
+   if(form)form.onsubmit=function(e){
+     e.preventDefault();
+     if(dlg.querySelector(".codeInput").value.trim().toUpperCase()===b.dataset.code){
+       dlg.close();sec.querySelector(".eval-lock").classList.add("hidden");sec.querySelector(".eval-zone").classList.remove("hidden");
+     }else dlg.querySelector(".codeErr").textContent="Code incorrect.";
+   };
+ };
+});
+document.querySelectorAll(".evalForm").forEach(function(form){
+ form.onsubmit=function(e){
+  e.preventDefault();var ans=JSON.parse(form.dataset.answers),good=0;
+  ans.forEach(function(a,i){var q=form.querySelector('input[name="q'+(i+1)+'"]:checked');if(q&&Number(q.value)===a)good++;});
+  var score=good*2;form.dataset.qscore=score;
+  var z=form.closest(".eval-zone"),r=z?z.querySelector(".evalResult"):null;if(r)r.textContent="Questions : "+score+" /10";
+ };
+});
+document.querySelectorAll(".saveFinalScore").forEach(function(b){
+ b.onclick=function(){
+   var z=b.closest(".eval-zone"),qs=Number(z.querySelector(".evalForm").dataset.qscore||0),ps=Math.max(0,Math.min(10,Number(z.querySelector(".proScore").value||0))),total=qs+ps,s=FMN.student(),key="fmn_notes|"+L+"|"+(s.name||"sans_nom"),d=FMN.j(key,{});
+   d["p"+P]=total;FMN.s(key,d);
+   z.querySelector(".finalScoreMsg").textContent="Note enregistrée : "+total+" /20";
+ };
+});
+})();
+</script>
+
+</body></html>
