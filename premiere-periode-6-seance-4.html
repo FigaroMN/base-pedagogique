@@ -36,6 +36,16 @@
 .fmn-cloudbar button,.fmn-cloudbar a{border:0;border-radius:9px;padding:9px 12px;background:#365976;color:#fff;font-weight:800;text-decoration:none;cursor:pointer}
 .fmn-cloudbar .secondary{background:#e3edf2;color:#1d2a38}
 </style>
+
+<style>
+.fmn-expath{margin-top:14px;border:1px solid #cbdce4;border-radius:14px;background:#f9fcfd;padding:16px}
+.fmn-expath-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.fmn-progress{height:10px;background:#e5edf1;border-radius:999px;overflow:hidden;margin:12px 0}.fmn-progress>span{display:block;height:100%;background:#365976;width:0%}
+.fmn-q{padding:14px;border:1px solid #dbe5ea;border-radius:12px;background:#fff;margin:10px 0}
+.fmn-options{display:grid;gap:8px;margin-top:10px}.fmn-options button{padding:10px;border:1px solid #c9d5dc;background:#fff;border-radius:10px;text-align:left;cursor:pointer}
+.fmn-options button.correct{outline:2px solid #2d7a55}.fmn-options button.wrong{outline:2px solid #a44343}
+.fmn-exfeedback{font-weight:800;margin-top:10px}.fmn-score{font-weight:900;font-size:1.1rem}.fmn-exactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+</style>
 </head><body>
 <header class="top no-print"><div class="shell nav"><a class="brand" href="premiere-periode-6.html">⚓ Période 6</a><a class="back" href="premiere-periode-6.html">← Menu de la période</a></div></header>
 <main class="shell fmn-one-session">
@@ -93,49 +103,14 @@
 </details>
 </div>
 <div class="item" id="p6s4-widget" style="margin-top:14px">
-<div class="actions" style="justify-content:space-between"><h3>🧩 Widget interactif</h3><button class="btn print no-print" onclick="FMN.print('p6s4-widget')" type="button">🖨️ Imprimer le widget</button></div>
-<p><strong>Quelle démarche est la plus professionnelle ?</strong></p>
-<div class="widget-answers no-print">
-<button data-ok="0" type="button">Remplacer directement le composant supposé en cause.</button>
-<button data-ok="1" type="button">Identifier les risques, consulter la documentation, contrôler, comparer puis conclure.</button>
-<button data-ok="0" type="button">Mesurer sans valeur attendue ni protocole.</button>
-</div><div class="feedback"></div>
+<div class="actions" style="justify-content:space-between"><h3>🧩 Exercices interactifs</h3><button class="btn print no-print" type="button" onclick="FMN.print('p6s4-widget')">🖨️ Imprimer</button></div>
+<div class="fmn-expath" data-questions='[{&quot;q&quot;: &quot;Avant toute intervention, quelle est la première démarche professionnelle ?&quot;, &quot;o&quot;: [&quot;Identifier les risques et consulter la documentation&quot;, &quot;Démonter immédiatement&quot;, &quot;Remplacer le composant le plus coûteux&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Pour préparer une intervention, les étapes doivent être :&quot;, &quot;o&quot;: [&quot;Ordonnées à partir du dossier et des risques&quot;, &quot;Improvisées au fur et à mesure&quot;, &quot;Décidées sans documentation&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Une conclusion de diagnostic doit s’appuyer sur :&quot;, &quot;o&quot;: [&quot;Une mesure ou une observation interprétée&quot;, &quot;Une supposition&quot;, &quot;L’habitude uniquement&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Après intervention, la bonne pratique est :&quot;, &quot;o&quot;: [&quot;Autocontrôle, essais et traçabilité&quot;, &quot;Rangement sans essais&quot;, &quot;Suppression des mesures&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Si une valeur constructeur précise n’est pas disponible, il faut :&quot;, &quot;o&quot;: [&quot;La rechercher dans une source fiable&quot;, &quot;L’inventer&quot;, &quot;Utiliser celle d’un autre modèle&quot;], &quot;a&quot;: 0}]'>
+ <div class="fmn-expath-head"><strong>Parcours de 5 exercices · Réparation simple après diagnostic</strong><span class="fmn-score">0 / 5</span></div>
+ <div class="fmn-progress"><span></span></div>
+ <div class="fmn-excontent"></div>
+ <div class="fmn-exfeedback"></div>
+ <div class="fmn-exactions no-print"><button type="button" class="btn fmn-next hidden">Exercice suivant</button><button type="button" class="btn light fmn-restart hidden">Recommencer</button></div>
 </div>
-<div class="item agenda-box" style="margin-top:14px">
-<div class="actions" style="justify-content:space-between">
-<h3>📅 Agenda / cahier de texte de la séance</h3>
-<button class="btn print no-print agendaPrint" type="button">🖨️ Imprimer l’agenda</button>
-</div>
-<div class="studentbar">
-<label>Date de séance<input class="agendaDate" type="date"/></label>
-<label>Durée réalisée<input class="agendaDuration" placeholder="Ex. 2 h" type="text"/></label>
-<label>Groupe / classe<input class="agendaGroup" placeholder="Ex. 1re MN" type="text"/></label>
-</div>
-<p><strong>Éléments abordés :</strong></p>
-<div class="grid3 agendaChecks">
-<label class="item"><input style="width:auto" type="checkbox" value="Cours"/> 📘 Cours</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Exercices"/> 📝 Exercices</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Widget"/> 🧩 Widget</label>
-<label class="item"><input style="width:auto" type="checkbox" value="TP/Atelier"/> 🔧 TP / Atelier</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Correction"/> ✅ Correction</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Évaluation"/> 📊 Évaluation</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Compétences évaluées"/> 🎯 Compétences évaluées</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Remédiation"/> 🛠️ Remédiation</label>
-<label class="item"><input style="width:auto" type="checkbox" value="Travail à faire"/> 🏠 Travail à faire</label>
-</div>
-<div class="grid2" style="margin-top:12px">
-<label>Résumé de la séance<textarea class="agendaSummary" placeholder="Notions, activités, TP réellement réalisés…"></textarea></label>
-<label>Travail à faire / prochaine séance<textarea class="agendaHomework" placeholder="Travail demandé, préparation, documents à apporter…"></textarea></label>
-</div>
-<div class="grid2" style="margin-top:12px">
-<label>Compétences observées<textarea class="agendaSkills" placeholder="Ex. C6 : hypothèses pertinentes ; C7 : mesures correctement interprétées"></textarea></label>
-<label>Remédiation / points à reprendre<textarea class="agendaRemed" placeholder="Difficultés rencontrées, élèves à accompagner, reprise prévue…"></textarea></label>
-</div>
-<div class="actions no-print" style="margin-top:12px">
-<button class="btn good agendaSave" type="button">Enregistrer dans l’agenda</button>
-<button class="btn light agendaClear" type="button">Réinitialiser cette séance</button>
-</div>
-<div class="feedback agendaMsg"></div>
 </div>
 <div class="item" id="p6s4-comp" style="margin-top:14px">
 <div class="actions" style="justify-content:space-between"><h3>🎯 Suivi compétences — préparation CERISE Pro</h3><button class="btn print no-print" onclick="FMN.print('p6s4-comp')" type="button">🖨️ Imprimer le suivi</button></div>
@@ -294,6 +269,7 @@ var status=document.getElementById("fmnCloudStatus"),done=document.getElementByI
 if(!status)return;
 var sess=FigaroCloud.session();if(!sess||!sess.access_token){status.textContent="Non connecté : le suivi reste local.";login.classList.remove("hidden");return;}
 var prof=await FigaroCloud.profile();if(!prof||prof.role!=="student"){status.textContent="Mode enseignant : suivi élève non activé sur cette page.";return;}
+if(prof.archived_at){status.textContent="Compte archivé : synchronisation suspendue.";done.classList.add("hidden");return;}
 var rows=await FigaroCloud.table("sessions","level=eq."+LEVEL+"&period=eq."+PERIOD+"&session_no=eq."+SESSION_NO+"&select=id,title");
 if(!rows||!rows[0]){status.textContent="Séance non encore enregistrée dans Supabase. Exécute SETUP-SUPABASE-CONNECTE.sql.";return;}
 var dbs=rows[0],existing=await FigaroCloud.table("session_progress","student_id=eq."+prof.id+"&session_id=eq."+dbs.id+"&select=id,status");
@@ -322,4 +298,33 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
 });
 })().catch(function(e){var x=document.getElementById("fmnCloudStatus");if(x)x.textContent="Suivi distant indisponible : "+e.message;});
 </script>
-</body></html>
+
+<script>
+(function initFigaroExercises(){
+ document.querySelectorAll(".fmn-expath").forEach(function(box){
+  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false;
+  var content=box.querySelector(".fmn-excontent"),fb=box.querySelector(".fmn-exfeedback"),next=box.querySelector(".fmn-next"),restart=box.querySelector(".fmn-restart"),scoreEl=box.querySelector(".fmn-score"),bar=box.querySelector(".fmn-progress span");
+  function render(){
+   answered=false;fb.textContent="";next.classList.add("hidden");restart.classList.add("hidden");
+   if(i>=qs.length){
+    content.innerHTML='<div class="q"><h4>Parcours terminé</h4><p>Tu as obtenu <strong>'+score+' / '+qs.length+'</strong>.</p><p>'+(score>=4?"Très bonne maîtrise.":"Reprends les notions associées avant de recommencer.")+'</p></div>';
+    scoreEl.textContent=score+" / "+qs.length;bar.style.width="100%";restart.classList.remove("hidden");
+    saveResult();return;
+   }
+   var q=qs[i];bar.style.width=((i)/qs.length*100)+"%";scoreEl.textContent=score+" / "+qs.length;
+   content.innerHTML='<div class="fmn-q"><strong>Exercice '+(i+1)+' / '+qs.length+'</strong><p>'+q.q+'</p><div class="fmn-options">'+q.o.map((o,n)=>'<button type="button" data-n="'+n+'">'+o+'</button>').join("")+'</div></div>';
+   content.querySelectorAll("button").forEach(function(b){b.onclick=function(){if(answered)return;answered=true;var n=Number(b.dataset.n);if(n===q.a){score++;b.classList.add("correct");fb.textContent="Bonne réponse.";}else{b.classList.add("wrong");var good=content.querySelector('button[data-n="'+q.a+'"]');if(good)good.classList.add("correct");fb.textContent="Réponse à revoir. La bonne réponse est indiquée.";}scoreEl.textContent=score+" / "+qs.length;next.classList.remove("hidden");};});
+  }
+  async function saveResult(){
+   try{
+    var sess=FigaroCloud&&FigaroCloud.session?FigaroCloud.session():null;if(!sess)return;
+    var p=await FigaroCloud.profile();if(!p||p.role!=="student"||p.archived_at)return;
+    var rows=await FigaroCloud.table("sessions","level=eq.premiere&period=eq.6&session_no=eq.4&select=id");
+    if(!rows||!rows[0])return;
+    await FigaroCloud.table("interactive_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:p.id,session_id:rows[0].id,score:score,total:qs.length,completed_at:new Date().toISOString()})})
+   }catch(e){}
+  }
+  next.onclick=function(){i++;render();};restart.onclick=function(){i=0;score=0;render();};render();
+ });
+})();
+</script></body></html>

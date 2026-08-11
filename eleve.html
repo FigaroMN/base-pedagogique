@@ -16,13 +16,19 @@
 <script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
 <script>
 (async function(){
-var p=await FigaroCloud.requireAuth("student");if(!p)return;welcome.textContent="Bonjour "+(p.full_name||"élève");
+var p=await FigaroCloud.requireAuth("student");if(!p)return;var requestedLevel=new URLSearchParams(location.search).get("level")||"";
+if(p.archived_at){
+ document.querySelector("main").innerHTML='<section class="hero"><span class="pill">Compte archivé</span><h1>Accès suspendu</h1><p class="muted">Ton compte a été archivé par l’enseignant. Tes données sont conservées, mais le suivi pédagogique à distance est suspendu.</p><button class="btn bad" id="archivedLogout" type="button">Déconnexion</button></section>';
+ document.getElementById("archivedLogout").onclick=async function(){await FigaroCloud.signOut();location.href="connexion.html";};
+ return;
+}
+welcome.textContent="Bonjour "+(p.full_name||"élève");
 logout.onclick=async function(){await FigaroCloud.signOut();location.href="connexion.html";};
 var memberships=await FigaroCloud.table("class_members","student_id=eq."+encodeURIComponent(p.id)+"&select=class_id");
 var classIds=(memberships||[]).map(x=>x.class_id),classes=[];
 if(classIds.length)classes=await FigaroCloud.table("classes","id=in.("+classIds.join(",")+")&select=id,name,level,school_year");
 classInfo.textContent=classes.length?classes.map(c=>c.name+" · "+(c.school_year||"")).join(" | "):"Compte non encore rattaché à une classe. Demande à ton enseignant.";
-var level=(classes[0]&&classes[0].level)||p.level;
+var actualLevel=(classes[0]&&classes[0].level)||p.level;var level=(requestedLevel&&requestedLevel===actualLevel)?requestedLevel:actualLevel;
 if(level){
   var sessions=await FigaroCloud.table("sessions","level=eq."+encodeURIComponent(level)+"&is_published=eq.true&select=id,period,session_no,title,session_type&order=period.asc,session_no.asc");
   var prog=await FigaroCloud.table("session_progress","student_id=eq."+encodeURIComponent(p.id)+"&select=session_id,status,started_at,completed_at");

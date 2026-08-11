@@ -14,9 +14,16 @@
 </div></main>
 <script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
 <script>
+const NAVPARAMS=new URLSearchParams(location.search);
+const NAVMODE=NAVPARAMS.get("mode")||"";
+const NAVLEVEL=NAVPARAMS.get("level")||"";
+function routeFor(p){
+  if(p&&p.role==="teacher") return "enseignant.html"+(NAVLEVEL?"?level="+encodeURIComponent(NAVLEVEL):"");
+  return "eleve.html"+(NAVLEVEL?"?level="+encodeURIComponent(NAVLEVEL):"");
+}
 (function(){
-var s=FigaroCloud.session();if(s&&s.access_token)FigaroCloud.profile().then(function(p){if(p)location.href=p.role==="teacher"?"enseignant.html":"eleve.html";}).catch(function(){});
-loginForm.onsubmit=async function(e){e.preventDefault();loginMsg.textContent="Connexion…";try{await FigaroCloud.signIn(loginEmail.value.trim(),loginPassword.value);var p=await FigaroCloud.profile();location.href=p&&p.role==="teacher"?"enseignant.html":"eleve.html";}catch(err){loginMsg.textContent="Connexion impossible : "+err.message;}};
-signupForm.onsubmit=async function(e){e.preventDefault();signupMsg.textContent="Création…";try{var d=await FigaroCloud.signUp(signupEmail.value.trim(),signupPassword.value,signupName.value.trim());signupMsg.textContent=d&&d.access_token?"Compte créé. Connexion en cours…":"Compte créé. Vérifie ton e-mail si Supabase demande une confirmation.";if(d&&d.access_token)setTimeout(function(){location.href="eleve.html"},600);}catch(err){signupMsg.textContent="Création impossible : "+err.message;}};
+var s=FigaroCloud.session();if(s&&s.access_token)FigaroCloud.profile().then(function(p){if(p)location.href=routeFor(p);}).catch(function(){});
+loginForm.onsubmit=async function(e){e.preventDefault();loginMsg.textContent="Connexion…";try{await FigaroCloud.signIn(loginEmail.value.trim(),loginPassword.value);var p=await FigaroCloud.profile();location.href=routeFor(p);}catch(err){loginMsg.textContent="Connexion impossible : "+err.message;}};
+signupForm.onsubmit=async function(e){e.preventDefault();signupMsg.textContent="Création…";try{var d=await FigaroCloud.signUp(signupEmail.value.trim(),signupPassword.value,signupName.value.trim());signupMsg.textContent=d&&d.access_token?"Compte créé. Connexion en cours…":"Compte créé. Vérifie ton e-mail si Supabase demande une confirmation.";if(d&&d.access_token)setTimeout(function(){location.href=routeFor({role:"student"})},600);}catch(err){signupMsg.textContent="Création impossible : "+err.message;}};
 })();
 </script></body></html>

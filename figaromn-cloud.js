@@ -54,7 +54,7 @@ async function refresh(){
 }
 async function profile(){
   var s=loadSession();if(!s||!s.user)return null;
-  var d=await req("/rest/v1/profiles?id=eq."+encodeURIComponent(s.user.id)+"&select=id,full_name,email,role,level");
+  var d=await req("/rest/v1/profiles?id=eq."+encodeURIComponent(s.user.id)+"&select=id,full_name,email,role,level,archived_at");
   return Array.isArray(d)&&d[0]?d[0]:null;
 }
 async function table(name,query,opt){

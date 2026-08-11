@@ -1,0 +1,27 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choisir le niveau · FigaroMN</title>
+<style>
+:root{--bg:#f3f7f9;--card:#fff;--ink:#1d2a38;--muted:#647481;--navy:#365975;--line:#dbe5ea;--blue:#eaf2f6;--good:#23694a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.shell{width:min(1100px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;justify-content:space-between;align-items:center}.brand{text-decoration:none;color:inherit;font-weight:900}
+.hero{padding:46px 0 22px}.eyebrow{display:inline-block;padding:6px 10px;background:var(--blue);border-radius:999px;font-weight:850;color:var(--navy)}
+h1{font-size:clamp(2rem,5vw,3.3rem);margin:.4rem 0}.lead{color:var(--muted);max-width:800px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;text-decoration:none;color:inherit;box-shadow:0 8px 24px rgba(20,45,60,.06)}.card:hover{transform:translateY(-2px)}
+.btn{display:inline-block;padding:11px 14px;border-radius:10px;background:var(--navy);color:#fff;text-decoration:none;font-weight:850}.btn.good{background:var(--good)}
+@media(max-width:780px){.grid,.grid3{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header class="top"><div class="shell nav"><a class="brand" href="choix-acces.html">⚓ FigaroMN</a><a href="choix-acces.html">← Choix de l'accès</a></div></header>
+<main class="shell"><section class="hero"><span class="eyebrow" id="modeLabel">FigaroMN</span><h1>Choisissez votre niveau</h1><p class="lead">Le niveau choisi sera utilisé pour ouvrir directement le bon parcours.</p></section>
+<section class="grid3" id="levels"></section></main>
+<script>
+(function(){
+ const q=new URLSearchParams(location.search),mode=q.get("mode")==="enseignant"?"enseignant":"eleve";
+ modeLabel.textContent=mode==="enseignant"?"🔐 Espace Enseignant":"🎓 Espace Élève";
+ const data=[
+  ["seconde","2nde BAC PRO MN","Fondamentaux, mesures, installations et premiers diagnostics."],
+  ["premiere","1re BAC PRO MN","Diagnostic structuré, maintenance et interventions."],
+  ["terminale","Tle BAC PRO MN","Situations intégrées, autonomie et préparation certificative."]
+ ];
+ levels.innerHTML=data.map(x=>'<a class="card" href="connexion.html?mode='+mode+'&level='+x[0]+'"><h2>'+x[1]+'</h2><p>'+x[2]+'</p><span class="btn">Ouvrir</span></a>').join("");
+})();
+</script></body></html>
