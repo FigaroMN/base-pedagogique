@@ -1,27 +1,71 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Choisir le niveau · FigaroMN</title>
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Choisir le niveau · FigaroMN</title>
 <style>
-:root{--bg:#f3f7f9;--card:#fff;--ink:#1d2a38;--muted:#647481;--navy:#365975;--line:#dbe5ea;--blue:#eaf2f6;--good:#23694a}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-.shell{width:min(1100px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;justify-content:space-between;align-items:center}.brand{text-decoration:none;color:inherit;font-weight:900}
-.hero{padding:46px 0 22px}.eyebrow{display:inline-block;padding:6px 10px;background:var(--blue);border-radius:999px;font-weight:850;color:var(--navy)}
-h1{font-size:clamp(2rem,5vw,3.3rem);margin:.4rem 0}.lead{color:var(--muted);max-width:800px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;text-decoration:none;color:inherit;box-shadow:0 8px 24px rgba(20,45,60,.06)}.card:hover{transform:translateY(-2px)}
-.btn{display:inline-block;padding:11px 14px;border-radius:10px;background:var(--navy);color:#fff;text-decoration:none;font-weight:850}.btn.good{background:var(--good)}
-@media(max-width:780px){.grid,.grid3{grid-template-columns:1fr}}
+:root{
+  --bg:#111820;--panel:#1d2934;--panel2:#243341;--ink:#f4f8fb;--muted:#b7c5cf;
+  --line:#314453;--cyan:#93d6e6;--cyan2:#b8ebf4;--green:#7bc59b;--gold:#e1c96d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:
+linear-gradient(180deg,#121920 0%,#10171e 100%);color:var(--ink);line-height:1.55}
+a{color:inherit}.shell{width:min(1120px,calc(100% - 32px));margin:auto}
+.top{border-bottom:1px solid rgba(255,255,255,.08);background:rgba(15,22,29,.94)}
+.nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand,.back{text-decoration:none;font-weight:900}.back{color:var(--cyan)}
+.hero{padding:58px 0 28px}.eyebrow{display:inline-block;padding:6px 10px;border:1px solid #375565;border-radius:999px;
+background:#16232c;color:var(--cyan2);font-size:.82rem;font-weight:900}
+h1{font-size:clamp(2.35rem,6vw,4rem);line-height:1.05;margin:14px 0 10px}
+.lead{color:var(--muted);max-width:760px;font-size:1.05rem}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{display:block;text-decoration:none;background:linear-gradient(180deg,var(--panel2),var(--panel));
+border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 15px 30px rgba(0,0,0,.16);
+transition:.18s transform,.18s border-color}
+.card:hover{transform:translateY(-3px);border-color:#5a7a8d}
+.card h2{font-size:1.35rem;margin:8px 0}.card p{color:var(--muted);min-height:72px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#2a3b47;color:var(--gold);font-weight:900;font-size:.78rem}
+.btn{display:inline-block;padding:11px 14px;border-radius:10px;background:var(--cyan);color:#0f1b22;text-decoration:none;font-weight:900}
+.btn.green{background:var(--green)}
+.note{margin:24px 0;padding:14px 16px;border-left:3px solid var(--cyan);background:#18222b;color:var(--muted);border-radius:0 10px 10px 0}
+footer{padding:44px 0;color:#7e929f;text-align:center;font-size:.88rem}
+@media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr}.card p{min-height:0}}
 </style>
-</head><body>
-<header class="top"><div class="shell nav"><a class="brand" href="choix-acces.html">⚓ FigaroMN</a><a href="choix-acces.html">← Choix de l'accès</a></div></header>
-<main class="shell"><section class="hero"><span class="eyebrow" id="modeLabel">FigaroMN</span><h1>Choisissez votre niveau</h1><p class="lead">Le niveau choisi sera utilisé pour ouvrir directement le bon parcours.</p></section>
-<section class="grid3" id="levels"></section></main>
+</head>
+<body>
+<header class="top"><div class="shell nav">
+<a class="brand" href="bac-pro.html">⚓ FigaroMN</a>
+<a class="back" href="bac-pro.html">← Choisir un autre espace</a>
+</div></header>
+<main class="shell">
+<section class="hero"><span class="eyebrow" id="spaceLabel">FigaroMN</span><h1>Choisir le niveau de classe</h1>
+<p class="lead" id="spaceText">Sélectionnez le niveau souhaité.</p></section>
+<section class="grid3" id="levelGrid"></section>
+<div class="note" id="modeNote"></div>
+</main><footer>FigaroMN · Maintenance Nautique</footer>
 <script>
 (function(){
- const q=new URLSearchParams(location.search),mode=q.get("mode")==="enseignant"?"enseignant":"eleve";
- modeLabel.textContent=mode==="enseignant"?"🔐 Espace Enseignant":"🎓 Espace Élève";
- const data=[
-  ["seconde","2nde BAC PRO MN","Fondamentaux, mesures, installations et premiers diagnostics."],
-  ["premiere","1re BAC PRO MN","Diagnostic structuré, maintenance et interventions."],
-  ["terminale","Tle BAC PRO MN","Situations intégrées, autonomie et préparation certificative."]
+ const params=new URLSearchParams(location.search);
+ const mode=params.get("mode")==="enseignant"?"enseignant":"eleve";
+ const teacher=mode==="enseignant";
+ spaceLabel.textContent=teacher?"🔐 ESPACE ENSEIGNANT":"🎓 ESPACE ÉLÈVE";
+ spaceText.textContent=teacher
+   ?"Choisissez la classe que vous souhaitez suivre."
+   :"Choisissez votre classe. Après connexion, FigaroMN vérifiera votre niveau enregistré.";
+ modeNote.textContent=teacher
+   ?"Le tableau de bord sera filtré automatiquement sur la classe choisie."
+   :"Si le niveau choisi ne correspond pas à votre classe Supabase, votre niveau réel sera utilisé.";
+ const levels=[
+   ["seconde","Seconde BAC PRO MN","Fondamentaux, mesures, installations et premières démarches de diagnostic."],
+   ["premiere","Première BAC PRO MN","Diagnostic structuré, maintenance et interventions professionnelles."],
+   ["terminale","Terminale BAC PRO MN","Situations intégrées, autonomie et préparation certificative."]
  ];
- levels.innerHTML=data.map(x=>'<a class="card" href="connexion.html?mode='+mode+'&level='+x[0]+'"><h2>'+x[1]+'</h2><p>'+x[2]+'</p><span class="btn">Ouvrir</span></a>').join("");
+ levelGrid.innerHTML=levels.map((x,i)=>`
+   <a class="card" href="connexion.html?mode=${mode}&level=${x[0]}">
+     <span class="badge">NIVEAU ${i+1}</span>
+     <h2>${x[1]}</h2>
+     <p>${x[2]}</p>
+     <span class="btn ${teacher?'green':''}">${teacher?'Suivre cette classe':'Accéder à ma classe'}</span>
+   </a>`).join("");
 })();
 </script></body></html>
