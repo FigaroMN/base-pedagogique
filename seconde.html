@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Seconde BAC PRO Maintenance Nautique - Base pédagogique FigaroMN">
+  <title>Seconde BAC PRO Maintenance Nautique | FigaroMN</title>
+  <style>
+    :root{
+      --bg:#071823;
+      --panel:#0d2533;
+      --panel2:#123345;
+      --text:#f4f8fb;
+      --muted:#b6c8d3;
+      --accent:#32c5d2;
+      --accent2:#f6b73c;
+      --ok:#6bd19a;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 16px 40px rgba(0,0,0,.28);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(50,197,210,.12), transparent 30rem),
+        linear-gradient(180deg,#06141e 0%,#091d29 100%);
+      color:var(--text);
+      line-height:1.55;
+    }
+    a{color:inherit}
+    .fm-shell{width:min(1180px,calc(100% - 32px));margin:auto}
+    .fm-topbar{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(12px);
+      background:rgba(6,20,30,.86);
+      border-bottom:1px solid var(--line)
+    }
+    .fm-nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .fm-brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:850;letter-spacing:.2px}
+    .fm-logo{
+      width:42px;height:42px;border-radius:13px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),#2e86de);
+      box-shadow:0 8px 20px rgba(50,197,210,.22);
+      font-weight:900;color:#041319
+    }
+    .fm-back{
+      text-decoration:none;padding:10px 14px;border-radius:12px;
+      border:1px solid var(--line);color:var(--muted)
+    }
+    .fm-back:hover,.fm-back:focus-visible{border-color:var(--accent);color:white;outline:none}
+    .fm-hero{padding:68px 0 34px}
+    .fm-kicker{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 11px;border:1px solid rgba(50,197,210,.35);
+      border-radius:999px;color:#bff7fb;background:rgba(50,197,210,.08);
+      font-size:.88rem;font-weight:750
+    }
+    h1{font-size:clamp(2rem,5vw,4.2rem);line-height:1.02;margin:18px 0 18px;max-width:900px}
+    .fm-lead{max-width:820px;color:var(--muted);font-size:clamp(1rem,2vw,1.18rem)}
+    .fm-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .fm-btn{
+      appearance:none;border:0;cursor:pointer;text-decoration:none;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      min-height:46px;padding:0 17px;border-radius:13px;font-weight:800
+    }
+    .fm-btn-primary{background:var(--accent);color:#041319}
+    .fm-btn-secondary{background:transparent;color:white;border:1px solid var(--line)}
+    .fm-btn:hover{transform:translateY(-1px)}
+    .fm-section{padding:34px 0}
+    .fm-section h2{font-size:clamp(1.5rem,3vw,2.25rem);margin:0 0 8px}
+    .fm-section-intro{color:var(--muted);margin:0 0 24px;max-width:850px}
+    .fm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .fm-card{
+      position:relative;
+      background:linear-gradient(180deg,rgba(18,51,69,.95),rgba(13,37,51,.95));
+      border:1px solid var(--line);border-radius:var(--radius);
+      padding:22px;box-shadow:var(--shadow);overflow:hidden
+    }
+    .fm-card::after{
+      content:"";position:absolute;right:-40px;top:-45px;width:120px;height:120px;
+      border-radius:50%;background:rgba(50,197,210,.08)
+    }
+    .fm-period{
+      display:inline-flex;padding:6px 10px;border-radius:999px;
+      background:rgba(246,183,60,.12);color:#ffd990;font-size:.82rem;font-weight:850
+    }
+    .fm-card h3{font-size:1.18rem;margin:14px 0 8px}
+    .fm-card p{color:var(--muted);font-size:.96rem;margin:0 0 16px}
+    .fm-tags{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0 18px}
+    .fm-tag{font-size:.78rem;padding:5px 8px;border-radius:8px;background:rgba(255,255,255,.07);color:#d9e6ec}
+    .fm-open{
+      display:inline-flex;align-items:center;gap:7px;
+      color:#bcf8fc;font-weight:800;text-decoration:none
+    }
+    .fm-open:hover,.fm-open:focus-visible{text-decoration:underline;outline:none}
+    .fm-feature{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:22px;
+      background:linear-gradient(135deg,rgba(50,197,210,.10),rgba(246,183,60,.06));
+      border:1px solid var(--line);border-radius:24px;padding:28px
+    }
+    .fm-feature h3{font-size:1.5rem;margin:0 0 10px}
+    .fm-feature p{color:var(--muted)}
+    .fm-checks{display:grid;gap:10px}
+    .fm-check{
+      display:flex;gap:10px;align-items:flex-start;
+      background:rgba(255,255,255,.045);padding:12px;border-radius:12px
+    }
+    .fm-check b{color:var(--ok)}
+    .fm-ref{
+      margin-top:24px;padding:16px 18px;border-left:4px solid var(--accent);
+      background:rgba(255,255,255,.04);border-radius:0 12px 12px 0;color:var(--muted)
+    }
+    .fm-footer{padding:44px 0 52px;color:#91a8b5;text-align:center;font-size:.9rem}
+    .fm-hidden{display:none}
+    .fm-panel{
+      margin-top:18px;padding:18px;border-radius:16px;
+      border:1px dashed rgba(50,197,210,.4);background:rgba(50,197,210,.06)
+    }
+    @media (max-width:900px){
+      .fm-grid{grid-template-columns:repeat(2,1fr)}
+      .fm-feature{grid-template-columns:1fr}
+    }
+    @media (max-width:620px){
+      .fm-shell{width:min(100% - 22px,1180px)}
+      .fm-nav{min-height:60px}
+      .fm-brand span:last-child{font-size:.92rem}
+      .fm-back{padding:8px 10px;font-size:.88rem}
+      .fm-hero{padding-top:42px}
+      .fm-grid{grid-template-columns:1fr}
+      .fm-card{padding:19px}
+      .fm-feature{padding:20px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *{transition:none!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="fm-topbar">
+    <div class="fm-shell fm-nav">
+      <a class="fm-brand" href="index.html" aria-label="Retour à l'accueil FigaroMN">
+        <span class="fm-logo" aria-hidden="true">MN</span>
+        <span>Base pédagogique FigaroMN</span>
+      </a>
+      <a class="fm-back" href="bac-pro.html">← BAC PRO</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="fm-hero">
+      <div class="fm-shell">
+        <span class="fm-kicker">⚓ Formation professionnelle</span>
+        <h1>Seconde BAC PRO<br>Maintenance Nautique</h1>
+        <p class="fm-lead">
+          Espace de formation organisé en 6 périodes. Chaque période pourra regrouper
+          séquences, cours, activités, travaux pratiques, ressources et évaluations.
+        </p>
+        <div class="fm-actions">
+          <a class="fm-btn fm-btn-primary" href="#periodes">Voir les 6 périodes</a>
+          <button class="fm-btn fm-btn-secondary" type="button" id="fmProgressBtn"
+                  aria-expanded="false" aria-controls="fmProgressPanel">
+            Afficher la progression
+          </button>
+        </div>
+        <div class="fm-panel fm-hidden" id="fmProgressPanel">
+          <strong>Progression de départ :</strong> prise en main des outils de mesure,
+          lecture et utilisation du multimètre, puis installation d'un équipement électrique
+          12/24 V avec activités d'apprentissage, transfert, synthèse et évaluation.
+        </div>
+      </div>
+    </section>
+
+    <section class="fm-section" id="periodes">
+      <div class="fm-shell">
+        <h2>Les 6 périodes</h2>
+        <p class="fm-section-intro">
+          Cette répartition constitue une organisation pédagogique de la page et pourra être
+          ajustée à ta progression annuelle.
+        </p>
+
+        <div class="fm-grid">
+          <article class="fm-card" id="periode-1">
+            <span class="fm-period">Période 1</span>
+            <h3>Pré-requis & sécurité électrique</h3>
+            <p>Réactiver les notions utiles avant les mesures et les interventions sur les circuits électriques embarqués.</p>
+            <div class="fm-tags"><span class="fm-tag">12/24 V</span><span class="fm-tag">QHSE</span><span class="fm-tag">Pré-requis</span></div>
+            <a class="fm-open" href="#sequence-multimetre">Commencer →</a>
+          </article>
+
+          <article class="fm-card" id="periode-2">
+            <span class="fm-period">Période 2</span>
+            <h3>Le multimètre</h3>
+            <p>Identifier les fonctions du multimètre, sélectionner la fonction et le calibre adaptés et interpréter l'affichage.</p>
+            <div class="fm-tags"><span class="fm-tag">Tension</span><span class="fm-tag">Résistance</span><span class="fm-tag">Mesure</span></div>
+            <a class="fm-open" href="#sequence-multimetre">Ouvrir la séquence →</a>
+          </article>
+
+          <article class="fm-card" id="periode-3">
+            <span class="fm-period">Période 3</span>
+            <h3>Installation d'un équipement</h3>
+            <p>Préparer l'installation d'un équipement électrique en tenant compte du câblage, de la protection et des règles d'intervention.</p>
+            <div class="fm-tags"><span class="fm-tag">C12</span><span class="fm-tag">Câblage</span><span class="fm-tag">Protection</span></div>
+            <a class="fm-open" href="#sequence-installation">Ouvrir la séquence →</a>
+          </article>
+
+          <article class="fm-card" id="periode-4">
+            <span class="fm-period">Période 4</span>
+            <h3>TP d'apprentissage</h3>
+            <p>Mettre en œuvre les acquis sur des installations : feux de navigation, feu de mouillage et pompe de cale.</p>
+            <div class="fm-tags"><span class="fm-tag">Feux</span><span class="fm-tag">Pompe de cale</span><span class="fm-tag">TP</span></div>
+            <a class="fm-open" href="#sequence-installation">Voir les activités →</a>
+          </article>
+
+          <article class="fm-card" id="periode-5">
+            <span class="fm-period">Période 5</span>
+            <h3>Transfert des compétences</h3>
+            <p>Réinvestir la démarche sur une nouvelle situation professionnelle et gagner en autonomie.</p>
+            <div class="fm-tags"><span class="fm-tag">Transfert</span><span class="fm-tag">Autonomie</span><span class="fm-tag">Méthode</span></div>
+            <a class="fm-open" href="#sequence-installation">Voir la progression →</a>
+          </article>
+
+          <article class="fm-card" id="periode-6">
+            <span class="fm-period">Période 6</span>
+            <h3>Synthèse & évaluation</h3>
+            <p>Formaliser la méthode de travail, vérifier les acquis et préparer la suite de la formation.</p>
+            <div class="fm-tags"><span class="fm-tag">Synthèse</span><span class="fm-tag">Évaluation</span><span class="fm-tag">Remédiation</span></div>
+            <a class="fm-open" href="#ressources">Voir les ressources →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fm-section" id="sequence-multimetre">
+      <div class="fm-shell">
+        <div class="fm-feature">
+          <div>
+            <span class="fm-period">Séquence</span>
+            <h3>Prise en main du multimètre</h3>
+            <p>
+              À partir des supports existants de Seconde, l'élève apprend à manipuler le multimètre,
+              à choisir une fonction et un calibre adaptés et à interpréter le résultat obtenu.
+            </p>
+            <a class="fm-btn fm-btn-primary" href="#" onclick="return false;">Contenus à intégrer</a>
+          </div>
+          <div class="fm-checks">
+            <div class="fm-check"><b>✓</b><span>Identifier les principales fonctions de mesure.</span></div>
+            <div class="fm-check"><b>✓</b><span>Positionner correctement les cordons.</span></div>
+            <div class="fm-check"><b>✓</b><span>Choisir le calibre adapté à la mesure.</span></div>
+            <div class="fm-check"><b>✓</b><span>Lire et interpréter l'afficheur.</span></div>
+            <div class="fm-check"><b>✓</b><span>Respecter les règles de sécurité liées à la mesure.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fm-section" id="sequence-installation">
+      <div class="fm-shell">
+        <div class="fm-feature">
+          <div>
+            <span class="fm-period">Séquence</span>
+            <h3>Installer un équipement électrique</h3>
+            <p>
+              Objectif : réaliser l'installation d'un équipement électrique embarqué.
+              Les activités existantes portent notamment sur les feux de navigation,
+              le feu de mouillage et les pompes de cale.
+            </p>
+            <div class="fm-ref">
+              <strong>Référentiel BAC PRO MN :</strong> compétence
+              <strong>C12 – Installer un équipement</strong>, rattachée au pôle
+              « Intervention sur l'embarcation et ses équipements ».
+            </div>
+          </div>
+          <div class="fm-checks">
+            <div class="fm-check"><b>✓</b><span>Analyser l'installation à réaliser.</span></div>
+            <div class="fm-check"><b>✓</b><span>Choisir une section de câble adaptée à partir des ressources fournies.</span></div>
+            <div class="fm-check"><b>✓</b><span>Choisir la protection du circuit à partir de la documentation pédagogique/technique.</span></div>
+            <div class="fm-check"><b>✓</b><span>Réaliser des TP d'apprentissage puis de transfert.</span></div>
+            <div class="fm-check"><b>✓</b><span>Terminer par synthèse, évaluation et remédiation.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fm-section" id="ressources">
+      <div class="fm-shell">
+        <h2>Organisation future des contenus</h2>
+        <p class="fm-section-intro">
+          Chaque carte pourra ensuite pointer vers sa propre page HTML :
+          cours, document ressource, TD, TP, widget interactif, évaluation et corrigé enseignant.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fm-footer">
+    <div class="fm-shell">
+      Base pédagogique FigaroMN · Seconde BAC PRO Maintenance Nautique
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      "use strict";
+      var btn=document.getElementById("fmProgressBtn");
+      var panel=document.getElementById("fmProgressPanel");
+      if(btn && panel){
+        btn.addEventListener("click",function(){
+          var hidden=panel.classList.toggle("fm-hidden");
+          btn.setAttribute("aria-expanded", String(!hidden));
+          btn.textContent=hidden ? "Afficher la progression" : "Masquer la progression";
+          try{ localStorage.setItem("figaromn-seconde-progression", hidden ? "0" : "1"); }catch(e){}
+        });
+        try{
+          if(localStorage.getItem("figaromn-seconde-progression")==="1"){
+            panel.classList.remove("fm-hidden");
+            btn.setAttribute("aria-expanded","true");
+            btn.textContent="Masquer la progression";
+          }
+        }catch(e){}
+      }
+    })();
+  </script>
+</body>
+</html>
