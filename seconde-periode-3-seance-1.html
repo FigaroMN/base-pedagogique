@@ -29,6 +29,13 @@
 @media(max-width:780px){.fmn-period-menu{grid-template-columns:1fr}}
 @media print{.fmn-session-nav{display:none!important}}
 </style>
+
+<style>
+.fmn-cloudbar{margin:16px 0;padding:14px;border:1px solid #bcd6e2;background:#eef8fb;border-radius:14px}
+.fmn-cloudbar .fmn-cloud-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fmn-cloudbar button,.fmn-cloudbar a{border:0;border-radius:9px;padding:9px 12px;background:#365976;color:#fff;font-weight:800;text-decoration:none;cursor:pointer}
+.fmn-cloudbar .secondary{background:#e3edf2;color:#1d2a38}
+</style>
 </head><body>
 <header class="top no-print"><div class="shell nav"><a class="brand" href="seconde-periode-3.html">⚓ Période 3</a><a class="back" href="seconde-periode-3.html">← Menu de la période</a></div></header>
 <main class="shell fmn-one-session">
@@ -37,7 +44,14 @@
 <div class="studentbar"><label>Élève<input class="studentName"></label><label>Classe<input class="studentClass" value="2nde BAC PRO MN"></label><label>Date<input class="studentDate" type="date"></label></div>
 <button type="button" class="btn good" id="saveStudent">Enregistrer l’élève</button>
 <div class="fmn-session-nav"><a href="seconde-periode-3.html">← Séance précédente</a><a href="seconde-periode-3.html">Toutes les séances</a><a href="seconde-periode-3-seance-2.html">Séance suivante →</a></div>
-</section>
+</section><div class="fmn-cloudbar no-print" id="fmnCloudBar">
+<strong>☁️ Suivi à distance</strong>
+<div class="fmn-cloud-actions">
+<span id="fmnCloudStatus">Vérification de la connexion…</span>
+<button type="button" id="fmnCompleteBtn" class="hidden">Marquer la séance terminée</button>
+<a id="fmnLoginLink" class="secondary hidden" href="connexion.html">Se connecter</a>
+</div>
+</div>
 <section class="section session printblock fmn-eval fmn-tp fmn-td fmn-widget fmn-cours" id="p3s1">
 <div class="session-head">
 <div><div class="stype">Période 3 · Séance 1 · Cours</div><div class="fmn-kind">📘 COURS</div><h2>Fonctionnement et risques</h2><p class="lead">Identifier pompe, commande, protection et risques.</p></div>
@@ -271,4 +285,41 @@ document.querySelectorAll(".saveFinalScore").forEach(function(b){
 })();
 </script>
 
+
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
+<script>
+(async function(){
+var LEVEL="seconde", PERIOD=3, SESSION_NO=1;
+var status=document.getElementById("fmnCloudStatus"),done=document.getElementById("fmnCompleteBtn"),login=document.getElementById("fmnLoginLink");
+if(!status)return;
+var sess=FigaroCloud.session();if(!sess||!sess.access_token){status.textContent="Non connecté : le suivi reste local.";login.classList.remove("hidden");return;}
+var prof=await FigaroCloud.profile();if(!prof||prof.role!=="student"){status.textContent="Mode enseignant : suivi élève non activé sur cette page.";return;}
+var rows=await FigaroCloud.table("sessions","level=eq."+LEVEL+"&period=eq."+PERIOD+"&session_no=eq."+SESSION_NO+"&select=id,title");
+if(!rows||!rows[0]){status.textContent="Séance non encore enregistrée dans Supabase. Exécute SETUP-SUPABASE-CONNECTE.sql.";return;}
+var dbs=rows[0],existing=await FigaroCloud.table("session_progress","student_id=eq."+prof.id+"&session_id=eq."+dbs.id+"&select=id,status");
+if(!existing||!existing.length){
+ await FigaroCloud.table("session_progress","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:prof.id,session_id:dbs.id,status:"started",started_at:new Date().toISOString()})});
+ status.textContent="Séance commencée — synchronisée.";
+}else status.textContent=existing[0].status==="completed"?"Séance terminée — synchronisée.":"Séance commencée — synchronisée.";
+if(!(existing&&existing[0]&&existing[0].status==="completed"))done.classList.remove("hidden");
+done.onclick=async function(){
+ await FigaroCloud.table("session_progress","student_id=eq."+prof.id+"&session_id=eq."+dbs.id,{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({status:"completed",completed_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
+ status.textContent="Séance terminée — synchronisée.";done.classList.add("hidden");
+};
+document.querySelectorAll(".saveFinalScore").forEach(function(btn){
+ btn.addEventListener("click",function(){
+  setTimeout(async function(){
+   var z=btn.closest(".eval-zone");if(!z)return;var msg=z.querySelector(".finalScoreMsg");if(!msg)return;
+   var m=msg.textContent.match(/([\d.,]+)\s*\/20/);if(!m)return;var score=Number(m[1].replace(",","."));
+   try{
+    var prev=await FigaroCloud.table("evaluation_results","student_id=eq."+prof.id+"&session_id=eq."+dbs.id+"&select=attempt_no&order=attempt_no.desc&limit=1");
+    var attempt=prev&&prev[0]?Number(prev[0].attempt_no)+1:1;
+    await FigaroCloud.table("evaluation_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:prof.id,session_id:dbs.id,score:score,attempt_no:attempt,details:{source:"FigaroMN HTML"}})});
+    msg.textContent+=" · synchronisée";
+   }catch(e){msg.textContent+=" · synchronisation impossible";}
+  },250);
+ });
+});
+})().catch(function(e){var x=document.getElementById("fmnCloudStatus");if(x)x.textContent="Suivi distant indisponible : "+e.message;});
+</script>
 </body></html>
