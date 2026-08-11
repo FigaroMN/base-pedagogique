@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BAC PRO Maintenance Nautique</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;background:#f4f7fa;color:#172b3a}
+    header{background:linear-gradient(135deg,#0b2942,#135a7a);color:white;padding:48px 20px;text-align:center}
+    header h1{font-size:38px;margin-bottom:10px}
+    header p{font-size:18px;opacity:.92}
+    .topbar{max-width:1150px;margin:0 auto;padding:24px 20px 0}
+    .back{display:inline-block;text-decoration:none;color:#0e5675;font-weight:bold}
+    .container{max-width:1150px;margin:auto;padding:36px 20px 55px}
+    .intro{text-align:center;margin-bottom:35px}
+    .intro h2{font-size:30px;margin-bottom:10px}
+    .levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+    .level{background:white;border-radius:18px;padding:30px;box-shadow:0 8px 25px rgba(0,0,0,.08);border-top:5px solid #0e5675}
+    .badge{display:inline-block;background:#e8f1f5;color:#0e5675;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:bold;margin-bottom:16px}
+    .level h3{font-size:25px;margin-bottom:12px}
+    .level p{color:#647480;line-height:1.6;margin-bottom:20px}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+    .meta span{background:#f1f4f6;border-radius:8px;padding:8px 10px;font-size:13px}
+    .btn{display:inline-block;background:#0e5675;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold}
+    .btn:hover{background:#083b52}
+    .btn.disabled{background:#8ea1ad;cursor:not-allowed}
+    .structure{margin-top:48px;background:#fff;border-radius:18px;padding:30px;box-shadow:0 8px 25px rgba(0,0,0,.06)}
+    .structure h2{margin-bottom:20px}
+    .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+    .flow div{background:#eef4f7;border-radius:10px;padding:15px;text-align:center;font-weight:bold}
+    footer{text-align:center;padding:28px;background:#0b2942;color:#fff}
+    @media(max-width:600px){header h1{font-size:29px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>🚤 BAC PRO Maintenance Nautique</h1>
+  <p>Progression pédagogique • Ressources • Compétences • Évaluations</p>
+</header>
+
+<div class="topbar">
+  <a class="back" href="index.html">← Retour à l'accueil</a>
+</div>
+
+<main class="container">
+  <section class="intro">
+    <h2>Choisissez votre niveau</h2>
+    <p>Chaque niveau sera organisé en périodes, séquences, séances et activités interactives.</p>
+  </section>
+
+  <section class="levels">
+    <article class="level">
+      <span class="badge">NIVEAU 1</span>
+      <h3>Seconde BAC PRO MN</h3>
+      <p>Acquérir les fondamentaux de la maintenance nautique, de l'électricité, de la sécurité et du diagnostic.</p>
+      <div class="meta">
+        <span>6 périodes</span>
+        <span>Cours + ateliers</span>
+        <span>Widgets notés</span>
+      </div>
+      <span class="btn disabled">Page Seconde à créer</span>
+    </article>
+
+    <article class="level">
+      <span class="badge">NIVEAU 2</span>
+      <h3>Première BAC PRO MN</h3>
+      <p>Développer l'autonomie, le diagnostic, les méthodes d'intervention et la maîtrise des systèmes nautiques.</p>
+      <div class="meta">
+        <span>Séquences</span>
+        <span>Compétences</span>
+        <span>Évaluations</span>
+      </div>
+      <span class="btn disabled">Page Première à créer</span>
+    </article>
+
+    <article class="level">
+      <span class="badge">NIVEAU 3</span>
+      <h3>Terminale BAC PRO MN</h3>
+      <p>Consolider les compétences professionnelles, préparer les situations complexes et les évaluations certificatives.</p>
+      <div class="meta">
+        <span>Diagnostic</span>
+        <span>Ateliers</span>
+        <span>Préparation examen</span>
+      </div>
+      <span class="btn disabled">Page Terminale à créer</span>
+    </article>
+  </section>
+
+  <section class="structure">
+    <h2>Structure de chaque parcours</h2>
+    <div class="flow">
+      <div>📅 Période</div>
+      <div>📚 Séquence</div>
+      <div>🧭 Séance</div>
+      <div>📘 Cours</div>
+      <div>🧩 Widget</div>
+      <div>🔧 Atelier</div>
+      <div>📊 Évaluation</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Base pédagogique BAC PRO Maintenance Nautique<br><br>Mr FIGARO
+</footer>
+</body>
+</html>
