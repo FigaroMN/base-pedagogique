@@ -36,8 +36,12 @@ async function signIn(email,password){
   var data=await req("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email:email,password:password})});
   saveSession(data);return data;
 }
-async function signUp(email,password,fullName){
-  var data=await req("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:email,password:password,data:{full_name:fullName||""}})});
+async function signUp(email,password,fullName,level){
+  var data=await req("/auth/v1/signup",{method:"POST",body:JSON.stringify({
+    email:email,
+    password:password,
+    data:{full_name:fullName||"",level:level||null}
+  })});
   if(data&&data.access_token)saveSession(data);
   return data;
 }
@@ -60,6 +64,36 @@ async function profile(){
 async function table(name,query,opt){
   return req("/rest/v1/"+name+(query?("?"+query):""),opt||{});
 }
+async function requireRole(role){
+  var s=loadSession();
+  if(!s||!s.access_token){
+    location.href="bac-pro.html";
+    return null;
+  }
+  var p;
+  try{
+    p=await profile();
+  }catch(e){
+    if(e.status===401){
+      await refresh();
+      p=await profile();
+    }else{
+      throw e;
+    }
+  }
+  if(!p){
+    clearSession();
+    location.href="bac-pro.html";
+    return null;
+  }
+  if(role&&p.role!==role){
+    await signOut();
+    location.href="bac-pro.html";
+    return null;
+  }
+  return p;
+}
+
 async function requireAuth(role){
   var s=loadSession();
   if(!s||!s.access_token){location.href="connexion.html";return null}
@@ -79,5 +113,5 @@ function downloadCSV(filename,rows){
   var blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
   a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},500);
 }
-window.FigaroCloud={req:req,signIn:signIn,signUp:signUp,signOut:signOut,refresh:refresh,profile:profile,table:table,requireAuth:requireAuth,session:loadSession,esc:esc,downloadCSV:downloadCSV};
+window.FigaroCloud={req:req,signIn:signIn,signUp:signUp,signOut:signOut,refresh:refresh,profile:profile,table:table,requireAuth:requireAuth,requireRole:requireRole,session:loadSession,esc:esc,downloadCSV:downloadCSV};
 })();
