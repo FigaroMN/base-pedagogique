@@ -1,150 +1,113 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Espace Enseignant FigaroMN</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Espace Enseignant FigaroMN</title>
 <style>
-:root{--bg:#f3f7f9;--card:#fff;--ink:#1d2a38;--muted:#647481;--navy:#365975;--line:#dbe5ea;--blue:#eaf2f6;--good:#23694a;--bad:#9b3838;--warn:#8a5b00}
+:root{--bg:#f2f6f8;--card:#fff;--ink:#1e2936;--muted:#627280;--navy:#405b78;--green:#456d55;--red:#8b4b45;--line:#d8e2e7}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-.shell{width:min(1180px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;text-decoration:none}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.item{background:#f9fbfc;border:1px solid var(--line);border-radius:13px;padding:15px}.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.good{background:var(--good)}.btn.bad{background:var(--bad)}.btn.archive{background:#8a5b00}.btn.tiny{padding:7px 9px;font-size:.82rem}.btn.light{background:#e8eef2;color:var(--ink)}input,select,textarea{width:100%;font:inherit;border:1px solid #b9c8d1;border-radius:9px;padding:10px;background:#fff}label{font-weight:700}.muted{color:var(--muted)}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--blue);font-weight:800;font-size:.82rem}.msg{font-weight:800;margin-top:10px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#eef3f6}.hero{padding:42px 0 18px}h1{font-size:clamp(2rem,5vw,3.2rem);margin:.3rem 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}
-@media(max-width:850px){.grid,.grid2{grid-template-columns:1fr}}
+.shell{width:min(1160px,calc(100% - 30px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}
+.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;text-decoration:none;color:var(--ink)}
+.hero{padding:38px 0 16px}h1{font-size:clamp(2rem,5vw,3.4rem);margin:.2rem 0}.muted{color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin:18px 0}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px;border:1px solid #b8c7d0;border-radius:10px;margin-top:5px}
+.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--navy);color:#fff;font-weight:900;cursor:pointer;text-decoration:none;display:inline-block}.btn.good{background:var(--green)}.btn.bad{background:var(--red)}.btn.light{background:#e7eef2;color:var(--ink)}
+.msg{font-weight:800;margin-top:12px}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#e5eef3;font-weight:850;font-size:.82rem}
+.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:720px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:#eaf0f3}
+.period{background:#f8fafb;border:1px solid var(--line);border-radius:14px;padding:18px}.period h3{margin-top:0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head><body>
 <header class="top"><div class="shell nav"><a class="brand" href="enseignant.html">🔐 Espace Enseignant</a><button class="btn bad" id="logout" type="button">Déconnexion</button></div></header>
-<main class="shell"><section class="hero"><span class="pill">Tableau de bord</span><h1>Suivi des élèves</h1><p class="muted">Classes, rattachement des comptes, progression, notes, compétences et agenda.</p></section>
+<main class="shell"><section class="hero"><span class="pill">Tableau de bord</span><h1>Suivi des élèves</h1>
+<p class="muted">Version simplifiée : rattachement, niveau, progression, notes et compétences.</p></section>
 
-<section class="card"><h2>1. Rattacher un élève à une classe</h2><div class="grid2"><label>Élève<select id="studentSelect"></select></label><label>Classe<select id="classSelect"></select></label></div><div class="actions" style="margin-top:12px"><button class="btn good" id="assignBtn">Rattacher</button></div><div class="msg" id="assignMsg"></div></section>
+<section class="card"><h2>1 · Rattacher un élève</h2>
+<div class="grid2"><label>Élève<select id="studentSelect"></select></label><label>Classe<select id="classSelect"></select></label></div>
+<br><button class="btn good" id="assignBtn" type="button">Rattacher à la classe</button><div id="assignMsg" class="msg"></div></section>
 
-<section class="card"><h2>2. Gestion des élèves</h2>
-<p class="muted"><strong>Archiver</strong> conserve les données. <strong>Retirer d’une classe</strong> conserve le compte. <strong>Supprimer définitivement</strong> efface le compte et les données élèves liées : cette action est irréversible.</p>
-<div class="grid2">
-<label>Filtrer par classe<select id="filterClass"><option value="">Toutes</option></select></label>
-<label>Afficher<select id="filterStatus"><option value="active">Élèves actifs</option><option value="archived">Élèves archivés</option><option value="all">Tous</option></select></label>
-</div>
-<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Élève</th><th>E-mail</th><th>Classe</th><th>Niveau</th><th>Statut</th><th>Progression</th><th>Moyenne</th><th>Exercices interactifs</th><th>Actions</th></tr></thead><tbody id="studentsRows"></tbody></table></div>
-<div class="msg" id="manageMsg"></div>
-</section>
+<section class="card"><h2>2 · Mes élèves</h2>
+<label>Classe<select id="filterClass"><option value="">Toutes mes classes</option></select></label>
+<div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Élève</th><th>E-mail</th><th>Niveau</th><th>Classe</th><th>Progression</th><th>Moyenne évaluations</th></tr></thead><tbody id="studentRows"></tbody></table></div>
+<div id="pageMsg" class="msg"></div></section>
 
-<section class="card"><h2>3. Observation de compétence</h2><div class="grid2"><label>Élève<select id="obsStudent"></select></label><label>Compétence<select id="obsComp"></select></label><label>Niveau<select id="obsLevel"><option value="1">1 · Non acquis</option><option value="2">2 · En cours</option><option value="3">3 · Acquis</option><option value="4">4 · Maîtrisé</option></select></label><label>Date<input id="obsDate" type="date"></label></div><label>Preuve<textarea id="obsEvidence"></textarea></label><label>Commentaire / remédiation<textarea id="obsComment"></textarea></label><button class="btn good" id="saveObs">Enregistrer l’observation</button><div class="msg" id="obsMsg"></div></section>
-
-<section class="card"><h2>4. Agenda / cahier de texte à distance</h2><div class="grid2"><label>Classe<select id="agendaClass"></select></label><label>Date<input id="agendaDate" type="date"></label><label>Durée (minutes)<input id="agendaDuration" type="number" min="0"></label><label>Compétences (ex. C5,C7)<input id="agendaComp"></label></div><label>Résumé<textarea id="agendaSummary"></textarea></label><label>Travail à faire<textarea id="agendaHomework"></textarea></label><label>Remédiation<textarea id="agendaRemed"></textarea></label><button class="btn good" id="saveAgenda">Enregistrer l’agenda</button><div class="msg" id="agendaMsg"></div></section>
-
-<section class="card"><h2>5. Export CERISE Pro — préparation</h2><p class="muted">Export CSV des observations enregistrées. Ce fichier prépare la saisie ; il n’est pas présenté comme un format officiel d’import CERISE Pro.</p><button class="btn" id="exportCSV">Exporter CSV</button></section>
+<section class="card"><h2>3 · Observer une compétence</h2>
+<div class="grid3">
+<label>Élève<select id="obsStudent"></select></label>
+<label>Compétence<select id="obsComp"></select></label>
+<label>Niveau<select id="obsLevel"><option value="1">1 · Non acquis</option><option value="2">2 · En cours</option><option value="3">3 · Acquis</option><option value="4">4 · Maîtrisé</option></select></label>
+</div><br>
+<label>Preuve<textarea id="obsEvidence"></textarea></label><br>
+<label>Commentaire / remédiation<textarea id="obsComment"></textarea></label><br>
+<button class="btn good" id="saveObs" type="button">Enregistrer</button><div id="obsMsg" class="msg"></div></section>
 </main>
 <script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
 <script>
 (async function(){
-var me=await FigaroCloud.requireAuth("teacher");if(!me)return;var requestedLevel=new URLSearchParams(location.search).get("level")||"";logout.onclick=async function(){await FigaroCloud.signOut();location.href="connexion.html";};
-obsDate.value=agendaDate.value=new Date().toISOString().slice(0,10);
-var classes=await FigaroCloud.table("classes","teacher_id=eq."+encodeURIComponent(me.id)+"&select=id,name,level,school_year&order=name.asc");
-function fillClass(sel,all){sel.innerHTML=(all?'<option value="">Toutes</option>':'')+(classes||[]).map(c=>'<option value="'+c.id+'">'+FigaroCloud.esc(c.name)+'</option>').join("");}
-fillClass(classSelect,false);fillClass(filterClass,true);fillClass(agendaClass,false);
-if(requestedLevel){
-  var chosen=(classes||[]).find(c=>c.level===requestedLevel);
-  if(chosen){ filterClass.value=chosen.id; classSelect.value=chosen.id; agendaClass.value=chosen.id; }
-}
-var profiles=await FigaroCloud.table("profiles","role=eq.student&select=id,full_name,email,level,archived_at&order=full_name.asc");
-studentSelect.innerHTML=(profiles||[]).filter(p=>!p.archived_at).map(p=>'<option value="'+p.id+'">'+FigaroCloud.esc((p.full_name||p.email||p.id)+" — "+(p.email||""))+'</option>').join("");
-obsStudent.innerHTML=studentSelect.innerHTML;
-var comps=await FigaroCloud.table("competencies","select=code,label&order=code.asc");obsComp.innerHTML=(comps||[]).map(c=>'<option value="'+c.code+'">'+c.code+' — '+FigaroCloud.esc(c.label)+'</option>').join("");
-var memberships=await FigaroCloud.table("class_members","select=class_id,student_id");
-var classMap={};(classes||[]).forEach(c=>classMap[c.id]=c);
-var membByStudent={};(memberships||[]).forEach(m=>{(membByStudent[m.student_id]||(membByStudent[m.student_id]=[])).push(m.class_id)});
-async function reloadProfiles(){
- profiles=await FigaroCloud.table("profiles","role=eq.student&select=id,full_name,email,level,archived_at&order=full_name.asc");
- studentSelect.innerHTML=(profiles||[]).filter(p=>!p.archived_at).map(p=>'<option value="'+p.id+'">'+FigaroCloud.esc((p.full_name||p.email||p.id)+" — "+(p.email||""))+'</option>').join("");
- obsStudent.innerHTML=studentSelect.innerHTML;
-}
-async function reloadMemberships(){
- memberships=await FigaroCloud.table("class_members","select=class_id,student_id");
- membByStudent={};(memberships||[]).forEach(m=>{(membByStudent[m.student_id]||(membByStudent[m.student_id]=[])).push(m.class_id)});
-}
-async function renderStudents(){
- var progress=await FigaroCloud.table("session_progress","select=student_id,status");
- var results=await FigaroCloud.table("evaluation_results","select=student_id,score");var interactive=await FigaroCloud.table("interactive_results","select=student_id,score,total");
- var pmap={},rmap={},imap={};
- (progress||[]).forEach(x=>{var a=pmap[x.student_id]||(pmap[x.student_id]={n:0,d:0});a.n++;if(x.status==="completed")a.d++;});
- (results||[]).forEach(x=>{var a=rmap[x.student_id]||(rmap[x.student_id]=[]);a.push(Number(x.score));});(interactive||[]).forEach(x=>{var a=imap[x.student_id]||(imap[x.student_id]={s:0,t:0,n:0});a.s+=Number(x.score);a.t+=Number(x.total);a.n++;});
- var fc=filterClass.value, fs=filterStatus.value;
- studentsRows.innerHTML=(profiles||[])
- .filter(p=>{
-   var classOK=!fc||(membByStudent[p.id]||[]).includes(fc);
-   var statusOK=fs==="all"||(fs==="archived"?!!p.archived_at:!p.archived_at);
-   return classOK&&statusOK;
- })
- .map(p=>{
-   var cls=(membByStudent[p.id]||[]).map(id=>classMap[id]&&classMap[id].name).filter(Boolean).join(", ");
-   var pr=pmap[p.id]||{n:0,d:0},rr=rmap[p.id]||[],avg=rr.length?(rr.reduce((a,b)=>a+b,0)/rr.length).toFixed(1):"—";
-   var status=p.archived_at?"Archivé":"Actif";var ix=imap[p.id]||{s:0,t:0,n:0};var ixTxt=ix.n?(ix.s+"/"+ix.t+" · "+ix.n+" parcours"):"—";
-   var archiveLabel=p.archived_at?"Restaurer":"Archiver";
-   var archiveClass=p.archived_at?"good":"archive";
-   return '<tr><td>'+FigaroCloud.esc(p.full_name||"")+'</td><td>'+FigaroCloud.esc(p.email||"")+'</td><td>'+FigaroCloud.esc(cls)+'</td><td>'+FigaroCloud.esc(p.level||"")+'</td><td><strong>'+status+'</strong></td><td>'+pr.d+'/'+pr.n+'</td><td>'+avg+'</td><td><div class="actions">'+
-   (!p.archived_at?'<button class="btn light tiny" type="button" data-action="eval" data-id="'+p.id+'">Évaluer</button>':'')+
-   '<button class="btn '+archiveClass+' tiny" type="button" data-action="archive" data-id="'+p.id+'" data-archived="'+(p.archived_at?"1":"0")+'">'+archiveLabel+'</button>'+
-   '<button class="btn light tiny" type="button" data-action="remove" data-id="'+p.id+'">Retirer classe</button>'+
-   '<button class="btn bad tiny" type="button" data-action="delete" data-id="'+p.id+'" data-name="'+FigaroCloud.esc(p.full_name||p.email||"élève")+'">Supprimer</button>'+
-   '</div></td></tr>';
- }).join("")||'<tr><td colspan="9">Aucun élève.</td></tr>';
+ const me=await FigaroCloud.requireRole("teacher"); if(!me)return;
+ logout.onclick=async()=>{await FigaroCloud.signOut();location.href="bac-pro.html";};
+ const requested=new URLSearchParams(location.search).get("level");
 
- studentsRows.querySelectorAll("button[data-action]").forEach(function(btn){
-   btn.onclick=async function(){
-     var id=btn.dataset.id, action=btn.dataset.action;
-     manageMsg.textContent="";
-     if(action==="eval"){
-       obsStudent.value=id;location.hash="obsStudent";return;
-     }
-     if(action==="archive"){
-       var makeArchived=btn.dataset.archived!=="1";
-       if(makeArchived&&!confirm("Archiver cet élève ? Ses données seront conservées."))return;
-       try{
-         await FigaroCloud.req("/rest/v1/rpc/set_student_archived",{method:"POST",body:JSON.stringify({target_student:id,make_archived:makeArchived})});
-         manageMsg.textContent=makeArchived?"Élève archivé.":"Élève restauré.";
-         await reloadProfiles();await renderStudents();
-       }catch(e){manageMsg.textContent="Erreur : "+e.message;}
-       return;
-     }
-     if(action==="remove"){
-       var classIds=membByStudent[id]||[];
-       if(!classIds.length){manageMsg.textContent="Cet élève n’est rattaché à aucune classe.";return;}
-       var cid=filterClass.value;
-       if(!cid){
-         if(classIds.length===1)cid=classIds[0];
-         else{
-           var names=classIds.map((x,i)=>(i+1)+" : "+(classMap[x]?classMap[x].name:x)).join("\n");
-           var n=prompt("Choisis le numéro de la classe à retirer :\n"+names);
-           var ix=Number(n)-1;if(ix<0||ix>=classIds.length)return;cid=classIds[ix];
-         }
-       }
-       if(!confirm("Retirer cet élève de la classe sélectionnée ? Son compte et ses résultats seront conservés."))return;
-       try{
-         await FigaroCloud.req("/rest/v1/rpc/remove_student_from_class",{method:"POST",body:JSON.stringify({target_student:id,target_class:cid})});
-         manageMsg.textContent="Élève retiré de la classe.";
-         await reloadMemberships();await renderStudents();
-       }catch(e){manageMsg.textContent="Erreur : "+e.message;}
-       return;
-     }
-     if(action==="delete"){
-       var name=btn.dataset.name||"cet élève";
-       var confirmation=prompt("SUPPRESSION DÉFINITIVE de "+name+".\nLe compte, la progression, les notes et les observations liées seront supprimés.\n\nTape SUPPRIMER pour confirmer :");
-       if(confirmation!=="SUPPRIMER"){manageMsg.textContent="Suppression annulée.";return;}
-       try{
-         await FigaroCloud.req("/rest/v1/rpc/delete_student_permanently",{method:"POST",body:JSON.stringify({target_student:id})});
-         manageMsg.textContent="Élève supprimé définitivement.";
-         await reloadProfiles();await reloadMemberships();await renderStudents();
-       }catch(e){manageMsg.textContent="Erreur : "+e.message;}
-     }
-   };
- });
-}
-filterClass.onchange=renderStudents;
-filterStatus.onchange=renderStudents;
-assignBtn.onclick=async function(){
- assignMsg.textContent="Enregistrement…";var sid=studentSelect.value,cid=classSelect.value,c=classMap[cid];
- try{await FigaroCloud.table("class_members","",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({class_id:cid,student_id:sid})});await FigaroCloud.table("profiles","id=eq."+encodeURIComponent(sid),{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({level:c.level})});assignMsg.textContent="Élève rattaché.";memberships=await FigaroCloud.table("class_members","select=class_id,student_id");membByStudent={};memberships.forEach(m=>{(membByStudent[m.student_id]||(membByStudent[m.student_id]=[])).push(m.class_id)});await renderStudents();}catch(e){assignMsg.textContent="Erreur : "+e.message;}
-};
-saveObs.onclick=async function(){
- try{await FigaroCloud.table("competency_observations","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:obsStudent.value,competency_code:obsComp.value,acquisition_level:Number(obsLevel.value),evidence:obsEvidence.value.trim(),teacher_comment:obsComment.value.trim(),observed_at:obsDate.value,teacher_id:me.id})});obsMsg.textContent="Observation enregistrée.";}catch(e){obsMsg.textContent="Erreur : "+e.message;}
-};
-saveAgenda.onclick=async function(){
- try{var elems=["Cours/TP/activité"];var compsArr=agendaComp.value.split(",").map(x=>x.trim()).filter(Boolean);await FigaroCloud.table("agenda_entries","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({class_id:agendaClass.value,lesson_date:agendaDate.value,duration_minutes:Number(agendaDuration.value||0)||null,elements_covered:elems,summary:agendaSummary.value.trim(),homework:agendaHomework.value.trim(),competencies:compsArr,remediation:agendaRemed.value.trim(),teacher_id:me.id})});agendaMsg.textContent="Agenda enregistré et visible à distance.";}catch(e){agendaMsg.textContent="Erreur : "+e.message;}
-};
-exportCSV.onclick=async function(){var obs=await FigaroCloud.table("competency_observations","select=student_id,competency_code,acquisition_level,evidence,teacher_comment,observed_at,created_at&order=observed_at.desc");var pm={};(profiles||[]).forEach(p=>pm[p.id]=p);var rows=[["Élève","E-mail","Compétence","Niveau","Preuve","Commentaire","Date"]];(obs||[]).forEach(o=>{var p=pm[o.student_id]||{};rows.push([p.full_name||"",p.email||"",o.competency_code,o.acquisition_level,o.evidence||"",o.teacher_comment||"",o.observed_at||""]);});FigaroCloud.downloadCSV("figaromn-suivi-competences.csv",rows);};
-await renderStudents();
-})().catch(function(e){document.body.insertAdjacentHTML("beforeend","<p class=msg>Erreur : "+FigaroCloud.esc(e.message)+"</p>");});
+ const classes=await FigaroCloud.table("classes","teacher_id=eq."+me.id+"&select=id,name,level,school_year&order=name.asc");
+ const classMap={}; classes.forEach(c=>classMap[c.id]=c);
+ function fillClasses(sel,all){
+   sel.innerHTML=(all?"<option value=''>Toutes mes classes</option>":"")+classes.map(c=>`<option value="${c.id}">${FigaroCloud.esc(c.name)}</option>`).join("");
+ }
+ fillClasses(classSelect,false); fillClasses(filterClass,true);
+ if(requested){
+   const c=classes.find(x=>x.level===requested);
+   if(c){classSelect.value=c.id;filterClass.value=c.id;}
+ }
+
+ let profiles=[], memberships=[];
+ async function reload(){
+   profiles=await FigaroCloud.table("profiles","role=eq.student&select=id,full_name,email,level,archived_at&order=full_name.asc");
+   memberships=await FigaroCloud.table("class_members","select=class_id,student_id");
+   const active=profiles.filter(p=>!p.archived_at);
+   studentSelect.innerHTML=active.map(p=>`<option value="${p.id}">${FigaroCloud.esc(p.full_name||p.email||p.id)}</option>`).join("");
+   obsStudent.innerHTML=studentSelect.innerHTML;
+   await render();
+ }
+
+ async function render(){
+   const pmap={}, emap={};
+   const prog=await FigaroCloud.table("session_progress","select=student_id,status");
+   const evals=await FigaroCloud.table("evaluation_results","select=student_id,score");
+   prog.forEach(x=>{const a=pmap[x.student_id]||(pmap[x.student_id]={n:0,d:0});a.n++;if(x.status==="completed")a.d++;});
+   evals.forEach(x=>{(emap[x.student_id]||(emap[x.student_id]=[])).push(Number(x.score));});
+   const mb={};memberships.forEach(m=>{(mb[m.student_id]||(mb[m.student_id]=[])).push(m.class_id);});
+   const fc=filterClass.value;
+   studentRows.innerHTML=profiles.filter(p=>!p.archived_at&&(!fc||(mb[p.id]||[]).includes(fc))).map(p=>{
+     const cls=(mb[p.id]||[]).map(id=>classMap[id]&&classMap[id].name).filter(Boolean).join(", ");
+     const pr=pmap[p.id]||{n:0,d:0}, notes=emap[p.id]||[];
+     const avg=notes.length?(notes.reduce((a,b)=>a+b,0)/notes.length).toFixed(1):"—";
+     return `<tr><td>${FigaroCloud.esc(p.full_name||"")}</td><td>${FigaroCloud.esc(p.email||"")}</td><td>${FigaroCloud.esc(p.level||"")}</td><td>${FigaroCloud.esc(cls||"Non rattaché")}</td><td>${pr.d} / ${pr.n}</td><td>${avg}</td></tr>`;
+   }).join("")||"<tr><td colspan='6'>Aucun élève.</td></tr>";
+ }
+ filterClass.onchange=render;
+
+ assignBtn.onclick=async function(){
+   assignMsg.textContent="Enregistrement…";
+   try{
+     const sid=studentSelect.value,cid=classSelect.value,c=classMap[cid];
+     await FigaroCloud.table("class_members","",{method:"POST",headers:{Prefer:"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({class_id:cid,student_id:sid})});
+     await FigaroCloud.table("profiles","id=eq."+sid,{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({level:c.level})});
+     assignMsg.textContent="Élève rattaché à "+c.name+".";
+     await reload();
+   }catch(e){assignMsg.textContent="Erreur : "+e.message;}
+ };
+
+ const comps=await FigaroCloud.table("competencies","select=code,label&order=code.asc");
+ obsComp.innerHTML=comps.map(c=>`<option value="${c.code}">${c.code} — ${FigaroCloud.esc(c.label)}</option>`).join("");
+ saveObs.onclick=async function(){
+   obsMsg.textContent="Enregistrement…";
+   try{
+     await FigaroCloud.table("competency_observations","",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({
+       student_id:obsStudent.value, competency_code:obsComp.value,
+       acquisition_level:Number(obsLevel.value), evidence:obsEvidence.value.trim(),
+       teacher_comment:obsComment.value.trim(), observed_at:new Date().toISOString().slice(0,10),
+       teacher_id:me.id
+     })});
+     obsMsg.textContent="Observation enregistrée.";
+   }catch(e){obsMsg.textContent="Erreur : "+e.message;}
+ };
+ await reload();
+})().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});
 </script></body></html>

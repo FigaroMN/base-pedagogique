@@ -1,64 +1,92 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connexion FigaroMN</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connexion FigaroMN</title>
 <style>
-:root{--bg:#f3f7f9;--card:#fff;--ink:#1d2a38;--muted:#647481;--navy:#365975;--line:#dbe5ea;--blue:#eaf2f6;--good:#23694a;--bad:#9b3838;--warn:#8a5b00}
+:root{--bg:#f2f6f8;--card:#fff;--ink:#1e2936;--muted:#627280;--navy:#405b78;--green:#456d55;--red:#8b4b45;--line:#d8e2e7}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-.shell{width:min(1180px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;text-decoration:none}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.item{background:#f9fbfc;border:1px solid var(--line);border-radius:13px;padding:15px}.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.good{background:var(--good)}.btn.bad{background:var(--bad)}.btn.light{background:#e8eef2;color:var(--ink)}input,select,textarea{width:100%;font:inherit;border:1px solid #b9c8d1;border-radius:9px;padding:10px;background:#fff}label{font-weight:700}.muted{color:var(--muted)}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--blue);font-weight:800;font-size:.82rem}.msg{font-weight:800;margin-top:10px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#eef3f6}.hero{padding:42px 0 18px}h1{font-size:clamp(2rem,5vw,3.2rem);margin:.3rem 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}
-@media(max-width:850px){.grid,.grid2{grid-template-columns:1fr}}
+.shell{width:min(1160px,calc(100% - 30px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line)}
+.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;text-decoration:none;color:var(--ink)}
+.hero{padding:38px 0 16px}h1{font-size:clamp(2rem,5vw,3.4rem);margin:.2rem 0}.muted{color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin:18px 0}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px;border:1px solid #b8c7d0;border-radius:10px;margin-top:5px}
+.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--navy);color:#fff;font-weight:900;cursor:pointer;text-decoration:none;display:inline-block}.btn.good{background:var(--green)}.btn.bad{background:var(--red)}.btn.light{background:#e7eef2;color:var(--ink)}
+.msg{font-weight:800;margin-top:12px}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#e5eef3;font-weight:850;font-size:.82rem}
+.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:720px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:#eaf0f3}
+.period{background:#f8fafb;border:1px solid var(--line);border-radius:14px;padding:18px}.period h3{margin-top:0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head><body>
 <header class="top"><div class="shell nav"><a class="brand" href="bac-pro.html">⚓ FigaroMN</a><a href="bac-pro.html">← Retour</a></div></header>
-<main class="shell"><section class="hero"><span class="pill">Suivi à distance</span><h1>Connexion FigaroMN</h1><p class="muted">Élèves et enseignant utilisent un compte personnel. Les droits sont contrôlés par Supabase et les politiques RLS.</p></section>
+<main class="shell"><section class="hero"><span class="pill" id="modeBadge"></span><h1 id="pageTitle">Connexion</h1><p class="muted" id="pageIntro"></p></section>
 <div class="grid2">
-<section class="card"><h2>Se connecter</h2><form id="loginForm"><label>E-mail<input id="loginEmail" type="email" required autocomplete="username"></label><br><br><label>Mot de passe<input id="loginPassword" type="password" required autocomplete="current-password"></label><br><br><button class="btn good" type="submit">Se connecter</button><div class="msg" id="loginMsg"></div></form></section>
-<section class="card"><h2>Créer un compte élève</h2><p class="muted">Après l’inscription, l’enseignant rattache le compte à la bonne classe.</p><form id="signupForm"><label>Nom et prénom<input id="signupName" required></label><br><br><label>E-mail<input id="signupEmail" type="email" required></label><br><br><label>Mot de passe<input id="signupPassword" type="password" minlength="8" required></label><br><br><button class="btn" type="submit">Créer mon compte</button><div class="msg" id="signupMsg"></div></form></section>
+<section class="card"><h2>Se connecter</h2>
+<form id="loginForm">
+<label>E-mail<input id="loginEmail" type="email" autocomplete="username" required></label><br><br>
+<label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label><br><br>
+<button class="btn good" type="submit">Se connecter</button><div id="loginMsg" class="msg"></div>
+</form></section>
+<section class="card" id="signupCard"><h2>Créer un compte élève</h2>
+<p class="muted">Le compte est créé sans confirmation e-mail. L'enseignant pourra ensuite le rattacher à sa classe.</p>
+<form id="signupForm">
+<label>Nom et prénom<input id="signupName" required></label><br><br>
+<label>E-mail<input id="signupEmail" type="email" required></label><br><br>
+<label>Mot de passe<input id="signupPassword" type="password" minlength="6" required></label><br><br>
+<button class="btn" type="submit">Créer mon compte</button><div id="signupMsg" class="msg"></div>
+</form></section>
 </div></main>
 <script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
 <script>
-const NAVPARAMS=new URLSearchParams(location.search);
-const NAVMODE=NAVPARAMS.get("mode")||"";
-const NAVLEVEL=NAVPARAMS.get("level")||"";
-function routeFor(p){
-  if(p&&p.role==="teacher") return "enseignant.html"+(NAVLEVEL?"?level="+encodeURIComponent(NAVLEVEL):"");
-  return "eleve.html"+(NAVLEVEL?"?level="+encodeURIComponent(NAVLEVEL):"");
-}
-(function(){
-if(NAVMODE==="enseignant"){
-  var signup=document.getElementById("signupForm");
-  if(signup&&signup.closest("section")) signup.closest("section").style.display="none";
-  var h=document.querySelector(".hero h1");
-  if(h) h.textContent="Connexion Enseignant";
-}else if(NAVMODE==="eleve"){
-  var h=document.querySelector(".hero h1");
-  if(h) h.textContent="Connexion Élève";
-}
+(async function(){
+ const q=new URLSearchParams(location.search);
+ const mode=q.get("mode")==="enseignant"?"enseignant":"eleve";
+ const level=["seconde","premiere","terminale"].includes(q.get("level"))?q.get("level"):"";
+ const expected=mode==="enseignant"?"teacher":"student";
 
-var s=FigaroCloud.session();
-if(s&&s.access_token){
- FigaroCloud.profile().then(async function(p){
-   if(!p)return;
-   var expectedRole=NAVMODE==="enseignant"?"teacher":NAVMODE==="eleve"?"student":"";
-   if(expectedRole && p.role!==expectedRole){
+ modeBadge.textContent=mode==="enseignant"?"🔐 ENSEIGNANT":"🎓 ÉLÈVE";
+ pageTitle.textContent=mode==="enseignant"?"Connexion Enseignant":"Connexion Élève";
+ pageIntro.textContent=level?"Niveau choisi : "+({seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[level]):"";
+ if(mode==="enseignant") signupCard.style.display="none";
+
+ const current=FigaroCloud.session();
+ if(current&&current.access_token){
+   try{
+     const p=await FigaroCloud.profile();
+     if(p&&p.role===expected){
+       location.href=(expected==="teacher"?"enseignant.html":"eleve.html")+(level?"?level="+level:"");
+       return;
+     }
      await FigaroCloud.signOut();
-     var msg=document.getElementById("loginMsg");
-     if(msg)msg.textContent=NAVMODE==="eleve"
-       ?"Une session enseignant était ouverte. Elle a été fermée : connecte-toi maintenant avec un compte élève."
-       :"Une session élève était ouverte. Elle a été fermée : connecte-toi maintenant avec le compte enseignant.";
-     return;
-   }
-   location.href=routeFor(p);
- }).catch(function(){});
-}
-loginForm.onsubmit=async function(e){e.preventDefault();loginMsg.textContent="Connexion…";try{await FigaroCloud.signIn(loginEmail.value.trim(),loginPassword.value);
-var p=await FigaroCloud.profile();
-var expectedRole=NAVMODE==="enseignant"?"teacher":NAVMODE==="eleve"?"student":"";
-if(expectedRole && p && p.role!==expectedRole){
-  await FigaroCloud.signOut();
-  loginMsg.textContent=NAVMODE==="eleve"
-    ?"Ce compte est un compte enseignant. Utilise un compte élève."
-    :"Ce compte est un compte élève. Utilise le compte enseignant.";
-  return;
-}
-location.href=routeFor(p);}catch(err){loginMsg.textContent="Connexion impossible : "+err.message;}};
-signupForm.onsubmit=async function(e){e.preventDefault();signupMsg.textContent="Création…";try{var d=await FigaroCloud.signUp(signupEmail.value.trim(),signupPassword.value,signupName.value.trim());signupMsg.textContent=d&&d.access_token?"Compte créé. Connexion en cours…":"Compte créé. Vérifie ton e-mail si Supabase demande une confirmation.";if(d&&d.access_token)setTimeout(function(){location.href=routeFor({role:"student"})},600);}catch(err){signupMsg.textContent="Création impossible : "+err.message;}};
+   }catch(e){ await FigaroCloud.signOut(); }
+ }
+
+ loginForm.onsubmit=async function(e){
+   e.preventDefault(); loginMsg.textContent="Connexion…";
+   try{
+     await FigaroCloud.signIn(loginEmail.value.trim(),loginPassword.value);
+     const p=await FigaroCloud.profile();
+     if(!p||p.role!==expected){
+       await FigaroCloud.signOut();
+       loginMsg.textContent=mode==="enseignant"
+         ?"Ce compte n'est pas un compte enseignant."
+         :"Ce compte n'est pas un compte élève.";
+       return;
+     }
+     location.href=(p.role==="teacher"?"enseignant.html":"eleve.html")+(level?"?level="+level:"");
+   }catch(err){ loginMsg.textContent="Connexion impossible : "+err.message; }
+ };
+
+ signupForm.onsubmit=async function(e){
+   e.preventDefault(); signupMsg.textContent="Création du compte…";
+   try{
+     const data=await FigaroCloud.signUp(
+       signupEmail.value.trim(), signupPassword.value,
+       signupName.value.trim(), level
+     );
+     if(!data||!data.access_token){
+       signupMsg.textContent="Le compte a été créé mais aucune session n'a été reçue. Vérifie que Confirm email est désactivé dans Supabase.";
+       return;
+     }
+     location.href="eleve.html"+(level?"?level="+level:"");
+   }catch(err){ signupMsg.textContent="Création impossible : "+err.message; }
+ };
 })();
 </script></body></html>
