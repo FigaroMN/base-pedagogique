@@ -1,0 +1,18 @@
+FIGAROMN - NOUVELLE NAVIGATION ET EXERCICES INTERACTIFS
+
+Navigation :
+BAC PRO -> Accès Élève / Enseignant -> Niveau 2nde / 1re / Tle -> Périodes -> Séances.
+
+Exercices interactifs :
+- remplacement de l'appellation Widget interactif ;
+- 5 exercices progressifs par séance ;
+- feedback immédiat ;
+- score final ;
+- possibilité de recommencer ;
+- enregistrement à distance dans Supabase pour les élèves connectés.
+
+Avant test :
+1. exécuter MIGRATION-EXERCICES-INTERACTIFS.sql dans Supabase ;
+2. téléverser tous les fichiers du ZIP à la racine GitHub ;
+3. attendre le redéploiement GitHub Pages ;
+4. tester choix-acces.html.

@@ -1,0 +1,39 @@
+FIGAROMN – PATCH CYCLE BAC PRO v1
+=====================================
+
+Cette version part du ZIP FigaroMN-PROPRE-etape-par-etape fourni.
+
+FICHIERS AJOUTÉS
+- cycle-bac-pro.html
+- figaromn-cycle.css
+- figaromn-cycle-data.js
+- figaromn-cycle.js
+- figaromn-year-theme.css
+
+FICHIERS MODIFIÉS
+- bac-pro.html
+- seconde.html
+- premiere.html
+- terminale.html
+
+FICHIERS NON TOUCHÉS
+- figaromn-cloud.js
+- supabase-config.js
+- toutes les pages période
+- toutes les pages séance
+- les migrations SQL
+- les pages connexion / élève / enseignant
+
+MISE SUR GITHUB
+1. Décompresser PATCH-GITHUB-CYCLE-BACPRO-v1.zip.
+2. Dans GitHub > FigaroMN/base-pedagogique :
+   Ajouter un fichier > Charger des fichiers.
+3. Glisser les 9 fichiers du patch.
+4. GitHub indiquera les 4 remplacements et les 5 nouveaux fichiers.
+5. Valider le commit sur la branche principale.
+6. Attendre le redéploiement GitHub Pages.
+7. Ouvrir : cycle-bac-pro.html
+
+RETOUR ARRIÈRE
+Le ZIP complet FigaroMN-GITHUB-CYCLE-BACPRO-v1.zip contient toute la base intégrée.
+Conserver aussi votre ZIP d’origine comme sauvegarde.

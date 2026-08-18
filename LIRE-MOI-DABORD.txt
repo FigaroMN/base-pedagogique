@@ -1,0 +1,52 @@
+FIGAROMN PROPRE — PROCÉDURE UNIQUE
+===================================
+
+IMPORTANT
+Ne téléverse pas encore le ZIP complet avant d'avoir exécuté l'étape 1.
+
+ÉTAPE 1 — SUPABASE
+Ouvrir SQL Editor et exécuter :
+00-RESET-SUPABASE-PROPRE.sql
+
+Résultat attendu :
+FigaroMN : base propre, RLS sans récursion
+
+Ce script conserve les comptes et les données.
+Il remplace les anciennes policies responsables de la récursion.
+
+ÉTAPE 2 — TESTER SUPABASE AVANT GITHUB
+Ne rien changer dans Authentication :
+- Allow new users to sign up = ON
+- Confirm email = OFF
+- Email provider = ON
+
+ÉTAPE 3 — GITHUB
+Téléverser les fichiers de ce ZIP à la racine du dépôt.
+Les fichiers importants remplacés sont :
+- connexion.html
+- eleve.html
+- enseignant.html
+- figaromn-cloud.js
+
+ÉTAPE 4 — TEST MINIMUM
+A. Enseignant
+BAC PRO -> Enseignant -> niveau -> connexion
+Attendu : tableau de bord enseignant.
+
+B. Élève
+BAC PRO -> Élève -> niveau -> créer un compte
+Attendu : Espace Élève avec "Ma formation" et 6 périodes.
+
+C. Rattachement
+Depuis l'espace Enseignant, rattacher l'élève à sa classe.
+Reconnexion Élève :
+Attendu : nom de classe + cahier de texte disponible.
+
+ÉTAPE 5
+Seulement quand ces 3 tests fonctionnent, tester :
+- progression des séances ;
+- exercices interactifs ;
+- évaluations ;
+- compétences.
+
+Ne pas ajouter d'autre fonctionnalité avant validation de ces tests.

@@ -1,0 +1,48 @@
+FIGAROMN CONNECTÉ À SUPABASE
+==============================
+
+Contenu :
+- 129 pages pédagogiques existantes ;
+- connexion.html : connexion / création de compte élève ;
+- eleve.html : tableau de bord élève ;
+- enseignant.html : tableau de bord enseignant ;
+- supabase-config.js : Project URL + Publishable key (publique) ;
+- figaromn-cloud.js : client Supabase natif avec fetch ;
+- SETUP-SUPABASE-CONNECTE.sql : migration + catalogue des 108 séances ;
+- bac-pro.html enrichi avec accès Élève / Enseignant.
+
+À FAIRE AVANT LE TEST
+1. Ouvrir Supabase > SQL Editor.
+2. Exécuter intégralement SETUP-SUPABASE-CONNECTE.sql.
+3. Téléverser tous les fichiers de ce ZIP à la racine de GitHub Pages.
+4. Tester connexion.html avec le compte enseignant.
+5. Créer un compte élève test depuis connexion.html.
+6. Dans l’espace Enseignant, rattacher cet élève à une classe.
+7. Se reconnecter comme élève et ouvrir une séance.
+
+Sécurité :
+- aucune Secret key / service_role n’est incluse ;
+- seule la Publishable key est présente côté navigateur ;
+- les accès aux lignes reposent sur Supabase Auth + RLS ;
+- le mot de passe enseignant n’est jamais stocké dans le HTML.
+
+CERISE Pro :
+- l’espace Enseignant peut exporter les observations de compétences en CSV ;
+- cet export prépare la saisie mais n’est pas présenté comme un format officiel d’import CERISE Pro.
+
+
+CODES D'ÉVALUATION
+Chaque évaluation possède désormais son propre code à 4 caractères. Voir CODES-EVALUATIONS-ENSEIGNANT.txt.
+
+
+GESTION DES ELEVES
+------------------
+Avant d'utiliser les nouveaux boutons, exécuter MIGRATION-GESTION-ELEVES.sql dans Supabase SQL Editor.
+
+L'espace Enseignant permet ensuite :
+- Archiver : conserve le compte et les données, suspend le suivi à distance ;
+- Restaurer : réactive l'élève ;
+- Retirer classe : retire uniquement l'appartenance à une classe ;
+- Supprimer définitivement : supprime le compte Supabase Auth et les données élèves liées par cascade.
+
+La suppression définitive demande de taper SUPPRIMER pour limiter les erreurs.

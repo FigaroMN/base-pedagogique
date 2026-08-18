@@ -1,0 +1,31 @@
+CODES D'ACCÈS AUX ÉVALUATIONS FIGAROMN
+
+2nde BAC PRO MN
+  Période 1 : 2A7M
+  Période 2 : 2B4N
+  Période 3 : 2C9P
+  Période 4 : 2D6R
+  Période 5 : 2E3S
+  Période 6 : 2F8T
+
+1re BAC PRO MN
+  Période 1 : 1A5M
+  Période 2 : 1B8N
+  Période 3 : 1C4P
+  Période 4 : 1D7R
+  Période 5 : 1E9S
+  Période 6 : 1F3T
+
+Tle BAC PRO MN
+  Période 1 : TA6M
+  Période 2 : TB9N
+  Période 3 : TC5P
+  Période 4 : TD8R
+  Période 5 : TE4S
+  Période 6 : TF7T
+
+IMPORTANT :
+- 1 code différent par évaluation ;
+- codes de 4 caractères ;
+- à conserver côté enseignant ;
+- sur GitHub Pages, ces codes restent une barrière pédagogique, pas une authentification forte.
