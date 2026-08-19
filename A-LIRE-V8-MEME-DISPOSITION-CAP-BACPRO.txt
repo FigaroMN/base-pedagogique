@@ -1,0 +1,84 @@
+FIGAROMN V8 – MÊME DISPOSITION CAP POUR LES 3 NIVEAUX BAC PRO
+================================================================
+
+OBJECTIF
+--------
+Seconde, Première et Terminale BAC PRO utilisent maintenant exactement
+la même organisation générale que le niveau CAP :
+
+- Accueil
+- Cours
+- Exercices
+- Évaluations
+- identité de l'élève
+- 3 blocs professionnels
+- grille "Ma progression"
+- suivi des compétences
+- suivi Supabase du compte élève
+
+PROGRESSIONS CONSERVÉES
+-----------------------
+
+SECONDE
+1. Bases électriques et multimètre
+2. Feux de navigation
+3. Pompe de cale
+4. Relais et circuits de puissance
+5. Guindeau : découverte et installation
+6. Synthèse annuelle et transfert
+
+PREMIÈRE
+1. Mesures électriques et diagnostic préparatoire
+2. Diagnostic des feux de navigation
+3. Diagnostic pompe de cale
+4. Guindeau et forte puissance
+5. Relais, trim et systèmes réversibles
+6. Entretien, réparation et restitution
+
+TERMINALE
+1. Diagnostic méthodologique avancé
+2. Production, stockage et distribution
+3. Trim, flaps et actionneurs
+4. Guindeau et aide à la manœuvre
+5. Prise en charge et restitution
+6. Préparation certificative et bilan
+
+CHAQUE SÉQUENCE
+---------------
+- 6 séances
+- les pages de séances existantes sont conservées
+- les exercices / TP / cours / évaluations existants ne sont pas supprimés
+- la 6e séance reste l'évaluation de synthèse existante
+- le suivi Supabase existant reste utilisé
+
+CONNEXION ÉLÈVE
+----------------
+Après identification :
+CAP       -> cap.html
+Seconde   -> seconde.html
+Première  -> premiere.html
+Terminale -> terminale.html
+
+L'élève arrive donc directement dans son espace de niveau, avec la
+même disposition que le CAP.
+
+PROFESSEUR
+-----------
+L'accès professeur unique de la V7.1 est conservé :
+CAP + Seconde + Première + Terminale avec une seule connexion.
+
+SUPABASE
+--------
+Aucune nouvelle migration SQL n'est nécessaire pour cette V8.
+Conserver les réglages déjà effectués.
+
+INSTALLATION GITHUB
+-------------------
+1. Ne pas installer une ancienne version par-dessus cette V8.
+2. Décompresser l'archive.
+3. Envoyer tous les fichiers à la racine :
+   FigaroMN/base-pedagogique
+4. Accepter les remplacements.
+5. Commit sur main.
+6. Attendre GitHub Pages.
+7. Tester avec un compte élève Seconde, Première et Terminale.

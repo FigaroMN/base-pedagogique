@@ -21,7 +21,15 @@
 <section class="card"><h2>📅 Cahier de texte</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Résumé</th><th>Travail</th><th>Compétences</th></tr></thead><tbody id="agendaRows"></tbody></table></div></section>
 <div id="pageMsg"></div>
 </main>
-<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-cycle-data.js"></script>
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script>
+(function(){
+ const q=new URLSearchParams(location.search);
+ const level=q.get("level");
+ if(["seconde","premiere","terminale"].includes(level)){
+   location.replace(level+".html");
+ }
+})();
+</script><script src="figaromn-cycle-data.js"></script>
 <script>
 (async function(){
  const p=await FigaroCloud.requireRole("student");if(!p)return;

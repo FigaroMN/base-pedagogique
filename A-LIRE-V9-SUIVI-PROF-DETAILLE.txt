@@ -1,0 +1,88 @@
+FIGAROMN V9 – SUIVI PROFESSEUR DÉTAILLÉ PAR ÉLÈVE
+=======================================================
+
+Cette version reprend toutes les mises à jour V8 et ajoute un dossier
+de suivi individuel complet dans l'espace professeur.
+
+POUR CHAQUE ÉLÈVE
+-----------------
+Le bouton "Suivi détaillé" permet de voir :
+
+1. BILAN INDIVIDUEL
+- progression tracée ;
+- nombre d'exercices distincts réalisés ;
+- moyenne des évaluations ;
+- meilleure note ;
+- nombre de compétences Acquises / Maîtrisées ;
+- synthèse des compétences consolidées ;
+- synthèse des compétences à renforcer ou encore à positionner.
+
+2. PROGRESSION PAR SÉQUENCE
+- séquence en cours ;
+- activités réalisées ;
+- exercices réalisés ;
+- moyenne des évaluations ;
+- meilleure note.
+
+3. COMPÉTENCES
+- C1 à C12 ;
+- intitulé ;
+- pourcentage ;
+- niveau d'acquisition ;
+- nombre d'indicateurs positionnés / requis ;
+- détail de chaque indicateur ;
+- résultats et pourcentage par indicateur ;
+- dernière observation enseignant si elle existe.
+
+4. EXERCICES DÉTAILLÉS
+Pour chaque tentative :
+- date ;
+- séquence ;
+- séance / activité ;
+- titre ;
+- numéro de tentative ;
+- score ;
+- pourcentage de réussite.
+
+5. ÉVALUATIONS DÉTAILLÉES
+Pour chaque tentative :
+- date ;
+- séquence ;
+- titre de l'évaluation ;
+- numéro de tentative ;
+- note /20 ;
+- pourcentage.
+
+6. BILAN PDF
+Bouton :
+"Imprimer / PDF le bilan"
+
+Le navigateur permet ensuite d'imprimer ou d'enregistrer le bilan
+individuel au format PDF.
+
+CAP
+---
+La V9 ajoute la synchronisation Supabase des exercices et évaluations CAP.
+Les anciennes tentatives CAP encore présentes dans le navigateur de
+l'élève sont resynchronisées lors de sa prochaine ouverture du CAP.
+
+SUPABASE - ACTION OBLIGATOIRE UNE FOIS
+---------------------------------------
+Dans Supabase > SQL Editor, exécuter :
+
+MIGRATION-V9-SUIVI-PROF-CAP.sql
+
+Cette migration est additive :
+- aucun compte n'est supprimé ;
+- aucun travail Bac Pro n'est supprimé ;
+- aucun mot de passe n'est modifié.
+
+GITHUB
+------
+1. Décompresser l'archive V9.
+2. Charger tous les fichiers à la racine de :
+   FigaroMN/base-pedagogique
+3. Accepter les remplacements.
+4. Commit changes sur main.
+5. Exécuter la migration V9 dans Supabase.
+6. Tester avec un élève Bac Pro puis un élève CAP.

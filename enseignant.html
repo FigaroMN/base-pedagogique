@@ -22,6 +22,39 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 .modal{position:fixed;inset:0;background:rgba(6,40,61,.72);z-index:9999;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}.modal.show{display:flex}.dialog{width:min(1080px,100%);margin:auto;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .dialog-head{background:var(--navy);color:#fff;padding:16px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.dialog-head h2{margin:0;color:#fff}.dialog-body{padding:18px}.seq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.seq{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--light)}.seq h3{margin:0 0 6px;color:var(--navy)}
 .skill-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.skill{border:1px solid var(--border);border-radius:11px;padding:10px;background:#fff}.skill strong{color:var(--navy)}
+.student-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:12px 0 18px}
+.student-kpis .skpi{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--light)}
+.student-kpis .skpi span{display:block;color:var(--muted);font-size:.76rem}
+.student-kpis .skpi strong{font-size:1.35rem;color:var(--navy)}
+.report-note{padding:14px;border-left:5px solid var(--blue);background:#eef7fa;border-radius:10px;margin:12px 0;line-height:1.55}
+.report-warning{padding:12px;border-left:5px solid var(--gold);background:#fff9e8;border-radius:10px;margin:12px 0}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:24px}
+.section-title h3{margin:0}
+.detail-table{min-width:880px}
+.level-na{background:#fdecee;color:#9f2834}.level-eca{background:#fff4d6;color:#7b5a00}.level-acq{background:#e8f2f5;color:#0b5d7a}.level-mait{background:#e8f7ef;color:#0d6d45}.level-wait{background:#eef1f2;color:#607680}
+.comp-card{border:1px solid var(--border);border-radius:13px;padding:13px;background:#fff}
+.comp-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.comp-title{font-weight:900;color:var(--navy)}
+.comp-meta{color:var(--muted);font-size:.78rem;margin-top:5px}
+.indicator-list{margin-top:9px;border-top:1px solid var(--border);padding-top:8px}
+.indicator-item{display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);font-size:.8rem}
+.indicator-item:last-child{border-bottom:0}
+.observation-box{margin-top:9px;padding:9px;border-radius:9px;background:#f5faf7;font-size:.8rem}
+.bilan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bilan-box{border:1px solid var(--border);border-radius:12px;padding:13px;background:#fff}
+.bilan-box h4{margin:0 0 7px;color:var(--navy)}
+@media(max-width:950px){.student-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.student-kpis,.bilan-grid{grid-template-columns:1fr}.indicator-item{grid-template-columns:1fr}}
+@media print{
+ body *{visibility:hidden!important}
+ #studentModal,#studentModal *{visibility:visible!important}
+ #studentModal{position:absolute!important;inset:0!important;background:#fff!important;display:block!important;padding:0!important}
+ #studentModal .dialog{width:100%!important;box-shadow:none!important;border-radius:0!important}
+ #studentModal .no-print{display:none!important}
+ #studentModal .dialog-head{background:#fff!important;color:#18323f!important;border-bottom:2px solid #06283d}
+ #studentModal .dialog-head h2{color:#06283d!important}
+}
+
 @media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid3,.grid4,.seq-grid,.skill-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.grid2,.grid3,.grid4,.kpis,.level-tabs,.seq-grid,.skill-grid{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column;padding:10px 0}.shell{width:min(100% - 18px,1220px)}}
 </style></head><body>
@@ -82,14 +115,14 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <div class="dialog"><div class="dialog-head"><div><h2 id="studentModalTitle">Suivi élève</h2><div id="studentModalMeta"></div></div><button class="btn light" id="closeModal" type="button">Fermer</button></div><div class="dialog-body" id="studentModalBody"></div></div>
 </div>
 
-<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-cycle-data.js"></script>
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-cycle-data.js"></script><script src="figaromn-cap-tracking-data.js"></script>
 <script>
 (async function(){
 "use strict";
 const me=await FigaroCloud.requireRole("teacher"); if(!me)return;
 const $=id=>document.getElementById(id);
 const labels={cap:"CAP",seconde:"Seconde",premiere:"Première",terminale:"Terminale"};
-let selectedLevel="",classes=[],classMap={},profiles=[],memberships=[],sessions=[],progress=[],evaluations=[],attempts=[],autoStatus=[],observations=[],interactive=[];
+let selectedLevel="",classes=[],classMap={},profiles=[],memberships=[],sessions=[],progress=[],evaluations=[],attempts=[],autoStatus=[],observations=[],interactive=[],indicatorResults=[],indicatorCatalog=[],capAttempts=[];
 let refreshTimer=null, busy=false;
 
 $("logout").onclick=async()=>{await FigaroCloud.signOut();location.href="index.html";};
@@ -105,8 +138,91 @@ function ago(v){
  if(m<1)return "à l’instant"; if(m<60)return "il y a "+m+" min"; var h=Math.round(m/60); if(h<24)return "il y a "+h+" h"; return fmtDate(v);
 }
 function seqTitle(level,n){
+ if(level==="cap"){
+  try{
+   const s=window.FIGAROMN_CAP_TRACKING_DATA.sequences.find(x=>Number(x.no)===Number(n));
+   return s?s.title:"Séquence "+n;
+  }catch(e){return "Séquence "+n;}
+ }
  try{return window.FIGAROMN_CYCLE_DATA.years[level].periods[n-1][1];}catch(e){return "Séquence "+n;}
 }
+function seqCount(level){return level==="cap"?7:6;}
+function expectedExercises(level){return level==="cap"?35:36;}
+function expectedEvaluations(level){return level==="cap"?7:6;}
+function levelFromPct(pct){
+ pct=Number(pct);
+ if(pct<50)return {label:"Non acquis",level:1,cls:"level-na"};
+ if(pct<70)return {label:"En cours d’acquisition",level:2,cls:"level-eca"};
+ if(pct<85)return {label:"Acquis",level:3,cls:"level-acq"};
+ return {label:"Maîtrisé",level:4,cls:"level-mait"};
+}
+function competencyTitle(level,code){
+ if(level==="cap"){
+  return (window.FIGAROMN_CAP_TRACKING_DATA.competencies||{})[code]||"";
+ }
+ return (window.FIGAROMN_CYCLE_DATA.competencies||{})[code]||"";
+}
+function capStudentAttempts(studentId,type){
+ return capAttempts.filter(x=>x.student_id===studentId&&(!type||x.activity_type===type));
+}
+function capAggregateIndicators(studentId){
+ const out={};
+ capStudentAttempts(studentId).forEach(a=>{
+  const data=a.indicator_data||{};
+  Object.keys(data).forEach(code=>{
+   if(!out[code])out[code]={};
+   Object.keys(data[code]||{}).forEach(idx=>{
+    const item=data[code][idx]||{};
+    if(!out[code][idx])out[code][idx]={good:0,total:0};
+    out[code][idx].good+=Number(item.good)||0;
+    out[code][idx].total+=Number(item.total)||0;
+   });
+  });
+ });
+ return out;
+}
+function studentCompetencyRows(studentId,level){
+ if(level!=="cap"){
+  return autoStatus.filter(x=>x.student_id===studentId)
+   .sort((a,b)=>Number(a.competency_code.slice(1))-Number(b.competency_code.slice(1)))
+   .map(s=>({
+    code:s.competency_code,
+    title:competencyTitle(level,s.competency_code),
+    percent:s.percent==null?null:Number(s.percent),
+    acquisition_level:Number(s.acquisition_level)||0,
+    acquisition_label:s.is_complete?(s.acquisition_label||"À positionner"):"À positionner",
+    positioned:Number(s.indicators_positioned)||0,
+    required:Number(s.indicators_required)||0,
+    complete:!!s.is_complete
+   }));
+ }
+
+ const aggregate=capAggregateIndicators(studentId);
+ const criteria=window.FIGAROMN_CAP_TRACKING_DATA.indicators||{};
+ return Object.keys(window.FIGAROMN_CAP_TRACKING_DATA.competencies||{})
+  .sort((a,b)=>Number(a.slice(1))-Number(b.slice(1)))
+  .map(code=>{
+   const req=(criteria[code]||[]).length;
+   const pcts=[];
+   for(let i=0;i<req;i++){
+    const item=aggregate[code]&&aggregate[code][i];
+    if(item&&Number(item.total)>0)pcts.push(Math.round(Number(item.good)/Number(item.total)*100));
+   }
+   const pct=pcts.length?Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length):null;
+   const complete=req>0&&pcts.length===req;
+   const lvl=pct==null?{label:"À positionner",level:0}:levelFromPct(pct);
+   return {
+    code:code,title:competencyTitle(level,code),percent:pct,
+    acquisition_level:complete?lvl.level:0,
+    acquisition_label:complete?lvl.label:"À positionner",
+    positioned:pcts.length,required:req,complete:complete
+   };
+  });
+}
+function latestObservation(studentId,code){
+ return observations.find(x=>x.student_id===studentId&&x.competency_code===code)||null;
+}
+
 function sessionMap(){const m={};sessions.forEach(s=>m[s.id]=s);return m;}
 function membershipsByStudent(){const m={};memberships.forEach(x=>(m[x.student_id]||(m[x.student_id]=[])).push(x.class_id));return m;}
 function classNames(studentId){
@@ -114,6 +230,10 @@ function classNames(studentId){
  return mb.map(id=>classMap[id]&&classMap[id].name).filter(Boolean).join(", ")||"Non rattaché";
 }
 function currentSequence(studentId,level){
+ if(level==="cap"){
+  const a=capStudentAttempts(studentId);
+  return a.length?Math.max(...a.map(x=>Number(x.sequence_no)||1)):1;
+ }
  const sm=sessionMap();let max=1;
  progress.filter(x=>x.student_id===studentId).forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level)max=Math.max(max,Number(s.period)||1);});
  attempts.filter(x=>x.student_id===studentId).forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level)max=Math.max(max,Number(s.period)||1);});
@@ -125,25 +245,56 @@ function lastActivity(studentId){
  progress.filter(x=>x.student_id===studentId).forEach(x=>d.push(x.updated_at||x.completed_at||x.started_at));
  attempts.filter(x=>x.student_id===studentId).forEach(x=>d.push(x.completed_at));
  evaluations.filter(x=>x.student_id===studentId).forEach(x=>d.push(x.submitted_at));
+ capAttempts.filter(x=>x.student_id===studentId).forEach(x=>d.push(x.completed_at));
  d=d.filter(Boolean).map(x=>new Date(x).getTime()).filter(Number.isFinite);
  return d.length?new Date(Math.max.apply(null,d)).toISOString():null;
 }
 function exerciseCount(studentId,level,seq){
+ if(level==="cap"){
+  const ids=new Set();
+  capStudentAttempts(studentId,"exercise")
+   .filter(x=>!seq||Number(x.sequence_no)===Number(seq))
+   .forEach(x=>ids.add(String(x.activity_index)));
+  return ids.size;
+ }
  const sm=sessionMap(),ids=new Set();
- attempts.filter(x=>x.student_id===studentId&&x.activity_type==="exercise").forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level&&Number(s.period)===seq)ids.add(x.session_id);});
+ attempts.filter(x=>x.student_id===studentId&&x.activity_type==="exercise").forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level&&(!seq||Number(s.period)===seq))ids.add(x.session_id);});
  if(!attempts.length){
-  interactive.filter(x=>x.student_id===studentId).forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level&&Number(s.period)===seq)ids.add(x.session_id);});
+  interactive.filter(x=>x.student_id===studentId).forEach(x=>{const s=sm[x.session_id];if(s&&s.level===level&&(!seq||Number(s.period)===seq))ids.add(x.session_id);});
  }
  return ids.size;
 }
 function evalStats(studentId,level,seq){
+ if(level==="cap"){
+  const a=capStudentAttempts(studentId,"evaluation").filter(x=>!seq||Number(x.sequence_no)===Number(seq));
+  if(!a.length)return {n:0,avg:null,last:null,best:null};
+  return {
+   n:a.length,
+   avg:a.reduce((s,x)=>s+Number(x.note20||0),0)/a.length,
+   best:Math.max(...a.map(x=>Number(x.note20)||0)),
+   last:a.map(x=>x.completed_at).filter(Boolean).sort().pop()
+  };
+ }
  const sm=sessionMap(),a=evaluations.filter(x=>x.student_id===studentId).filter(x=>{const s=sm[x.session_id];return s&&s.level===level&&(!seq||Number(s.period)===seq);});
- if(!a.length)return {n:0,avg:null,last:null};
- return {n:a.length,avg:a.reduce((s,x)=>s+Number(x.score||0),0)/a.length,last:a.map(x=>x.submitted_at).filter(Boolean).sort().pop()};
+ if(!a.length)return {n:0,avg:null,last:null,best:null};
+ return {
+  n:a.length,
+  avg:a.reduce((s,x)=>s+Number(x.score||0),0)/a.length,
+  best:Math.max(...a.map(x=>Number(x.score)||0)),
+  last:a.map(x=>x.submitted_at).filter(Boolean).sort().pop()
+ };
 }
 function autoStats(studentId){
- const a=autoStatus.filter(x=>x.student_id===studentId),complete=a.filter(x=>x.is_complete);
- return {all:a.length,complete:complete.length,acquired:complete.filter(x=>Number(x.acquisition_level)>=3).length,pending:a.filter(x=>!x.is_complete).length};
+ const p=profiles.find(x=>x.id===studentId);
+ const a=studentCompetencyRows(studentId,p?p.level:"");
+ const complete=a.filter(x=>x.complete);
+ return {
+  all:a.length,
+  complete:complete.length,
+  acquired:complete.filter(x=>Number(x.acquisition_level)>=3).length,
+  mastered:complete.filter(x=>Number(x.acquisition_level)>=4).length,
+  pending:a.filter(x=>!x.complete).length
+ };
 }
 function isRecent(v){return v&&(Date.now()-new Date(v).getTime())<10*60*1000;}
 
@@ -223,6 +374,9 @@ async function loadLive(){
   attempts=await safeTable("activity_attempts","select=id,student_id,session_id,activity_type,attempt_no,score,total,percent,completed_at&order=completed_at.desc");
   autoStatus=await safeTable("competency_auto_status","select=student_id,competency_code,percent,acquisition_level,acquisition_label,indicators_positioned,indicators_required,is_complete,updated_at");
   observations=await safeTable("competency_observations","select=student_id,competency_code,acquisition_level,evidence,teacher_comment,observed_at&order=observed_at.desc");
+  indicatorResults=await safeTable("indicator_results","select=student_id,session_id,competency_code,indicator_index,indicator_label,correct_count,question_count,percent,completed_at&order=completed_at.desc");
+  indicatorCatalog=await safeTable("competency_indicator_catalog","select=competency_code,indicator_index,label,is_required&order=competency_code.asc,indicator_index.asc");
+  capAttempts=await safeTable("cap_activity_attempts","select=student_id,source_key,sequence_no,activity_no,activity_index,activity_type,title,attempt_no,score,total,note20,percent,competency_data,indicator_data,details,completed_at&order=completed_at.desc");
   interactive=attempts.length?[]:await safeTable("interactive_results","select=student_id,session_id,score,total,completed_at");
   renderStudents();renderSelects();
   $("lastRefresh").textContent="Dernière actualisation : "+new Date().toLocaleTimeString("fr-FR");
@@ -256,34 +410,261 @@ async function sendPasswordReset(id,button){
  }
 }
 
+
+function fmtPct(v){
+ if(v==null || !isFinite(Number(v)))return "—";
+ return (Math.round(Number(v)*10)/10).toLocaleString("fr-FR")+" %";
+}
+function fmtNote(v){
+ if(v==null || !isFinite(Number(v)))return "—";
+ return (Math.round(Number(v)*10)/10).toLocaleString("fr-FR")+" /20";
+}
+function studentExerciseRows(id,level){
+ const sm=sessionMap();
+ if(level==="cap"){
+  return capStudentAttempts(id,"exercise").map(x=>({
+   date:x.completed_at,sequence:Number(x.sequence_no),session:Number(x.activity_no),
+   title:x.title||"",attempt:Number(x.attempt_no)||1,
+   score:Number(x.score)||0,total:Number(x.total)||0,percent:Number(x.percent)||0
+  }));
+ }
+ return attempts.filter(x=>x.student_id===id&&x.activity_type==="exercise").map(x=>{
+  const s=sm[x.session_id];
+  return {
+   date:x.completed_at,sequence:s?Number(s.period):0,session:s?Number(s.session_no):0,
+   title:s?s.title:"",attempt:Number(x.attempt_no)||1,
+   score:Number(x.score)||0,total:Number(x.total)||0,percent:Number(x.percent)||0
+  };
+ });
+}
+function studentEvaluationRows(id,level){
+ const sm=sessionMap();
+ if(level==="cap"){
+  return capStudentAttempts(id,"evaluation").map(x=>({
+   date:x.completed_at,sequence:Number(x.sequence_no),session:6,title:x.title||"",
+   attempt:Number(x.attempt_no)||1,note:Number(x.note20)||0,
+   score:Number(x.score)||0,total:Number(x.total)||0,percent:Number(x.percent)||0
+  }));
+ }
+ return evaluations.filter(x=>x.student_id===id).map(x=>{
+  const s=sm[x.session_id];
+  return {
+   date:x.submitted_at,sequence:s?Number(s.period):0,session:s?Number(s.session_no):0,
+   title:s?s.title:"",attempt:Number(x.attempt_no)||1,note:Number(x.score)||0,
+   score:null,total:null,percent:Number(x.score||0)*5
+  };
+ });
+}
+function studentIndicatorRows(id,level,code){
+ if(level==="cap"){
+  const agg=capAggregateIndicators(id);
+  const criteria=(window.FIGAROMN_CAP_TRACKING_DATA.indicators||{})[code]||[];
+  return criteria.map((label,idx)=>{
+   const item=agg[code]&&agg[code][idx];
+   const total=item?Number(item.total)||0:0;
+   const good=item?Number(item.good)||0:0;
+   return {
+    index:idx+1,label:label,good:good,total:total,
+    percent:total?Math.round(good/total*100):null
+   };
+  });
+ }
+
+ const catalog=indicatorCatalog.filter(x=>x.competency_code===code)
+  .sort((a,b)=>Number(a.indicator_index)-Number(b.indicator_index));
+ const results=indicatorResults.filter(x=>x.student_id===id&&x.competency_code===code);
+ const indexes=new Set(catalog.map(x=>Number(x.indicator_index)));
+ results.forEach(x=>indexes.add(Number(x.indicator_index)));
+
+ return Array.from(indexes).sort((a,b)=>a-b).map(idx=>{
+  const rows=results.filter(x=>Number(x.indicator_index)===idx);
+  const good=rows.reduce((s,x)=>s+Number(x.correct_count||0),0);
+  const total=rows.reduce((s,x)=>s+Number(x.question_count||0),0);
+  const cat=catalog.find(x=>Number(x.indicator_index)===idx);
+  const label=(cat&&cat.label)||(rows[0]&&rows[0].indicator_label)||"Indicateur "+idx;
+  return {index:idx,label:label,good:good,total:total,percent:total?Math.round(good/total*100):null};
+ });
+}
+function studentMetrics(id,p){
+ const exRows=studentExerciseRows(id,p.level);
+ const evRows=studentEvaluationRows(id,p.level);
+ const skills=studentCompetencyRows(id,p.level);
+ const exUnique=new Set(exRows.map(x=>p.level==="cap"?String(x.sequence)+"-"+String(x.session):String(x.sequence)+"-"+String(x.session))).size;
+ const evAvg=evRows.length?evRows.reduce((s,x)=>s+Number(x.note||0),0)/evRows.length:null;
+ const evBest=evRows.length?Math.max(...evRows.map(x=>Number(x.note)||0)):null;
+ const complete=skills.filter(x=>x.complete);
+ const acquired=complete.filter(x=>Number(x.acquisition_level)>=3);
+ const mastered=complete.filter(x=>Number(x.acquisition_level)>=4);
+
+ let completed=0,progressTotal=0;
+ if(p.level==="cap"){
+  completed=new Set(capStudentAttempts(id).map(x=>x.activity_type+"-"+x.activity_index)).size;
+  progressTotal=42;
+ }else{
+  const ids=sessions.filter(s=>s.level===p.level).map(s=>s.id);
+  completed=progress.filter(x=>x.student_id===id&&ids.includes(x.session_id)&&x.status==="completed").length;
+  progressTotal=ids.length||36;
+ }
+ return {
+  exRows,evRows,skills,exUnique,evAvg,evBest,complete,acquired,mastered,
+  completed,progressTotal
+ };
+}
+function acquisitionBadge(skill){
+ if(!skill.complete)return '<span class="pill level-wait">À positionner</span>';
+ const lvl=Number(skill.acquisition_level);
+ const cls=lvl>=4?"level-mait":lvl>=3?"level-acq":lvl>=2?"level-eca":"level-na";
+ return '<span class="pill '+cls+'">'+esc(skill.acquisition_label||"—")+'</span>';
+}
+function buildSequenceHTML(id,p){
+ const sm=sessionMap();
+ let html="";
+ for(let n=1;n<=seqCount(p.level);n++){
+  let done=0;
+  if(p.level==="cap"){
+   done=new Set(capStudentAttempts(id).filter(x=>Number(x.sequence_no)===n).map(x=>x.activity_type+"-"+x.activity_index)).size;
+  }else{
+   const sl=sessions.filter(s=>s.level===p.level&&Number(s.period)===n),ids=sl.map(s=>s.id);
+   done=progress.filter(x=>x.student_id===id&&ids.includes(x.session_id)&&x.status==="completed").length;
+  }
+  const ex=exerciseCount(id,p.level,n),ev=evalStats(id,p.level,n);
+  const denom=p.level==="cap"?6:6;
+  html+=`<div class="seq">
+   <h3>Séquence ${n} · ${esc(seqTitle(p.level,n))}</h3>
+   <div>📚 Activités suivies : <strong>${done} / ${denom}</strong></div>
+   <div>📝 Exercices réalisés : <strong>${ex} / ${p.level==="cap"?5:6}</strong></div>
+   <div>✅ Évaluations : <strong>${ev.n?fmtNote(ev.avg):"—"}</strong>${ev.best!=null?` · meilleure ${fmtNote(ev.best)}`:""}</div>
+   <div class="bar"><span style="width:${Math.min(100,done/denom*100)}%"></span></div>
+  </div>`;
+ }
+ return html;
+}
+function buildCompetencyHTML(id,p){
+ const skills=studentCompetencyRows(id,p.level);
+ if(!skills.length)return "<div class='small'>Aucune compétence synchronisée.</div>";
+ return skills.map(s=>{
+  const inds=studentIndicatorRows(id,p.level,s.code);
+  const obs=latestObservation(id,s.code);
+  const indHtml=inds.length?inds.map(i=>{
+   const lvl=i.percent==null?null:levelFromPct(i.percent);
+   return `<div class="indicator-item">
+    <div><strong>${esc(s.code)}-I${i.index}</strong> · ${esc(i.label)}</div>
+    <div>${i.total?`${i.good}/${i.total} · ${fmtPct(i.percent)}`:"—"}</div>
+    <div>${i.percent==null?'<span class="pill level-wait">À positionner</span>':`<span class="pill ${lvl.cls}">${esc(lvl.label)}</span>`}</div>
+   </div>`;
+  }).join(""):"<div class='small'>Aucun résultat d’indicateur.</div>";
+
+  return `<div class="comp-card">
+   <div class="comp-head">
+    <div>
+     <div class="comp-title">${esc(s.code)} · ${esc(s.title)}</div>
+     <div class="comp-meta">${s.positioned} / ${s.required} indicateurs positionnés ${s.percent!=null?"· "+fmtPct(s.percent):""}</div>
+    </div>
+    ${acquisitionBadge(s)}
+   </div>
+   <details class="indicator-list">
+    <summary>Voir le détail des indicateurs</summary>
+    ${indHtml}
+   </details>
+   ${obs?`<div class="observation-box"><strong>Observation enseignant :</strong> niveau ${esc(obs.acquisition_level)} · ${esc(obs.evidence||"")} ${obs.teacher_comment?"<br>"+esc(obs.teacher_comment):""}<br><span class="small">${fmtDate(obs.observed_at)}</span></div>`:""}
+  </div>`;
+ }).join("");
+}
+function buildExerciseTable(id,p){
+ const rows=studentExerciseRows(id,p.level).sort((a,b)=>new Date(b.date)-new Date(a.date));
+ const body=rows.map(x=>`<tr>
+  <td>${fmtDate(x.date)}</td>
+  <td>Séq. ${x.sequence}</td>
+  <td>${x.session||"—"}</td>
+  <td>${esc(x.title||"")}</td>
+  <td>${x.attempt}</td>
+  <td><strong>${x.score} / ${x.total}</strong></td>
+  <td>${fmtPct(x.percent)}</td>
+ </tr>`).join("")||"<tr><td colspan='7'>Aucun exercice synchronisé.</td></tr>";
+ return `<div class="tablewrap"><table class="detail-table">
+  <thead><tr><th>Date</th><th>Séquence</th><th>Séance/activité</th><th>Exercice</th><th>Tentative</th><th>Score</th><th>Réussite</th></tr></thead>
+  <tbody>${body}</tbody>
+ </table></div>`;
+}
+function buildEvaluationTable(id,p){
+ const rows=studentEvaluationRows(id,p.level).sort((a,b)=>new Date(b.date)-new Date(a.date));
+ const body=rows.map(x=>`<tr>
+  <td>${fmtDate(x.date)}</td>
+  <td>Séq. ${x.sequence}</td>
+  <td>${esc(x.title||"")}</td>
+  <td>${x.attempt}</td>
+  <td><strong>${fmtNote(x.note)}</strong></td>
+  <td>${fmtPct(x.percent)}</td>
+ </tr>`).join("")||"<tr><td colspan='6'>Aucune évaluation synchronisée.</td></tr>";
+ return `<div class="tablewrap"><table class="detail-table">
+  <thead><tr><th>Date</th><th>Séquence</th><th>Évaluation</th><th>Tentative</th><th>Note</th><th>Réussite</th></tr></thead>
+  <tbody>${body}</tbody>
+ </table></div>`;
+}
+function buildBilanHTML(id,p,m){
+ const strengths=m.skills.filter(x=>x.complete&&Number(x.acquisition_level)>=3);
+ const reinforce=m.skills.filter(x=>!x.complete||Number(x.acquisition_level)<3);
+ const strengthsText=strengths.length
+  ? strengths.map(x=>x.code+" · "+x.acquisition_label).join(" ; ")
+  : "Aucune compétence complètement positionnée au niveau Acquis ou Maîtrisé pour le moment.";
+ const reinforceText=reinforce.length
+  ? reinforce.map(x=>x.code+" · "+(x.complete?x.acquisition_label:"À positionner")).join(" ; ")
+  : "Toutes les compétences positionnées sont au niveau Acquis ou Maîtrisé.";
+
+ return `<div class="report-note">
+  <strong>Bilan chiffré de ${esc(p.full_name||p.email||"l’élève")} :</strong><br>
+  ${m.exUnique} exercice(s) distinct(s) réalisé(s) sur ${expectedExercises(p.level)}.
+  ${m.evRows.length} tentative(s) d’évaluation enregistrée(s)${m.evAvg!=null?", moyenne "+fmtNote(m.evAvg):""}${m.evBest!=null?", meilleure note "+fmtNote(m.evBest):""}.
+  ${m.acquired.length} compétence(s) complètement positionnée(s) au niveau Acquis ou Maîtrisé, dont ${m.mastered.length} Maîtrisée(s).
+ </div>
+ <div class="bilan-grid">
+  <div class="bilan-box"><h4>✅ Compétences consolidées</h4><p>${esc(strengthsText)}</p></div>
+  <div class="bilan-box"><h4>🎯 Compétences à renforcer / positionner</h4><p>${esc(reinforceText)}</p></div>
+ </div>
+ <div class="report-warning"><strong>Lecture pédagogique :</strong> les niveaux automatiques sont des repères issus des exercices et évaluations numériques. Ils doivent être croisés avec les observations en situation professionnelle avant toute validation définitive d’une compétence pratique.</div>`;
+}
 function openStudent(id){
  const p=profiles.find(x=>x.id===id);if(!p)return;
+ const m=studentMetrics(id,p);
  $("studentModalTitle").textContent=p.full_name||p.email||"Élève";
- $("studentModalMeta").textContent=(labels[p.level]||p.level||"")+" · "+classNames(p.id);
- const sm=sessionMap();
- let seqHtml="";
- for(let n=1;n<=6;n++){
-  const sl=sessions.filter(s=>s.level===p.level&&Number(s.period)===n),ids=sl.map(s=>s.id);
-  const done=progress.filter(x=>x.student_id===id&&ids.includes(x.session_id)&&x.status==="completed").length;
-  const ex=exerciseCount(id,p.level,n),ev=evalStats(id,p.level,n);
-  seqHtml+=`<div class="seq"><h3>Séquence ${n} · ${esc(seqTitle(p.level,n))}</h3>
-   <div>📘 Séances terminées : <strong>${done} / 6</strong></div>
-   <div>📝 Exercices réalisés : <strong>${ex} / 6</strong></div>
-   <div>✅ Évaluations : <strong>${ev.n?ev.avg.toFixed(1)+" /20":"—"}</strong></div>
-   <div class="bar"><span style="width:${Math.min(100,done/6*100)}%"></span></div></div>`;
- }
- const auto=autoStatus.filter(x=>x.student_id===id).sort((a,b)=>Number(a.competency_code.slice(1))-Number(b.competency_code.slice(1)));
- const skills=auto.length?auto.map(s=>`<div class="skill"><strong>${esc(s.competency_code)}</strong><div>${s.is_complete?esc(s.acquisition_label)+" · "+(s.percent==null?"—":s.percent+" %"):"À positionner"}</div><div class="small">${s.indicators_positioned}/${s.indicators_required} indicateurs</div></div>`).join(""):"<div class='small'>Aucun indicateur synchronisé.</div>";
- const evalList=evaluations.filter(x=>x.student_id===id).slice(0,12).map(x=>{const s=sm[x.session_id];return `<tr><td>${fmtDate(x.submitted_at)}</td><td>${s?`Séq. ${s.period} · Séance ${s.session_no}`:"—"}</td><td><strong>${x.score}/20</strong></td><td>${x.attempt_no}</td></tr>`;}).join("")||"<tr><td colspan='4'>Aucune évaluation.</td></tr>";
- $("studentModalBody").innerHTML=`<div class="actions" style="margin-bottom:18px">
+ $("studentModalMeta").textContent=(labels[p.level]||p.level||"")+" · "+classNames(p.id)+" · "+(p.email||"");
+
+ const progressPct=m.progressTotal?Math.round(m.completed/m.progressTotal*100):0;
+ $("studentModalBody").innerHTML=`
+ <div class="actions no-print" style="margin-bottom:18px">
+  <button id="modalPrintReport" class="btn good" type="button">🖨️ Imprimer / PDF le bilan</button>
   <button id="modalResetPassword" class="btn orange" type="button">🔑 Réinitialiser le mot de passe</button>
  </div>
- <h3>Progression annuelle</h3><div class="seq-grid">${seqHtml}</div>
- <h3 style="margin-top:22px">Compétences calculées automatiquement</h3><div class="skill-grid">${skills}</div>
- <h3 style="margin-top:22px">Historique récent des évaluations</h3><div class="tablewrap"><table><thead><tr><th>Date</th><th>Séance</th><th>Note</th><th>Tentative</th></tr></thead><tbody>${evalList}</tbody></table></div>`;
+
+ <div class="student-kpis">
+  <div class="skpi"><span>Progression tracée</span><strong>${m.completed} / ${m.progressTotal}</strong><div class="small">${progressPct} %</div></div>
+  <div class="skpi"><span>Exercices distincts</span><strong>${m.exUnique} / ${expectedExercises(p.level)}</strong></div>
+  <div class="skpi"><span>Moyenne évaluations</span><strong>${m.evAvg!=null?fmtNote(m.evAvg):"—"}</strong></div>
+  <div class="skpi"><span>Meilleure note</span><strong>${m.evBest!=null?fmtNote(m.evBest):"—"}</strong></div>
+  <div class="skpi"><span>Compétences acquises+</span><strong>${m.acquired.length}</strong><div class="small">${m.mastered.length} maîtrisée(s)</div></div>
+ </div>
+
+ <div class="section-title"><h3>📋 Bilan individuel</h3></div>
+ ${buildBilanHTML(id,p,m)}
+
+ <div class="section-title"><h3>📚 Progression annuelle détaillée</h3></div>
+ <div class="seq-grid">${buildSequenceHTML(id,p)}</div>
+
+ <div class="section-title"><h3>🎯 Niveau d’acquisition des compétences</h3></div>
+ <div class="skill-grid">${buildCompetencyHTML(id,p)}</div>
+
+ <div class="section-title"><h3>📝 Exercices détaillés</h3><span class="pill">${m.exRows.length} tentative(s)</span></div>
+ ${buildExerciseTable(id,p)}
+
+ <div class="section-title"><h3>✅ Évaluations détaillées et notes</h3><span class="pill">${m.evRows.length} tentative(s)</span></div>
+ ${buildEvaluationTable(id,p)}
+ `;
+
  $("modalResetPassword").onclick=function(){sendPasswordReset(id,this);};
+ $("modalPrintReport").onclick=function(){window.print();};
  $("studentModal").classList.add("show");
 }
+
 $("closeModal").onclick=()=>$("studentModal").classList.remove("show");
 $("studentModal").addEventListener("click",e=>{if(e.target===$("studentModal"))$("studentModal").classList.remove("show");});
 

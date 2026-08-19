@@ -123,7 +123,7 @@ input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
  backLink.href=level==="cap"?"index.html":"choix-niveau.html?mode=eleve";
 
  function destination(){
-   return level==="cap" ? "cap.html" : "eleve.html?level="+encodeURIComponent(level);
+   return level==="cap" ? "cap.html" : level+".html";
  }
 
  function humanLevel(x){return labels[x]||x||"niveau non renseigné";}

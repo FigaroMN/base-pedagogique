@@ -1988,6 +1988,95 @@ function attemptHistoryWithCurrent(kind,index){
  return arr;
 }
 
+function capCloudPayload(kind,index,snapshot,attemptNo){
+ if(!snapshot)return null;
+ var item=kind==="ex24"?DATA.exercises[index]:DATA.evaluations[index];
+ if(!item)return null;
+
+ var meta=snapshot.meta||{};
+ var total=Number(meta.total||(item.questions||[]).length||0);
+ if(!total)return null;
+ var score=Number(meta.score||0);
+ var note=attemptNote20(snapshot,total);
+ var sequenceNo=kind==="ex24"?Number(item.course||1):(index+1);
+ var activityNo=kind==="ex24"?Number(item.situation||((index%5)+1)):6;
+ var indicatorData=indicatorStatsForSnapshot(kind,index,snapshot);
+
+ return {
+  student_id:(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID,
+  source_key:kind+"|"+index+"|"+String(snapshot.date||"")+"|"+String(attemptNo||1),
+  sequence_no:sequenceNo,
+  activity_no:activityNo,
+  activity_index:index,
+  activity_type:kind==="ex24"?"exercise":"evaluation",
+  title:String(item.title||""),
+  attempt_no:Number(attemptNo||1),
+  score:score,
+  total:total,
+  note20:Number(note||0),
+  percent:Math.round((score/total)*1000)/10,
+  competency_data:snapshot.stats||{},
+  indicator_data:indicatorData||{},
+  details:{
+   responses:meta.responses||[],
+   context:meta.context||"",
+   situation:meta.situation||item.situation||null,
+   course:meta.course||item.course||sequenceNo
+  },
+  completed_at:snapshot.date||new Date().toISOString()
+ };
+}
+
+async function syncCapPayloadsToCloud(payloads){
+ if(!payloads || !payloads.length)return;
+ var p=window.FIGAROMN_CAP_PROFILE;
+ if(!p || p.role!=="student" || p.level!=="cap" || !window.FigaroCloud)return;
+
+ var chunks=[];
+ for(var i=0;i<payloads.length;i+=40)chunks.push(payloads.slice(i,i+40));
+
+ for(var c=0;c<chunks.length;c++){
+  try{
+   await FigaroCloud.table(
+    "cap_activity_attempts",
+    "on_conflict=student_id,source_key",
+    {
+     method:"POST",
+     headers:{Prefer:"resolution=ignore-duplicates,return=minimal"},
+     body:JSON.stringify(chunks[c])
+    }
+   );
+  }catch(e){
+   console.warn("FigaroMN CAP : synchronisation Supabase indisponible.",e);
+   return;
+  }
+ }
+}
+
+function syncCapAttemptToCloud(kind,index,snapshot,attemptNo){
+ var payload=capCloudPayload(kind,index,snapshot,attemptNo);
+ if(payload)syncCapPayloadsToCloud([payload]);
+}
+
+function collectAllLocalCapAttempts(){
+ var rows=[];
+ ["ex24","eval18"].forEach(function(kind){
+  var count=kind==="ex24"?DATA.exercises.length:DATA.evaluations.length;
+  for(var i=0;i<count;i++){
+   var history=attemptHistoryWithCurrent(kind,i);
+   history.forEach(function(snap,n){
+    var payload=capCloudPayload(kind,i,snap,n+1);
+    if(payload)rows.push(payload);
+   });
+  }
+ });
+ return rows;
+}
+
+window.FIGAROMN_SYNC_CAP_HISTORY=function(){
+ return syncCapPayloadsToCloud(collectAllLocalCapAttempts());
+};
+
 function archiveCurrentSnapshot(kind,index){
  var current=readSkillSnapshot(kind,index);
  if(current)appendAttemptHistory(kind,index,current);
@@ -3062,6 +3151,7 @@ function openExercise(index,forceRedo){
 
     var snap=readSkillSnapshot("ex24",index);
     var exHistory=appendAttemptHistory("ex24",index,snap);
+    syncCapAttemptToCloud("ex24",index,snap,exHistory.length);
     var end=detail.querySelector("#capmn26-ex-end");
     end.classList.remove("hidden");
 
@@ -3415,6 +3505,7 @@ function openEvaluation(index,forceRedo){
 
   var snap=readSkillSnapshot("eval18",index);
   var evalHistory=appendAttemptHistory("eval18",index,snap);
+  syncCapAttemptToCloud("eval18",index,snap,evalHistory.length);
   var result=detail.querySelector("#capmn26-eval-result");
   result.classList.remove("hidden");
 
@@ -3502,6 +3593,12 @@ show("home");
    }else{
      if(p.role!=="student" || p.level!=="cap" || p.archived_at){
        return fail("connexion-eleve.html?level=cap");
+     }
+     window.FIGAROMN_CAP_PROFILE=p;
+     if(window.FIGAROMN_SYNC_CAP_HISTORY){
+       window.FIGAROMN_SYNC_CAP_HISTORY().catch(function(e){
+         console.warn("FigaroMN CAP : reprise de l'historique local non synchronisée.",e);
+       });
      }
      ret.href="index.html";
      ret.textContent="Accueil";
