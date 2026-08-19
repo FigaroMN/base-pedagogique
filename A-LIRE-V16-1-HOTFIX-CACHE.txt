@@ -1,0 +1,56 @@
+FIGAROMN V16.1 – HOTFIX CACHE / EXERCICES / ÉVALUATIONS
+=========================================================
+
+PROBLÈME
+--------
+Le navigateur affichait encore :
+levelInfo is not defined
+
+alors que la fonction est bien présente dans la V16.
+
+CAUSE PROBABLE
+--------------
+Une ancienne version de figaromn-bacpro-auto.js était encore servie
+par le cache navigateur ou GitHub Pages.
+
+CORRECTION V16.1
+----------------
+Les fichiers ont maintenant de NOUVEAUX noms :
+
+figaromn-bacpro-auto-v161.js
+figaromn-level-cap-layout-v161.js
+figaromn-level-cap-layout-v161.css
+
+Cela empêche le navigateur de réutiliser les anciens fichiers.
+
+VALIDATION DES SÉANCES
+----------------------
+Le bouton est conservé dans chaque séance :
+
+✅ Valider la séance faite
+
+Il enregistre la séance terminée dans session_progress et met à jour
+la progression de l'élève.
+
+EXERCICES / ÉVALUATIONS
+-----------------------
+Le moteur conserve :
+- levelInfo()
+- question -> indicateur -> % -> compétence
+- note automatique /20 pour les évaluations
+- historiques et synthèses
+
+SUPABASE
+--------
+Aucune nouvelle migration.
+
+INSTALLATION
+------------
+1. Décompresser le ZIP V16.1.
+2. Envoyer tous les fichiers à la racine du dépôt GitHub.
+3. Accepter les remplacements.
+4. Commit changes.
+5. Attendre le redéploiement GitHub Pages.
+6. Recharger la page normalement.
+
+Les nouveaux noms de fichiers rendent un Ctrl+F5 normalement inutile.
