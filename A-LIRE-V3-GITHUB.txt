@@ -1,0 +1,41 @@
+FIGAROMN – MISE À JOUR GITHUB V3 COMPLÈTE
+==========================================
+
+Cette archive contient la version complète à publier à la racine du dépôt :
+FigaroMN/base-pedagogique
+
+CORRECTIONS PRINCIPALES
+- index.html : le bouton CAP affiche "Accéder au CAP"
+- lien CAP : https://www.evoluxiaprime.com/periode1cap
+- choix-niveau.html : accès CAP direct
+- dernière architecture Cycle Bac Pro conservée
+- suivi enseignant par niveau / classe conservé
+- suivi des exercices, indicateurs et compétences conservé
+- migration Supabase de suivi automatique conservée
+- figaromn-cloud.js conservé
+
+IMPORTANT POUR GITHUB
+1. Télécharger puis DÉCOMPRESSER le ZIP.
+2. Ouvrir FigaroMN/base-pedagogique sur GitHub.
+3. Envoyer LES FICHIERS DÉCOMPRESSÉS à la RACINE du dépôt.
+4. Ne pas envoyer le fichier ZIP lui-même dans le dépôt.
+5. Accepter les remplacements des fichiers existants.
+6. Faire Commit changes sur la branche main.
+7. Attendre GitHub Pages.
+8. Ouvrir :
+   https://figaromn.github.io/base-pedagogique/index.html
+9. Si nécessaire : Ctrl + F5.
+
+TEST DU BOUTON CAP
+Le bouton doit afficher :
+Accéder au CAP
+
+et ouvrir :
+https://www.evoluxiaprime.com/periode1cap
+
+SUPABASE
+Si MIGRATION-SUIVI-AUTO-INDICATEURS.sql a déjà été exécutée, ne pas la relancer
+uniquement pour corriger le bouton CAP.
+
+VERSION
+FIGAROMN GitHub V3 complète
