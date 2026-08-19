@@ -1,0 +1,65 @@
+FIGAROMN V7.1 – INSCRIPTION ÉLÈVE SANS CONFIRMATION E-MAIL
+===============================================================
+
+Cette version remplace la V7 précédente et contient déjà :
+- Accès professeur unique ;
+- CAP + Seconde + Première + Terminale BAC PRO ;
+- identification personnelle des élèves ;
+- suivi professeur ;
+- réinitialisation du mot de passe ;
+- toutes les progressions et séances précédentes.
+
+PREMIÈRE CONNEXION ÉLÈVE
+------------------------
+L'élève saisit maintenant :
+1. Nom et prénom
+2. Adresse e-mail
+3. Mot de passe
+4. Confirmation du mot de passe
+
+FigaroMN vérifie que les deux mots de passe sont identiques AVANT
+de créer le compte.
+
+PAS DE CONFIRMATION PAR E-MAIL À L'INSCRIPTION
+-----------------------------------------------
+Ce réglage se fait dans Supabase.
+
+Dans Supabase :
+Authentication
+> Providers
+> Email
+
+Désactiver :
+Confirm email
+
+Puis enregistrer le réglage.
+
+Ainsi, lors de l'inscription, l'élève est connecté directement après
+la création de son compte.
+
+ATTENTION
+---------
+L'adresse e-mail reste importante pour la fonction :
+"Mot de passe oublié / Réinitialiser le mot de passe".
+
+RÉINITIALISATION MOT DE PASSE
+-----------------------------
+Conserver dans :
+Authentication > URL Configuration > Redirect URLs
+
+https://figaromn.github.io/base-pedagogique/nouveau-mot-de-passe.html
+
+INSTALLATION GITHUB
+-------------------
+1. Ne pas installer l'ancienne V7.
+2. Décompresser cette archive V7.1.
+3. Charger tous les fichiers décompressés à la racine de :
+   FigaroMN/base-pedagogique
+4. Accepter les remplacements.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Tester avec un compte élève test.
+
+AUCUNE NOUVELLE MIGRATION SQL
+-----------------------------
+Cette correction ne nécessite pas de nouvelle migration SQL.

@@ -15,7 +15,7 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
 @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head><body>
-<header class="top"><div class="shell nav"><a class="brand" href="bac-pro.html">⚓ FigaroMN</a><a href="bac-pro.html">← Retour</a></div></header>
+<header class="top"><div class="shell nav"><a class="brand" href="index.html">⚓ FigaroMN</a><a href="index.html">← Accueil</a></div></header>
 <main class="shell"><section class="hero"><span class="pill" id="modeBadge"></span><h1 id="pageTitle">Connexion</h1><p class="muted" id="pageIntro"></p></section>
 <div class="grid2">
 <section class="card"><h2>Se connecter</h2>
@@ -42,11 +42,12 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
  const mode=q.get("mode")==="enseignant"?"enseignant":"eleve";
  const level=["seconde","premiere","terminale"].includes(q.get("level"))?q.get("level"):"";
  const cycle=q.get("cycle")==="cap"?"cap":"bacpro";
+ const allTeacher=q.get("scope")==="all";
  const expected=mode==="enseignant"?"teacher":"student";
 
  modeBadge.textContent=mode==="enseignant"?"🔐 ENSEIGNANT":"🎓 ÉLÈVE";
- pageTitle.textContent=mode==="enseignant"?"Connexion Enseignant":"Connexion Élève";
- pageIntro.textContent=cycle==="cap"?"Cycle choisi : CAP Maintenance Nautique":(level?"Niveau choisi : "+({seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[level]):"");
+ pageTitle.textContent=mode==="enseignant"?"Connexion professeur unique":"Connexion Élève";
+ pageIntro.textContent=mode==="enseignant"?"Connexion unique : accès CAP, Seconde, Première et Terminale BAC PRO.":(cycle==="cap"?"Cycle choisi : CAP Maintenance Nautique":(level?"Niveau choisi : "+({seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[level]):""));
  if(mode==="enseignant") signupCard.style.display="none";
 
  const current=FigaroCloud.session();
@@ -54,7 +55,7 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
    try{
      const p=await FigaroCloud.profile();
      if(p&&p.role===expected){
-       location.href=expected==="teacher"?(cycle==="cap"?"cap.html?mode=enseignant":("enseignant.html"+(level?"?level="+level:""))):("eleve.html"+(level?"?level="+level:""));
+       location.href=expected==="teacher"?"enseignant.html":("eleve.html"+(level?"?level="+level:""));
        return;
      }
      await FigaroCloud.signOut();
@@ -73,7 +74,7 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
          :"Ce compte n'est pas un compte élève.";
        return;
      }
-     location.href=p.role==="teacher"?(cycle==="cap"?"cap.html?mode=enseignant":("enseignant.html"+(level?"?level="+level:""))):("eleve.html"+(level?"?level="+level:""));
+     location.href=p.role==="teacher"?"enseignant.html":("eleve.html"+(level?"?level="+level:""));
    }catch(err){ loginMsg.textContent="Connexion impossible : "+err.message; }
  };
 

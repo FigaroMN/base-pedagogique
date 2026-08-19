@@ -1,33 +1,23 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Accès professeur · FigaroMN</title>
+<meta http-equiv="refresh" content="0;url=connexion.html?mode=enseignant&scope=all">
 <style>
-:root{--navy:#06283d;--blue:#0b5d7a;--green:#16895a;--orange:#ff7a18;--bg:#eef6f8;--text:#18323f;--muted:#607680;--border:#d9e6ea}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-.shell{width:min(1000px,calc(100% - 28px));margin:auto}.top{background:var(--navy);color:#fff;padding:18px}.top a{color:#fff;text-decoration:none;font-weight:900}
-.hero{text-align:center;padding:44px 0 24px}.hero h1{color:var(--navy);font-size:clamp(2rem,5vw,3.5rem);margin:.2rem 0}.hero p{color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{display:block;background:#fff;border:1px solid var(--border);border-radius:18px;padding:25px;text-decoration:none;color:inherit;box-shadow:0 9px 25px rgba(6,40,61,.07)}
-.card h2{color:var(--navy)}.card p{color:var(--muted);line-height:1.5}.btn{display:inline-block;margin-top:14px;padding:11px 14px;border-radius:10px;background:var(--blue);color:#fff;font-weight:900}.cap .btn{background:var(--green)}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
+body{font-family:Arial,Helvetica,sans-serif;background:#eef6f8;color:#18323f;margin:0}
+main{min-height:100vh;display:grid;place-items:center;padding:20px}
+.card{background:#fff;border:1px solid #d9e6ea;border-radius:18px;padding:25px;max-width:580px;text-align:center}
+a{display:inline-block;margin-top:12px;padding:11px 14px;background:#0b5d7a;color:#fff;border-radius:10px;text-decoration:none;font-weight:900}
 </style>
 </head>
 <body>
-<header class="top"><div class="shell"><a href="index.html">← Accueil FigaroMN</a></div></header>
-<main class="shell">
-<section class="hero"><h1>🔐 Accès professeur</h1><p>Choisissez le cycle à consulter.</p></section>
-<section class="grid">
- <a class="card" href="choix-niveau.html?mode=enseignant">
-  <h2>🚤 BAC PRO</h2>
-  <p>Suivi par Seconde, Première et Terminale : classes, élèves, évaluations, indicateurs et compétences.</p>
-  <span class="btn">Ouvrir l'espace BAC PRO</span>
- </a>
- <a class="card cap" href="connexion.html?mode=enseignant&cycle=cap">
-  <h2>⛵ CAP</h2>
-  <p>Accéder à la progression CAP et à ses outils pédagogiques. Connexion avec le compte enseignant FigaroMN.</p>
-  <span class="btn">Ouvrir l'espace CAP</span>
- </a>
-</section>
-</main>
-</body></html>
+<main><div class="card">
+<h1>🔐 Accès professeur unique</h1>
+<p>Redirection vers la connexion professeur…</p>
+<a href="connexion.html?mode=enseignant&scope=all">Continuer</a>
+</div></main>
+<script>location.replace("connexion.html?mode=enseignant&scope=all");</script>
+</body>
+</html>

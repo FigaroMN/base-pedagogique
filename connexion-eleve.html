@@ -73,7 +73,7 @@ input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
 
   <section class="card">
    <h2>Première connexion</h2>
-   <p>Créez votre compte personnel. Le niveau choisi sera enregistré dans votre profil.</p>
+   <p>Créez votre compte personnel. Le niveau choisi sera enregistré dans votre profil. Aucune validation par e-mail n'est demandée.</p>
    <form id="signupForm">
     <label for="signupName">Nom et prénom
      <input id="signupName" type="text" autocomplete="name" maxlength="80" required>
@@ -83,6 +83,9 @@ input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
     </label>
     <label for="signupPassword">Choisir un mot de passe
      <input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required>
+    </label>
+    <label for="signupPasswordConfirm">Confirmer le mot de passe
+     <input id="signupPasswordConfirm" type="password" autocomplete="new-password" minlength="6" required>
     </label>
     <button class="btn" type="submit">Créer mon compte et entrer</button>
     <div id="signupMsg" class="msg" aria-live="polite"></div>
@@ -200,6 +203,15 @@ input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
  signupForm.addEventListener("submit",async function(e){
    e.preventDefault();
    signupMsg.className="msg";
+
+   if(signupPassword.value!==signupPasswordConfirm.value){
+     signupMsg.className="msg err";
+     signupMsg.textContent="Les deux mots de passe ne correspondent pas.";
+     signupPasswordConfirm.focus();
+     signupPasswordConfirm.select();
+     return;
+   }
+
    signupMsg.textContent="Création du compte…";
    try{
      const data=await FigaroCloud.signUp(
@@ -210,7 +222,7 @@ input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
      );
      if(!data || !data.access_token){
        signupMsg.className="msg err";
-       signupMsg.textContent="Compte créé, mais aucune session n'a été ouverte. Vérifiez le réglage de confirmation e-mail dans Supabase.";
+       signupMsg.textContent="Le compte a été créé mais Supabase attend encore une confirmation par e-mail. Dans Supabase, désactivez Confirm email pour obtenir la connexion immédiate.";
        return;
      }
      await validateProfile();

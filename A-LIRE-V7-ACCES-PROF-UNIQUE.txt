@@ -1,0 +1,64 @@
+FIGAROMN V7 – ACCÈS PROFESSEUR UNIQUE
+=======================================
+
+NOUVEAU PARCOURS PROFESSEUR
+---------------------------
+Accueil FigaroMN
+      ↓
+Accès professeur
+      ↓
+UNE SEULE connexion avec le compte professeur Supabase
+      ↓
+Tableau de bord complet
+      ├── CAP
+      ├── Seconde BAC PRO
+      ├── Première BAC PRO
+      └── Terminale BAC PRO
+
+Il n'y a plus de choix CAP / BAC PRO avant la connexion professeur
+et il n'y a plus de seconde connexion pour changer de cycle.
+
+COMPTE PROFESSEUR
+-----------------
+Le même compte enseignant Supabase est utilisé pour tous les niveaux.
+Le mot de passe n'est jamais enregistré dans GitHub.
+
+L'écran de connexion demande toujours l'adresse e-mail du compte
+professeur + son unique mot de passe. Cela évite de placer un mot de
+passe secret directement dans le code public GitHub Pages.
+
+ESPACE PROFESSEUR
+-----------------
+Le tableau de bord possède les filtres :
+- Tous niveaux
+- CAP
+- Seconde
+- Première
+- Terminale
+
+Depuis le même espace, le professeur peut notamment :
+- filtrer les élèves par niveau et classe ;
+- voir leur suivi ;
+- suivre exercices et évaluations ;
+- suivre indicateurs et compétences ;
+- réinitialiser leur mot de passe sans supprimer leurs travaux ;
+- gérer les classes ;
+- enregistrer les observations enseignant.
+
+SUPABASE
+--------
+Aucune nouvelle migration SQL n'est nécessaire pour cette V7.
+
+Conserver les réglages précédents, notamment l'URL de récupération :
+https://figaromn.github.io/base-pedagogique/nouveau-mot-de-passe.html
+
+INSTALLATION GITHUB
+-------------------
+1. Décompresser l'archive.
+2. Charger tous les fichiers décompressés à la racine de :
+   FigaroMN/base-pedagogique
+3. Accepter les remplacements.
+4. Commit changes sur main.
+5. Attendre GitHub Pages.
+6. Tester :
+   Accueil > Accès professeur > connexion > tableau tous niveaux.
