@@ -886,3 +886,11 @@
  #fmn-level-master .session-row .session-action{grid-column:1/-1}
  #fmn-level-master .skill-dashboard{grid-template-columns:1fr}
 }
+
+
+#fmn-level-master .indicator-acquisition{display:grid;gap:10px;margin-top:12px}
+#fmn-level-master .indicator-comp-head{display:flex;gap:8px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
+#fmn-level-master .indicator-comp-head strong{color:var(--navy)}
+#fmn-level-master .indicator-synthesis{margin-top:9px;padding:9px 11px;border-left:4px solid var(--cyan);background:#eef6f8;border-radius:8px;font-size:12px;line-height:1.45}
+#fmn-level-master .method-box{margin:10px 0 14px;padding:12px;border:1px solid var(--border);border-radius:11px;background:#eefaf5;font-size:12px;line-height:1.55}
+#fmn-level-master .skill-wait{background:#eef1f2;color:#607680}

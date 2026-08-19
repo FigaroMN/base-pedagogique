@@ -1,0 +1,87 @@
+FIGAROMN V11 – BAC PRO AUTOMATIQUE COMME LE CAP
+=================================================
+
+Le film CAP a servi de modèle fonctionnel.
+
+CE QUI CHANGE
+-------------
+SECONDE, PREMIÈRE et TERMINALE utilisent désormais le même mécanisme :
+
+EXERCICES
+- 6 séquences
+- 6 exercices par séquence = 36 exercices par niveau
+- correction immédiate
+- toutes les tentatives conservées
+- meilleur score
+- dernière note /20
+- code "refaire" pour refaire
+- historique complet
+- impression / PDF
+- chaque question est rattachée explicitement à une compétence ET à un indicateur
+
+ÉVALUATIONS
+- 6 évaluations par niveau
+- 18 questions par évaluation
+- note /20
+- code enseignant d'accès
+- code "evaluation" pour refaire
+- toutes les tentatives conservées
+- historique complet
+
+CALCUL AUTOMATIQUE
+------------------
+1. chaque question alimente un indicateur ;
+2. pourcentage indicateur =
+   bonnes réponses / questions liées à l'indicateur × 100 ;
+3. pourcentage compétence =
+   moyenne des indicateurs positionnés ;
+4. tant que tous les indicateurs requis ne sont pas travaillés :
+   "À positionner" ;
+5. lorsque tous les indicateurs sont positionnés :
+   0-49 %   = Non acquis
+   50-69 %  = En cours d'acquisition
+   70-84 %  = Acquis
+   85-100 % = Maîtrisé
+
+Il n'y a plus de case manuelle à cocher pour calculer le niveau numérique.
+
+RÉFÉRENTIEL
+-----------
+Les intitulés C1 à C12 et les critères d'évaluation viennent du :
+PJ 4 Référentiel Baccalauréat professionnel maintenance nautique.pdf
+Pages 24 à 35.
+
+Le rattachement précis question -> indicateur est un choix pédagogique
+de l'application construit à partir des exercices des séquences.
+
+SUPABASE
+--------
+OBLIGATOIRE une seule fois :
+MIGRATION-V11-BACPRO-AUTO.sql
+
+La migration ne supprime pas les anciennes tentatives, notes ou historiques.
+Elle remet seulement le résultat automatique dérivé Bac Pro à
+"À positionner" afin que le nouveau moteur V11 reparte sur des
+rattachements question -> indicateur cohérents.
+
+IMPORTANT
+---------
+Le calcul numérique est 100 % automatique.
+Pour C9 à C12 et plus généralement pour les compétences pratiques,
+ce résultat numérique reste à croiser avec les observations en situation
+professionnelle pour une validation certificative.
+
+INSTALLATION
+------------
+1. Décompresser le ZIP V11.
+2. Charger tous les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Commit changes.
+4. Dans Supabase > SQL Editor :
+   exécuter MIGRATION-V11-BACPRO-AUTO.sql une seule fois.
+5. Tester avec un compte élève test :
+   - 1 exercice
+   - vérifier l'indicateur
+   - vérifier la synthèse compétences
+   - 1 évaluation
+   - vérifier la note /20
+   - vérifier l'espace professeur.

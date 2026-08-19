@@ -271,6 +271,7 @@ function openExerciseWithRedo(seq,session){
 }
 
 function renderExercises(){
+ if(window.FIGAROMN_BACPRO_AUTO_ACTIVE)return;
  $("fmn-exercise-grid").innerHTML=CFG.sequences.map(seq=>{
    const finished=seq.sessions.filter(s=>sessionAttemptRows(seq.no,s.no).length>0).length;
    return `<details class="exercise-course" open data-exercise-course-index="${seq.no-1}">
@@ -374,6 +375,7 @@ function openEvaluation(seq,forceRedo){
 }
 
 function renderEvaluations(){
+ if(window.FIGAROMN_BACPRO_AUTO_ACTIVE)return;
  $("fmn-eval-grid").innerHTML=CFG.sequences.map(seq=>{
    const rows=evalRows(seq.no).slice().sort((a,b)=>new Date(a.submitted_at||0)-new Date(b.submitted_at||0));
    const session=seq.sessions[5];
