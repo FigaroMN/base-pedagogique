@@ -1,0 +1,53 @@
+FIGAROMN – CYCLE BAC PRO V2 – SUIVI AUTOMATIQUE
+=================================================
+
+ARCHITECTURE RETENUE
+- 3 niveaux : Seconde / Première / Terminale
+- 6 séquences par année
+- 6 séances par séquence
+- 1 exercice formatif par séance
+- 1 évaluation de séquence dans la séance 6
+- total : 18 séquences / 108 séances / 108 exercices
+
+EXERCICES -> INDICATEURS -> COMPETENCES
+Chaque exercice synchronisé crée :
+1. une tentative dans activity_attempts ;
+2. des résultats détaillés dans indicator_results ;
+3. un recalcul serveur dans competency_auto_status.
+
+Une compétence reste "À positionner" tant que tous ses indicateurs requis
+n'ont pas été rencontrés. Une fois les indicateurs complets :
+- < 50 % : Non acquis
+- 50 à 69,9 % : En cours d'acquisition
+- 70 à 84,9 % : Acquis
+- >= 85 % : Maîtrisé
+
+Le rattachement question -> indicateur est un choix pédagogique.
+Le texte des critères provient des critères déjà intégrés dans les pages Bac Pro.
+
+ESPACE ENSEIGNANT
+- filtres Tous / Seconde / Première / Terminale ;
+- filtre par classe ;
+- recherche élève ;
+- création de classe ;
+- rattachement élève -> classe ;
+- suivi automatique des évaluations avec actualisation toutes les 8 secondes ;
+- progression par séquence ;
+- 6 exercices par séquence ;
+- compétences automatiques ;
+- détail individuel de l'élève ;
+- observations enseignant conservées en complément.
+
+SUPABASE : ETAPE OBLIGATOIRE
+Après avoir mis les fichiers sur GitHub, exécuter UNE FOIS :
+MIGRATION-SUIVI-AUTO-INDICATEURS.sql
+
+Cette migration est additive : elle ne supprime pas les tables ni les résultats existants.
+
+FICHIERS TECHNIQUES
+Les noms historiques *-periode-* et la colonne SQL period sont conservés pour ne casser
+aucune URL ni donnée existante. L'interface affiche désormais le mot "Séquence".
+
+SUIVI TEMPS REEL
+Sans ajouter de bibliothèque externe, l'espace enseignant se réactualise automatiquement
+toutes les 8 secondes lorsque l'onglet est visible. C'est un suivi quasi temps réel.

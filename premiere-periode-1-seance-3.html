@@ -47,9 +47,9 @@
 .fmn-exfeedback{font-weight:800;margin-top:10px}.fmn-score{font-weight:900;font-size:1.1rem}.fmn-exactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 </style>
 </head><body>
-<header class="top no-print"><div class="shell nav"><a class="brand" href="premiere-periode-1.html">⚓ Période 1</a><a class="back" href="premiere-periode-1.html">← Menu de la période</a></div></header>
+<header class="top no-print"><div class="shell nav"><a class="brand" href="premiere-periode-1.html">⚓ Séquence 1</a><a class="back" href="premiere-periode-1.html">← Menu de la séquence</a></div></header>
 <main class="shell fmn-one-session">
-<section class="hero no-print"><span class="eyebrow">Première BAC PRO Maintenance Nautique · Période 1 · Séance 3</span>
+<section class="hero no-print"><span class="eyebrow">Première BAC PRO Maintenance Nautique · Séquence 1 · Séance 3</span>
 <h1>Contrôle d’alimentation d’un récepteur</h1>
 <div class="studentbar"><label>Élève<input class="studentName"></label><label>Classe<input class="studentClass" value="1re BAC PRO MN"></label><label>Date<input class="studentDate" type="date"></label></div>
 <button type="button" class="btn good" id="saveStudent">Enregistrer l’élève</button>
@@ -64,7 +64,7 @@
 </div>
 <section class="section session printblock fmn-eval fmn-tp fmn-td fmn-widget fmn-cours" id="p1s3">
 <div class="session-head">
-<div><div class="stype">Période 1 · Séance 3 · TP</div><div class="fmn-kind">🔧 TP / ATELIER</div><h2>Contrôle d’alimentation d’un récepteur</h2><p class="lead">Mesurer, comparer et interpréter.</p></div>
+<div><div class="stype">Séquence 1 · Séance 3 · TP</div><div class="fmn-kind">🔧 TP / ATELIER</div><h2>Contrôle d’alimentation d’un récepteur</h2><p class="lead">Mesurer, comparer et interpréter.</p></div>
 <button class="btn print no-print" onclick="FMN.print('p1s3')" type="button">🖨️ Imprimer la séance</button>
 </div>
 <div class="grid2">
@@ -103,7 +103,7 @@
 </details>
 </div>
 <div class="item" id="p1s3-widget" style="margin-top:14px">
-<div class="actions" style="justify-content:space-between"><h3>🧩 Exercices interactifs</h3><button class="btn print no-print" type="button" onclick="FMN.print('p1s3-widget')">🖨️ Imprimer</button></div>
+<div class="actions" style="justify-content:space-between"><h3>🧩 Exercice 3 de la séquence</h3><button class="btn print no-print" type="button" onclick="FMN.print('p1s3-widget')">🖨️ Imprimer</button></div>
 <div class="fmn-expath" data-questions='[{&quot;q&quot;: &quot;Avant toute intervention, quelle est la première démarche professionnelle ?&quot;, &quot;o&quot;: [&quot;Identifier les risques et consulter la documentation&quot;, &quot;Démonter immédiatement&quot;, &quot;Remplacer le composant le plus coûteux&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Pour préparer une intervention, les étapes doivent être :&quot;, &quot;o&quot;: [&quot;Ordonnées à partir du dossier et des risques&quot;, &quot;Improvisées au fur et à mesure&quot;, &quot;Décidées sans documentation&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Une conclusion de diagnostic doit s’appuyer sur :&quot;, &quot;o&quot;: [&quot;Une mesure ou une observation interprétée&quot;, &quot;Une supposition&quot;, &quot;L’habitude uniquement&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Après intervention, la bonne pratique est :&quot;, &quot;o&quot;: [&quot;Autocontrôle, essais et traçabilité&quot;, &quot;Rangement sans essais&quot;, &quot;Suppression des mesures&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Si une valeur constructeur précise n’est pas disponible, il faut :&quot;, &quot;o&quot;: [&quot;La rechercher dans une source fiable&quot;, &quot;L’inventer&quot;, &quot;Utiliser celle d’un autre modèle&quot;], &quot;a&quot;: 0}]'>
  <div class="fmn-expath-head"><strong>Parcours de 5 exercices · Contrôle d’alimentation d’un récepteur</strong><span class="fmn-score">0 / 5</span></div>
  <div class="fmn-progress"><span></span></div>
@@ -261,7 +261,7 @@ document.querySelectorAll(".saveFinalScore").forEach(function(b){
 </script>
 
 
-<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script>
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-tracking.js"></script>
 <script>
 (async function(){
 var LEVEL="premiere", PERIOD=1, SESSION_NO=3;
@@ -302,18 +302,18 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
 <script>
 (function initFigaroExercises(){
  document.querySelectorAll(".fmn-expath").forEach(function(box){
-  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false;
+  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false,attemptAnswers=[];
   var content=box.querySelector(".fmn-excontent"),fb=box.querySelector(".fmn-exfeedback"),next=box.querySelector(".fmn-next"),restart=box.querySelector(".fmn-restart"),scoreEl=box.querySelector(".fmn-score"),bar=box.querySelector(".fmn-progress span");
   function render(){
    answered=false;fb.textContent="";next.classList.add("hidden");restart.classList.add("hidden");
    if(i>=qs.length){
-    content.innerHTML='<div class="q"><h4>Parcours terminé</h4><p>Tu as obtenu <strong>'+score+' / '+qs.length+'</strong>.</p><p>'+(score>=4?"Très bonne maîtrise.":"Reprends les notions associées avant de recommencer.")+'</p></div>';
+    content.innerHTML='<div class="q"><h4>Exercice terminé</h4><p>Tu as obtenu <strong>'+score+' / '+qs.length+'</strong>.</p><p>'+(score>=4?"Très bonne maîtrise.":"Reprends les notions associées avant de recommencer.")+'</p></div>';
     scoreEl.textContent=score+" / "+qs.length;bar.style.width="100%";restart.classList.remove("hidden");
     saveResult();return;
    }
    var q=qs[i];bar.style.width=((i)/qs.length*100)+"%";scoreEl.textContent=score+" / "+qs.length;
    content.innerHTML='<div class="fmn-q"><strong>Exercice '+(i+1)+' / '+qs.length+'</strong><p>'+q.q+'</p><div class="fmn-options">'+q.o.map((o,n)=>'<button type="button" data-n="'+n+'">'+o+'</button>').join("")+'</div></div>';
-   content.querySelectorAll("button").forEach(function(b){b.onclick=function(){if(answered)return;answered=true;var n=Number(b.dataset.n);if(n===q.a){score++;b.classList.add("correct");fb.textContent="Bonne réponse.";}else{b.classList.add("wrong");var good=content.querySelector('button[data-n="'+q.a+'"]');if(good)good.classList.add("correct");fb.textContent="Réponse à revoir. La bonne réponse est indiquée.";}scoreEl.textContent=score+" / "+qs.length;next.classList.remove("hidden");};});
+   content.querySelectorAll("button").forEach(function(b){b.onclick=function(){if(answered)return;answered=true;var n=Number(b.dataset.n);attemptAnswers[i]=(n===q.a);if(n===q.a){score++;b.classList.add("correct");fb.textContent="Bonne réponse.";}else{b.classList.add("wrong");var good=content.querySelector('button[data-n="'+q.a+'"]');if(good)good.classList.add("correct");fb.textContent="Réponse à revoir. La bonne réponse est indiquée.";}scoreEl.textContent=score+" / "+qs.length;next.classList.remove("hidden");};});
   }
   async function saveResult(){
    try{
@@ -321,10 +321,10 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
     var p=await FigaroCloud.profile();if(!p||p.role!=="student"||p.archived_at)return;
     var rows=await FigaroCloud.table("sessions","level=eq.premiere&period=eq.1&session_no=eq.3&select=id");
     if(!rows||!rows[0])return;
-    await FigaroCloud.table("interactive_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:p.id,session_id:rows[0].id,score:score,total:qs.length,completed_at:new Date().toISOString()})})
+    await FigaroCloud.table("interactive_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:p.id,session_id:rows[0].id,score:score,total:qs.length,completed_at:new Date().toISOString()})});if(window.FigaroTracking){await FigaroTracking.saveExerciseAttempt({box:box,questions:qs,answers:attemptAnswers.slice(),score:score,total:qs.length})}
    }catch(e){}
   }
-  next.onclick=function(){i++;render();};restart.onclick=function(){i=0;score=0;render();};render();
+  next.onclick=function(){i++;render();};restart.onclick=function(){i=0;score=0;attemptAnswers=[];render();};render();
  });
 })();
 </script></body></html>

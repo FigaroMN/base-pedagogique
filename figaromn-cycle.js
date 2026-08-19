@@ -61,10 +61,10 @@ function periodCards(mode){
    var st=periodState(y,i+1);
    var icon=mode==="courses"?"📘":mode==="exercises"?"📝":mode==="evaluations"?"✅":"⚓";
    var helper=mode==="courses"
-    ?"Ouvrir la période : cours, TP, ressources et séances."
+    ?"Ouvrir la séquence : cours, TP, ressources et séances."
     :mode==="exercises"
-     ?"Ouvrir la période pour accéder aux TP, exercices et widgets présents dans les séances."
-     :"Ouvrir la période pour accéder aux évaluations protégées et aux résultats.";
+     ?"Ouvrir la séquence pour accéder aux TP, exercices et widgets présents dans les séances."
+     :"Ouvrir la séquence pour accéder aux évaluations protégées et aux résultats.";
    html+='<article class="menu-card">'+
     '<div><div class="top-icon">'+icon+'</div>'+
     '<span class="pill">'+esc(yearLabel(y))+'</span> <span class="pill">'+esc(p[0])+'</span>'+
@@ -72,7 +72,7 @@ function periodCards(mode){
     '<span class="status '+st.cls+'">'+esc(st.text)+'</span>'+
     (st.note!==null?'<span class="pill">Note : '+esc(st.note)+' /20</span>':'')+
     '</div><div class="toolbar">'+
-    '<a class="btn blue" href="'+esc(p[3])+'">Ouvrir la période</a>'+
+    '<a class="btn blue" href="'+esc(p[3])+'">Ouvrir la séquence</a>'+
     '<a class="btn light" href="'+esc(DATA.years[y].page)+'">Vue annuelle</a>'+
     '</div></article>';
   });
@@ -95,8 +95,8 @@ function summaryStats(){
 function renderHome(){
  var s=summaryStats();
  root.querySelector("#fmn-stats").innerHTML=
-  '<div class="stat"><span>Périodes affichées</span><strong>'+s.total+'</strong></div>'+
-  '<div class="stat"><span>Périodes commencées</span><strong>'+s.active+'</strong></div>'+
+  '<div class="stat"><span>Séquences affichées</span><strong>'+s.total+'</strong></div>'+
+  '<div class="stat"><span>Séquences commencées</span><strong>'+s.active+'</strong></div>'+
   '<div class="stat"><span>Évaluations enregistrées</span><strong>'+s.evaluated+'</strong></div>'+
   '<div class="stat"><span>Séances tracées</span><strong>'+s.sessions+'</strong></div>';
 
