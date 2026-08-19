@@ -46,7 +46,7 @@ html,body{margin:0;background:#eef6f8}
 @media print{#capmn26-master .capmn17-answer-head .btn{display:none!important}}
 </style>
 
-<link rel="stylesheet" href="figaromn-tools-v18.css?v=18">
+<link rel="stylesheet" href="figaromn-tools-v19.css?v=19">
 </head>
 <body>
 <header id="fmn-capbar">
@@ -3683,7 +3683,7 @@ function print17(box,title){
  if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc17(title)+'</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#18323f;line-height:1.5}h1,h2,h3{color:#06283d}.a{border:1px solid #d7e4e8;border-radius:12px;padding:14px;margin:12px 0;page-break-inside:avoid}.r{min-height:70px;border-top:1px dashed #ccdce1;padding-top:10px}.c{border-left:5px solid #4b8f64;background:#f2faf5}</style></head><body><h1>'+esc17(title)+'</h1><h2>Mes réponses</h2>'+
   answers.map(function(a){return '<div class="a"><h3>'+esc17(a.p)+'</h3><div class="r">'+(a.v?esc17(a.v).replace(/\n/g,"<br>"):"<em>Réponse non renseignée</em>")+'</div></div>';}).join("")+
-  '<div class="a c"><h3>Conclusion / compte rendu professionnel</h3><div class="r">'+((conc&&conc.value)?esc17(conc.value).replace(/\n/g,"<br>"):"<em>Conclusion non renseignée</em>")+'</div></div><script src="figaromn-tools-v18.js?v=18"></script>
+  '<div class="a c"><h3>Conclusion / compte rendu professionnel</h3><div class="r">'+((conc&&conc.value)?esc17(conc.value).replace(/\n/g,"<br>"):"<em>Conclusion non renseignée</em>")+'</div></div><script src="figaromn-tools-v19.js?v=19"></script>
 </body></html>');
  w.document.close();
  setTimeout(function(){w.print();},250);

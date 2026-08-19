@@ -1,0 +1,104 @@
+FIGAROMN V19 – OUTILS BLANCHET NAUTIQUE
+=========================================
+
+CORRECTION DU BUG V18
+---------------------
+Les panneaux Outils étaient masqués par une règle CSS trop prioritaire.
+V19 corrige :
+#figaromn-tools .ft-panel.active { display:block!important; }
+
+Les documents et la calculatrice sont désormais visibles et utilisables.
+
+OUTILS DISPONIBLES
+------------------
+1. Ordre de réparation – Blanchet Nautique
+2. État des lieux / réception de l'embarcation
+3. Devis – Blanchet Nautique
+4. Facture – Blanchet Nautique
+5. Calculatrice scientifique
+
+ÉTAT DES LIEUX
+--------------
+Contrôle à la réception :
+- coque / flotteurs
+- pont / cockpit
+- console / pare-brise
+- sellerie
+- moteur
+- hélice / embase
+- direction / commandes
+- batteries
+- éclairage
+- électronique
+- pompe de cale
+- mouillage / guindeau
+- armement de sécurité
+- carburant
+- remorque / bers
+- documents / clés / accessoires
+
+Chaque point possède :
+- état
+- observation
+
+Sont également prévus :
+- niveau carburant
+- batterie
+- clés remises
+- documents
+- accessoires
+- références photos
+- dommages préexistants
+- objets laissés à bord
+- observations
+- visa client
+- réceptionnaire Blanchet Nautique
+
+CALCULATRICE SCIENTIFIQUE
+-------------------------
+- + - × ÷
+- parenthèses
+- DEG / RAD
+- sin cos tan
+- asin acos atan
+- ln log
+- racine carrée
+- carré
+- puissance xʸ
+- inverse
+- pourcentage
+- factorielle
+- EXP
+- π et e
+- mémoire MC / MR / M+ / M-
+- Ans
+- changement de signe
+- historique du dernier calcul
+
+DOCUMENTS
+---------
+Tous les documents :
+- sont complétables ;
+- se sauvegardent automatiquement sur l'appareil ;
+- peuvent être imprimés/PDF remplis ;
+- peuvent être imprimés vierges sans effacer le travail saisi ;
+- affichent Blanchet Nautique en en-tête.
+
+DEVIS / FACTURE
+---------------
+Le taux de TVA reste à renseigner.
+Aucune valeur fiscale n'est imposée.
+
+IMPORTANT
+---------
+Ces modèles sont pédagogiques.
+Les mentions légales, fiscales et comptables doivent être validées
+par Blanchet Nautique avant une utilisation réelle.
+
+SUPABASE
+--------
+Aucune nouvelle migration.
+
+INSTALLATION
+------------
+Installer directement la V19 complète.
