@@ -31,6 +31,22 @@ html,body{margin:0;background:#eef6f8}
  }
 })();
 </script>
+
+<style id="capmn17-answer-style">
+#capmn26-master .capmn17-answer-box{margin-top:18px;padding:18px;border:1px solid #d7e4e8;border-radius:15px;background:#f6fafb}
+#capmn26-master .capmn17-answer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+#capmn26-master .capmn17-answer-head h3{margin:0 0 5px;color:#18323f}
+#capmn26-master .capmn17-answer-head p{margin:0;color:#607680;font-size:13px}
+#capmn26-master .capmn17-answer-field{display:block;margin:12px 0}
+#capmn26-master .capmn17-answer-field span{display:block;margin-bottom:7px;font-weight:800;color:#18323f}
+#capmn26-master .capmn17-answer-field textarea{width:100%;min-height:105px;padding:12px;border:2px solid #d7e4e8;border-radius:11px;font:inherit;resize:vertical;box-sizing:border-box;background:#fff}
+#capmn26-master .capmn17-answer-field.capmn17-conclusion textarea{min-height:130px}
+#capmn26-master .capmn17-save{margin-top:8px;color:#3d7b52;font-size:12px;font-weight:800}
+@media(max-width:700px){#capmn26-master .capmn17-answer-head .btn{width:100%}}
+@media print{#capmn26-master .capmn17-answer-head .btn{display:none!important}}
+</style>
+
+<link rel="stylesheet" href="figaromn-tools-v18.css?v=18">
 </head>
 <body>
 <header id="fmn-capbar">
@@ -60,7 +76,7 @@ html,body{margin:0;background:#eef6f8}
 #capmn26-master .header h1{margin:7px 0 4px;font-size:31px}
 #capmn26-master .header h2{margin:0;font-size:20px;font-weight:500}
 #capmn26-master .header p{max-width:800px;margin:13px auto 0;line-height:1.55}
-#capmn26-master .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+#capmn26-master .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 #capmn26-master .nav button{border:0;border-radius:11px;padding:12px 10px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}
 #capmn26-master .nav button.active{background:var(--navy);color:#fff}
 #capmn26-master .nav button:hover,#capmn26-master .nav button:focus-visible{outline:3px solid rgba(25,184,211,.18)}
@@ -919,6 +935,7 @@ html,body{margin:0;background:#eef6f8}
   <button type="button" data-view="courses">📘 Cours</button>
   <button type="button" data-view="exercises">📝 Exercices</button>
   <button type="button" data-view="evaluations">✅ Évaluations</button>
+  <button type="button" data-view="tools">🧰 Outils</button>
  </nav>
 
  <div class="body">
@@ -978,6 +995,7 @@ html,body{margin:0;background:#eef6f8}
   </section>
 
   <section id="capmn26-eval-detail" class="hidden"></section>
+  <section id="capmn26-tools" class="hidden"><div id="figaromn-tools" data-level="cap"></div></section>
 
  </div>
 </div>
@@ -1133,7 +1151,8 @@ var sections={
  exercises:root.querySelector("#capmn26-exercises"),
  exerciseDetail:root.querySelector("#capmn26-exercise-detail"),
  evaluations:root.querySelector("#capmn26-evaluations"),
- evalDetail:root.querySelector("#capmn26-eval-detail")
+ evalDetail:root.querySelector("#capmn26-eval-detail"),
+ tools:root.querySelector("#capmn26-tools")
 };
 
 function capStorageKey(k){
@@ -3624,5 +3643,86 @@ show("home");
  }
 })();
 </script>
+
+<script id="capmn17-answer-script">
+(function(){
+"use strict";
+var ROOT=document.getElementById("capmn26-master");
+if(!ROOT)return;
+
+function esc17(s){
+ return String(s==null?"":s).replace(/[&<>"']/g,function(m){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+ });
+}
+function key17(courseIdx,itemIdx){
+ return "capmn17_answer|"+courseIdx+"|"+itemIdx;
+}
+function concKey17(courseIdx){
+ return "capmn17_conclusion|"+courseIdx;
+}
+function read17(key){
+ try{return localStorage.getItem(key)||"";}catch(e){return "";}
+}
+function save17(key,val){
+ try{localStorage.setItem(key,val||"");}catch(e){}
+}
+function prompts17(scope){
+ var p=Array.prototype.slice.call(scope.querySelectorAll("ol li")).map(function(x){return x.textContent.trim();}).filter(Boolean);
+ if(!p.length)p=Array.prototype.slice.call(scope.querySelectorAll("ul li")).map(function(x){return x.textContent.trim();}).filter(Boolean);
+ if(p.length>10)p=p.slice(0,10);
+ return p.length?p:["Réponse / travail réalisé"];
+}
+function print17(box,title){
+ var answers=Array.prototype.slice.call(box.querySelectorAll("[data-cap17-answer]")).map(function(ta,idx){
+  var lab=ta.closest(".capmn17-answer-field");
+  return {p:lab.querySelector("span").textContent.trim(),v:ta.value||""};
+ });
+ var conc=box.querySelector("[data-cap17-conclusion]");
+ var w=window.open("","_blank");
+ if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
+ w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc17(title)+'</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#18323f;line-height:1.5}h1,h2,h3{color:#06283d}.a{border:1px solid #d7e4e8;border-radius:12px;padding:14px;margin:12px 0;page-break-inside:avoid}.r{min-height:70px;border-top:1px dashed #ccdce1;padding-top:10px}.c{border-left:5px solid #4b8f64;background:#f2faf5}</style></head><body><h1>'+esc17(title)+'</h1><h2>Mes réponses</h2>'+
+  answers.map(function(a){return '<div class="a"><h3>'+esc17(a.p)+'</h3><div class="r">'+(a.v?esc17(a.v).replace(/\n/g,"<br>"):"<em>Réponse non renseignée</em>")+'</div></div>';}).join("")+
+  '<div class="a c"><h3>Conclusion / compte rendu professionnel</h3><div class="r">'+((conc&&conc.value)?esc17(conc.value).replace(/\n/g,"<br>"):"<em>Conclusion non renseignée</em>")+'</div></div><script src="figaromn-tools-v18.js?v=18"></script>
+</body></html>');
+ w.document.close();
+ setTimeout(function(){w.print();},250);
+}
+function enhance17(){
+ var detail=ROOT.querySelector(".course-detail:not(.hidden), #capmn26-course-detail:not(.hidden), [id*='course-detail']:not(.hidden)");
+ if(!detail)return;
+ if(detail.querySelector(".capmn17-answer-box"))return;
+
+ var titleEl=detail.querySelector("h1,h2");
+ var title=titleEl?titleEl.textContent.trim():"Cours CAP";
+ var courseIdx=(detail.getAttribute("data-index")||detail.getAttribute("data-course-index")||title).toString().replace(/\s+/g,"_");
+ var prompts=prompts17(detail);
+
+ var box=document.createElement("section");
+ box.className="capmn17-answer-box";
+ box.innerHTML='<div class="capmn17-answer-head"><div><h3>✍️ Mes réponses</h3><p>Complète les réponses de l’activité. Sauvegarde automatique sur cet appareil.</p></div><button type="button" class="btn blue capmn17-print">🖨️ Imprimer / PDF avec mes réponses</button></div>'+
+ prompts.map(function(p,i){return '<label class="capmn17-answer-field"><span>'+(i+1)+'. '+esc17(p)+'</span><textarea data-cap17-answer="'+i+'" placeholder="Écris ta réponse ici…">'+esc17(read17(key17(courseIdx,i)))+'</textarea></label>';}).join("")+
+ '<label class="capmn17-answer-field capmn17-conclusion"><span>Conclusion / compte rendu professionnel</span><textarea data-cap17-conclusion="1" placeholder="Formule ici ta conclusion professionnelle…">'+esc17(read17(concKey17(courseIdx)))+'</textarea></label>'+
+ '<div class="capmn17-save">💾 Sauvegarde automatique sur cet appareil</div>';
+
+ var target=detail.querySelector(".personal-synthesis, .synthesis, textarea") || detail.lastElementChild;
+ if(target && target.parentNode)target.parentNode.insertBefore(box,target.nextSibling);
+ else detail.appendChild(box);
+
+ box.querySelectorAll("[data-cap17-answer]").forEach(function(ta,i){
+  ta.addEventListener("input",function(){save17(key17(courseIdx,i),ta.value);});
+ });
+ var conc=box.querySelector("[data-cap17-conclusion]");
+ conc.addEventListener("input",function(){save17(concKey17(courseIdx),conc.value);});
+ box.querySelector(".capmn17-print").onclick=function(){print17(box,title);};
+}
+
+var obs=new MutationObserver(function(){setTimeout(enhance17,0);});
+obs.observe(ROOT,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});
+ROOT.addEventListener("click",function(){setTimeout(enhance17,80);});
+setTimeout(enhance17,150);
+})();
+</script>
+
 </body>
 </html>

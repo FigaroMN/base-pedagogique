@@ -14,7 +14,7 @@
 #fmn-level-master .header h1{margin:7px 0 4px;font-size:31px}
 #fmn-level-master .header h2{margin:0;font-size:20px;font-weight:500}
 #fmn-level-master .header p{max-width:800px;margin:13px auto 0;line-height:1.55}
-#fmn-level-master .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+#fmn-level-master .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 #fmn-level-master .nav button{border:0;border-radius:11px;padding:12px 10px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}
 #fmn-level-master .nav button.active{background:var(--navy);color:#fff}
 #fmn-level-master .nav button:hover,#fmn-level-master .nav button:focus-visible{outline:3px solid rgba(25,184,211,.18)}
@@ -1005,5 +1005,78 @@
  #fmn-level-master .flow-session-validate .btn{
   width:100%;
   min-width:0;
+ }
+}
+
+
+#fmn-level-master .session-answer-box{
+ margin-top:18px;
+ padding:18px;
+ border:1px solid var(--border);
+ border-radius:15px;
+ background:#f6fafb;
+}
+#fmn-level-master .session-answer-head{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:14px;
+ flex-wrap:wrap;
+ margin-bottom:14px;
+}
+#fmn-level-master .session-answer-head h3{
+ margin:0 0 5px;
+ color:var(--navy);
+}
+#fmn-level-master .session-answer-head p{
+ margin:0;
+ color:var(--muted);
+ font-size:13px;
+}
+#fmn-level-master .session-answer-grid{
+ display:grid;
+ grid-template-columns:1fr;
+ gap:12px;
+}
+#fmn-level-master .session-answer-field{
+ display:block;
+}
+#fmn-level-master .session-answer-field>span{
+ display:block;
+ margin-bottom:7px;
+ color:var(--navy);
+ line-height:1.4;
+}
+#fmn-level-master .session-answer-field textarea{
+ width:100%;
+ min-height:105px;
+ padding:12px;
+ border:2px solid var(--border);
+ border-radius:11px;
+ font:inherit;
+ resize:vertical;
+ background:#fff;
+ box-sizing:border-box;
+}
+#fmn-level-master .session-conclusion-field{
+ margin-top:16px;
+}
+#fmn-level-master .session-conclusion-field textarea{
+ min-height:130px;
+}
+#fmn-level-master .session-save-state{
+ margin-top:9px;
+ color:#3d7b52;
+ font-size:12px;
+ font-weight:800;
+}
+@media(max-width:700px){
+ #fmn-level-master .session-answer-head .btn{
+  width:100%;
+ }
+}
+@media print{
+ #fmn-level-master .session-answer-head .btn{
+  display:none!important;
  }
 }

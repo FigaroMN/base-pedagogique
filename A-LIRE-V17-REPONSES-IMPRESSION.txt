@@ -1,0 +1,71 @@
+FIGAROMN V17 – RÉPONSES ÉLÈVES + IMPRESSION
+================================================
+
+MODIFICATION APPLIQUÉE À :
+- CAP
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+DANS CHAQUE SÉANCE / ACTIVITÉ
+-----------------------------
+L'élève dispose maintenant de :
+
+✍️ Mes réponses
+
+Pour chaque consigne de l'activité guidée :
+- une zone de texte est proposée ;
+- l'élève peut écrire sa réponse ;
+- la réponse est sauvegardée automatiquement sur l'appareil.
+
+Une zone supplémentaire est prévue :
+Conclusion / compte rendu professionnel
+
+IMPRESSION
+----------
+Chaque séance dispose d'un bouton :
+
+🖨️ Imprimer / PDF la séance et mes réponses
+
+L'impression fonctionne :
+- avec les réponses remplies ;
+- ou avec les zones non renseignées.
+
+Le document imprimable reprend :
+- séquence ;
+- séance ;
+- objectif ;
+- consignes ;
+- réponses ;
+- conclusion professionnelle.
+
+VALIDATION DE LA SÉANCE
+-----------------------
+Le bouton :
+✅ Valider la séance faite
+
+reste indépendant des réponses.
+
+Écrire dans les champs ne valide pas automatiquement la séance.
+Valider la séance ne valide pas automatiquement une compétence.
+
+COMPÉTENCES
+-----------
+Le calcul automatique des compétences reste inchangé :
+question -> indicateur -> % -> compétence
+
+Les évaluations conservent également leur note /20.
+
+SAUVEGARDE
+----------
+Les réponses sont sauvegardées localement sur l'appareil via localStorage.
+
+Aucune nouvelle migration Supabase n'est nécessaire pour V17.
+
+GITHUB
+------
+1. Décompresser l'archive V17.
+2. Charger tous les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Accepter les remplacements.
+4. Commit changes.
+5. Tester une séance en Seconde puis une séance CAP.

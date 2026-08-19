@@ -1,0 +1,49 @@
+FIGAROMN V18 – ONGLET OUTILS TOUS NIVEAUX
+==========================================
+
+Ajouté à CAP, Seconde, Première et Terminale.
+
+ONGLET 🧰 OUTILS
+----------------
+1. Ordre de réparation à compléter
+2. Devis à compléter
+3. Facture à compléter
+4. Calculatrice
+
+IMPRESSION
+----------
+Chaque document possède :
+- Imprimer / PDF rempli
+- Imprimer vierge
+
+L'impression vierge n'efface pas les données saisies.
+
+DEVIS / FACTURE
+---------------
+8 lignes de pièces ou prestations.
+Calcul automatique :
+- Total HT
+- TVA selon le taux SAISI par l'utilisateur
+- Total TTC
+- remise et frais éventuels
+
+Aucun taux de TVA n'est imposé par FigaroMN.
+
+SAUVEGARDE
+----------
+Sauvegarde automatique locale par utilisateur / niveau lorsque
+l'identifiant du compte est disponible.
+
+IMPORTANT
+---------
+Les modèles sont pédagogiques. Ils doivent être adaptés aux procédures,
+mentions légales et règles comptables de l'entreprise.
+
+SUPABASE
+--------
+Aucune nouvelle migration.
+
+INSTALLATION
+------------
+N'installe pas la V17 avant celle-ci.
+Utilise directement la V18 complète.

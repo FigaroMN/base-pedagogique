@@ -229,6 +229,169 @@ async function validateSessionDone(period,no,button,statusBox){
  }
 }
 
+
+function sessionAnswerStorageKey(sequenceNo,sessionNo,itemNo){
+ const userKey=(me&&me.id)?me.id:"local";
+ return "fmn_session_answer|"+userKey+"|"+CFG.level+"|"+sequenceNo+"|"+sessionNo+"|"+itemNo;
+}
+
+function sessionConclusionStorageKey(sequenceNo,sessionNo){
+ const userKey=(me&&me.id)?me.id:"local";
+ return "fmn_session_conclusion|"+userKey+"|"+CFG.level+"|"+sequenceNo+"|"+sessionNo;
+}
+
+function readLocalValue(key){
+ try{return localStorage.getItem(key)||"";}catch(e){return "";}
+}
+function writeLocalValue(key,value){
+ try{localStorage.setItem(key,value||"");}catch(e){}
+}
+
+function guidedPromptsFromHTML(html){
+ const holder=document.createElement("div");
+ holder.innerHTML=html||"";
+ let prompts=Array.from(holder.querySelectorAll("ol li"))
+   .map(x=>x.textContent.trim())
+   .filter(Boolean);
+
+ if(!prompts.length){
+   prompts=Array.from(holder.querySelectorAll("ul li"))
+     .map(x=>x.textContent.trim())
+     .filter(Boolean);
+ }
+
+ // Ne garder que les premières consignes structurantes pour éviter
+ // de transformer une longue liste de cours en questionnaire.
+ if(prompts.length>10)prompts=prompts.slice(0,10);
+
+ return prompts;
+}
+
+function answerFieldsHTML(sequenceNo,session){
+ const prompts=guidedPromptsFromHTML(session.html);
+ const fields=(prompts.length?prompts:["Réponse / travail réalisé"]).map((prompt,idx)=>{
+   const key=sessionAnswerStorageKey(sequenceNo,session.no,idx+1);
+   const saved=readLocalValue(key);
+   return `
+    <label class="session-answer-field">
+     <span><strong>${idx+1}. ${esc(prompt)}</strong></span>
+     <textarea
+      data-session-answer="${sequenceNo}|${session.no}|${idx+1}"
+      placeholder="Écris ta réponse ici…">${esc(saved)}</textarea>
+    </label>`;
+ }).join("");
+
+ const conclusion=readLocalValue(sessionConclusionStorageKey(sequenceNo,session.no));
+
+ return `
+  <section class="session-answer-box" data-answer-box="${sequenceNo}|${session.no}">
+   <div class="session-answer-head">
+    <div>
+     <h3>✍️ Mes réponses – séance ${session.no}</h3>
+     <p>Complète les réponses demandées pendant l’activité. La sauvegarde est automatique sur cet appareil.</p>
+    </div>
+    <button type="button" class="btn blue" data-print-session="${sequenceNo}|${session.no}">
+     🖨️ Imprimer / PDF la séance et mes réponses
+    </button>
+   </div>
+
+   <div class="session-answer-grid">
+    ${fields}
+   </div>
+
+   <label class="session-answer-field session-conclusion-field">
+    <span><strong>Conclusion / compte rendu professionnel</strong></span>
+    <textarea
+     data-session-conclusion="${sequenceNo}|${session.no}"
+     placeholder="Formule ici ta conclusion professionnelle, les contrôles réalisés et le résultat obtenu…">${esc(conclusion)}</textarea>
+   </label>
+
+   <div class="session-save-state">💾 Sauvegarde automatique sur cet appareil</div>
+  </section>`;
+}
+
+function collectSessionPrintData(sequenceNo,sessionNo){
+ const box=document.querySelector('[data-answer-box="'+sequenceNo+'|'+sessionNo+'"]');
+ if(!box)return null;
+
+ const seq=CFG.sequences.find(x=>Number(x.no)===Number(sequenceNo));
+ const courseSet=(window.FIGAROMN_BACPRO_COURSE_DATA||{})[CFG.level]||[];
+ const course=courseSet.find(x=>Number(x.no)===Number(sequenceNo));
+ const session=course&&course.sessions.find(x=>Number(x.no)===Number(sessionNo));
+ if(!session)return null;
+
+ const answers=Array.from(box.querySelectorAll("[data-session-answer]")).map((ta,idx)=>{
+  const label=ta.closest(".session-answer-field");
+  const prompt=label&&label.querySelector("span")?label.querySelector("span").textContent.trim():"Question "+(idx+1);
+  return {prompt:prompt,value:ta.value||""};
+ });
+
+ const conclusion=box.querySelector("[data-session-conclusion]");
+
+ return {
+  sequenceTitle:seq?seq.title:"Séquence "+sequenceNo,
+  sequenceNo:sequenceNo,
+  sessionNo:sessionNo,
+  sessionTitle:session.title||"",
+  objective:session.objective||"",
+  answers:answers,
+  conclusion:conclusion?conclusion.value:""
+ };
+}
+
+function printSessionAnswers(sequenceNo,sessionNo){
+ const data=collectSessionPrintData(sequenceNo,sessionNo);
+ if(!data){alert("Impossible de préparer l’impression de cette séance.");return;}
+
+ const w=window.open("","_blank");
+ if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
+
+ const answerHtml=data.answers.map(a=>`
+  <div class="answer">
+   <h3>${esc(a.prompt)}</h3>
+   <div class="response">${a.value?esc(a.value).replace(/\n/g,"<br>"):"<em>Réponse non renseignée</em>"}</div>
+  </div>`).join("");
+
+ w.document.write(`<!doctype html>
+ <html lang="fr">
+ <head>
+  <meta charset="utf-8">
+  <title>${esc(data.sequenceTitle)} – séance ${data.sessionNo}</title>
+  <style>
+   body{font-family:Arial,sans-serif;color:#18323f;padding:28px;line-height:1.5}
+   h1,h2,h3{color:#06283d}
+   .meta{border:1px solid #d7e4e8;border-radius:12px;padding:14px;margin:14px 0;background:#f5f9fa}
+   .answer{border:1px solid #d7e4e8;border-radius:12px;padding:14px;margin:12px 0;page-break-inside:avoid}
+   .answer h3{font-size:15px;margin:0 0 8px}
+   .response{min-height:70px;border-top:1px dashed #cddce1;padding-top:10px;white-space:normal}
+   .conclusion{border-left:5px solid #4b8f64;background:#f2faf5}
+   .footer{margin-top:20px;font-size:12px;color:#607680}
+   @media print{body{padding:0}}
+  </style>
+ </head>
+ <body>
+  <h1>${esc(data.sequenceTitle)}</h1>
+  <div class="meta">
+   <strong>Séance ${data.sessionNo} – ${esc(data.sessionTitle)}</strong>
+   ${data.objective?`<p><strong>Objectif :</strong> ${esc(data.objective)}</p>`:""}
+  </div>
+
+  <h2>Mes réponses</h2>
+  ${answerHtml}
+
+  <div class="answer conclusion">
+   <h3>Conclusion / compte rendu professionnel</h3>
+   <div class="response">${data.conclusion?esc(data.conclusion).replace(/\n/g,"<br>"):"<em>Conclusion non renseignée</em>"}</div>
+  </div>
+
+  <div class="footer">FigaroMN · document de travail élève · impression / PDF</div>
+ </body>
+ </html>`);
+
+ w.document.close();
+ setTimeout(()=>w.print(),250);
+}
+
 function openCourse(seqNo){
  selectedSequence=selectSequence(seqNo);
  const seq=CFG.sequences.find(x=>Number(x.no)===selectedSequence);
@@ -271,6 +434,8 @@ function openCourse(seqNo){
 
      <div class="flow-course-resource">${s.html}</div>
 
+     ${!isTeacher?answerFieldsHTML(seq.no,s):""}
+
      ${!isTeacher?`
       <div class="flow-session-validate">
        <div>
@@ -311,6 +476,27 @@ function openCourse(seqNo){
  $("fmn-course-note").addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
  $("fmn-course-done").onclick=()=>{try{localStorage.setItem(doneKey,"1");}catch(err){};$("fmn-course-done").textContent="✅ Cours terminé";};
  $("fmn-course-print").onclick=()=>window.print();
+
+ document.querySelectorAll("#fmn-course-detail [data-session-answer]").forEach(ta=>{
+  ta.addEventListener("input",()=>{
+   const parts=ta.dataset.sessionAnswer.split("|").map(Number);
+   writeLocalValue(sessionAnswerStorageKey(parts[0],parts[1],parts[2]),ta.value);
+  });
+ });
+
+ document.querySelectorAll("#fmn-course-detail [data-session-conclusion]").forEach(ta=>{
+  ta.addEventListener("input",()=>{
+   const parts=ta.dataset.sessionConclusion.split("|").map(Number);
+   writeLocalValue(sessionConclusionStorageKey(parts[0],parts[1]),ta.value);
+  });
+ });
+
+ document.querySelectorAll("#fmn-course-detail [data-print-session]").forEach(btn=>{
+  btn.onclick=()=>{
+   const parts=btn.dataset.printSession.split("|").map(Number);
+   printSessionAnswers(parts[0],parts[1]);
+  };
+ });
 
  document.querySelectorAll("#fmn-course-detail [data-validate-session]").forEach(btn=>{
   btn.onclick=async()=>{
@@ -717,6 +903,7 @@ document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=
  if(target==="courses"){renderCourses();view("courses");return;}
  if(target==="exercises"){openExercisesSelected();return;}
  if(target==="evaluations"){openEvaluationsSelected();return;}
+ if(target==="tools"){view("tools");return;}
 });
 $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}
