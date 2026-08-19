@@ -44,7 +44,7 @@ function dbSession(seq,no){
 }
 function sessionIds(){return state.sessions.map(function(s){return s.id;});}
 function attemptRows(kind,seq,no){
- var db=dbSession(seq,no);if(!db)return [];
+ var db=dbSession(seq,no);if(!db||!state.profile)return [];
  return state.attempts.filter(function(a){
   return a.student_id===state.profile.id &&
     a.session_id===db.id &&
@@ -64,6 +64,7 @@ function indicatorRowsForAttemptIds(ids){
  return state.indicators.filter(function(r){return set[r.attempt_id];});
 }
 function aggregateIndicators(kind,filterFn){
+ if(!state.profile)return {};
  var attempts=state.attempts.filter(function(a){
   return a.student_id===state.profile.id &&
     a.activity_type===kind &&
@@ -376,6 +377,30 @@ function currentAttemptIndicatorAggregate(questions,responses){
 async function safeTable(table,query,opts){
  try{return await FigaroCloud.table(table,query||"",opts);}catch(e){return [];}
 }
+
+var readyPromise=null;
+
+async function ensureReady(){
+ if(state.profile && state.profile.id)return true;
+ if(readyPromise)return readyPromise;
+
+ readyPromise=(async function(){
+  var p=await FigaroCloud.profile();
+  if(!p)throw new Error("Compte élève introuvable.");
+  if(p.role!=="student")throw new Error("Ce compte n’est pas un compte élève.");
+  if(p.level!==CFG.level)throw new Error("Ce compte n’appartient pas à ce niveau.");
+  if(p.archived_at)throw new Error("Ce compte est archivé.");
+  state.profile=p;
+  await reload();
+  return true;
+ })();
+
+ try{
+  return await readyPromise;
+ }finally{
+  readyPromise=null;
+ }
+}
 async function reload(){
  var id=state.profile.id;
  state.sessions=await safeTable("sessions","level=eq."+CFG.level+"&select=id,level,period,session_no,title&order=period.asc,session_no.asc");
@@ -491,6 +516,10 @@ function showHistory(kind,item){
 function rebuildExercises(){
  var grid=$("fmn-exercise-grid");if(!grid)return;
  activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ if(!state.profile){
+  grid.innerHTML='<div class="content-box"><strong>⏳ Chargement des exercices…</strong><p>Connexion au suivi de l’élève en cours.</p></div>';
+  return;
+ }
  var items=DATA.exercises.filter(function(e){return Number(e.sequence)===activeSequence;});
  var done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
  var title=(CFG.sequences.find(function(s){return Number(s.no)===activeSequence;})||{}).title||("Séquence "+activeSequence);
@@ -590,6 +619,10 @@ function openExercise(ex,forceRedo){
 function rebuildEvaluations(){
  var grid=$("fmn-eval-grid");if(!grid)return;
  activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ if(!state.profile){
+  grid.innerHTML='<div class="content-box"><strong>⏳ Chargement de l’évaluation…</strong><p>Connexion au suivi de l’élève en cours.</p></div>';
+  return;
+ }
  var ev=DATA.evaluations.find(function(x){return Number(x.sequence)===activeSequence;});
  grid.className="menu-grid";
  if(!ev){grid.innerHTML="<p>Aucune évaluation disponible pour cette séquence.</p>";return;}
@@ -667,12 +700,12 @@ function openEvaluation(ev,forceRedo){
 }
 async function init(){
  try{
-  state.profile=await FigaroCloud.profile();
-  if(!state.profile||state.profile.role!=="student"||state.profile.level!==CFG.level||state.profile.archived_at)return;
-  await reload();
-  rebuildExercises();rebuildEvaluations();
+  await ensureReady();
+  rebuildExercises();
+  rebuildEvaluations();
  }catch(e){
-  var s=$("fmn-cloud-status");if(s)s.textContent="Suivi automatique indisponible : "+e.message;
+  var s=$("fmn-cloud-status");
+  if(s)s.textContent="Suivi automatique indisponible : "+e.message;
  }
 }
 window.FIGAROMN_BACPRO_AUTO_ACTIVE=true;
@@ -681,17 +714,37 @@ function normalizeSequence(no){
  if(!isFinite(n)||n<1||n>6)n=1;
  return n;
 }
-function openExercisesForSequence(no){
+async function openExercisesForSequence(no){
  activeSequence=normalizeSequence(no);
  window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
- rebuildExercises();
+
+ // Affichage immédiat : le bouton répond même si Supabase charge encore.
  show("exercises");
+ var grid=$("fmn-exercise-grid");
+ if(grid)grid.innerHTML='<div class="content-box"><strong>⏳ Chargement des exercices de la séquence '+activeSequence+'…</strong></div>';
+
+ try{
+  await ensureReady();
+  rebuildExercises();
+ }catch(e){
+  if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Exercices indisponibles</strong><p>'+esc(e.message)+'</p></div>';
+ }
 }
-function openEvaluationsForSequence(no){
+
+async function openEvaluationsForSequence(no){
  activeSequence=normalizeSequence(no);
  window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
- rebuildEvaluations();
+
  show("evaluations");
+ var grid=$("fmn-eval-grid");
+ if(grid)grid.innerHTML='<div class="content-box"><strong>⏳ Chargement de l’évaluation de la séquence '+activeSequence+'…</strong></div>';
+
+ try{
+  await ensureReady();
+  rebuildEvaluations();
+ }catch(e){
+  if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Évaluation indisponible</strong><p>'+esc(e.message)+'</p></div>';
+ }
 }
 window.FigaroBacAuto={
  init:init,reload:reload,rebuildExercises:rebuildExercises,rebuildEvaluations:rebuildEvaluations,

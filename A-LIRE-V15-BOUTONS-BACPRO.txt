@@ -1,0 +1,65 @@
+FIGAROMN V15 – BOUTONS BAC PRO CORRIGÉS
+========================================
+
+PROBLÈME CORRIGÉ
+----------------
+Les boutons suivants pouvaient rester sans effet :
+- Exercices
+- Évaluations
+- Passer aux exercices de cette séquence
+- Passer à l'évaluation
+
+CAUSE
+-----
+Le moteur essayait parfois d'afficher les exercices avant que le profil
+et les données Supabase soient complètement chargés.
+
+CORRECTION V15
+--------------
+1. Le clic change immédiatement de rubrique.
+2. Un message "Chargement..." apparaît si Supabase n'est pas encore prêt.
+3. Le moteur attend ensuite automatiquement le profil élève.
+4. Dès que les données sont prêtes, les exercices / évaluations s'affichent.
+5. Une erreur de chargement ne peut plus rendre le bouton totalement inerte.
+6. Les scripts utilisent maintenant ?v=15 afin d'éviter l'ancien cache
+   GitHub Pages / navigateur.
+
+PARCOURS TESTÉ DANS LE CODE
+---------------------------
+Accueil
+→ Séquence
+→ Cours
+→ Passer aux exercices de cette séquence
+→ Exercices
+→ Évaluation
+
+Les boutons du haut :
+Accueil / Cours / Exercices / Évaluations
+utilisent la séquence actuellement choisie.
+
+CONSERVÉ
+--------
+- codes de séquence retirés de l'affichage ;
+- acquisition automatique question → indicateur → % → compétence ;
+- notes /20 ;
+- historique des tentatives ;
+- bilan exercices de séquence ;
+- bilan évaluation ;
+- synthèse générale ;
+- suivi professeur.
+
+SUPABASE
+--------
+Aucune nouvelle migration V15.
+
+GITHUB
+------
+1. Décompresser le ZIP.
+2. Envoyer tous les fichiers décompressés à la racine du dépôt.
+3. Accepter les remplacements.
+4. Commit changes.
+5. Attendre GitHub Pages.
+6. Ouvrir Seconde avec un compte élève et tester :
+   Séquence 1 → Cours → bouton orange → Exercices → Évaluations.
+
+Grâce au ?v=15, un Ctrl+F5 ne devrait normalement pas être nécessaire.

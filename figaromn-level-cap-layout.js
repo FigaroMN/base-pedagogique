@@ -24,19 +24,38 @@ function selectSequence(no){
 
 function openExercisesSelected(){
  const n=selectSequence(selectedSequence);
- if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
-   window.FigaroBacAuto.openExercisesForSequence(n);
- }else{
-   view("exercises");
+
+ // Toujours changer de vue immédiatement.
+ view("exercises");
+
+ try{
+  if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
+    window.FigaroBacAuto.openExercisesForSequence(n);
+  }else{
+    const box=$("fmn-exercise-grid");
+    if(box)box.innerHTML='<div class="content-box"><strong>⏳ Initialisation des exercices…</strong><p>Recharge la page si ce message reste affiché.</p></div>';
+  }
+ }catch(err){
+  const box=$("fmn-exercise-grid");
+  if(box)box.innerHTML='<div class="content-box"><strong>⚠️ Erreur d’ouverture des exercices</strong><p>'+esc(err.message)+'</p></div>';
  }
 }
 
 function openEvaluationsSelected(){
  const n=selectSequence(selectedSequence);
- if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openEvaluationsForSequence==="function"){
-   window.FigaroBacAuto.openEvaluationsForSequence(n);
- }else{
-   view("evaluations");
+
+ view("evaluations");
+
+ try{
+  if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openEvaluationsForSequence==="function"){
+    window.FigaroBacAuto.openEvaluationsForSequence(n);
+  }else{
+    const box=$("fmn-eval-grid");
+    if(box)box.innerHTML='<div class="content-box"><strong>⏳ Initialisation des évaluations…</strong><p>Recharge la page si ce message reste affiché.</p></div>';
+  }
+ }catch(err){
+  const box=$("fmn-eval-grid");
+  if(box)box.innerHTML='<div class="content-box"><strong>⚠️ Erreur d’ouverture de l’évaluation</strong><p>'+esc(err.message)+'</p></div>';
  }
 }
 
@@ -592,6 +611,15 @@ document.getElementById("fmn-level-master").addEventListener("click",function(e)
    openCourse(selectSequence(step.dataset.seq));
  }
 });
+
+
+window.FigaroMNLevelFlow={
+ openCourse:function(no){openCourse(selectSequence(no));},
+ exercises:function(no){if(no)selectSequence(no);openExercisesSelected();},
+ evaluations:function(no){if(no)selectSequence(no);openEvaluationsSelected();},
+ home:function(){view("home");},
+ courses:function(){renderCourses();view("courses");}
+};
 
 loadCloud();
 })();
