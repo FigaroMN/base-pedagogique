@@ -1,0 +1,54 @@
+FIGAROMN V14 – CORRECTION NAVIGATION BAC PRO
+=============================================
+
+CORRECTIONS
+-----------
+1. Correction de l'erreur :
+   "activeSequence is not defined"
+
+2. Les boutons fonctionnent de nouveau :
+   - Ouvrir la séquence
+   - Ouvrir le cours
+   - Exercices
+   - Évaluations
+   - Passer aux exercices de cette séquence
+   - Passer à l'évaluation
+
+3. La séquence sélectionnée est conservée pendant le parcours :
+   Accueil → Cours → Exercices → Évaluation.
+
+4. Les codes affichés près des séquences ont été retirés :
+   2A1M, 2B2N, 2C3P, etc. ne sont plus visibles.
+
+Les champs "code" des séquences ont été laissés vides dans les
+configurations V14 afin que l'enseignant puisse fournir lui-même
+les codes ultérieurement.
+
+CONSERVÉ
+--------
+- moteur automatique question → indicateur → % → compétence ;
+- notes /20 des évaluations ;
+- historique des tentatives ;
+- synthèse des 6 exercices par séquence ;
+- bilan de chaque évaluation ;
+- synthèse cumulative des évaluations ;
+- suivi professeur ;
+- identification élèves ;
+- réinitialisation mot de passe.
+
+SUPABASE
+--------
+Aucune nouvelle migration pour V14.
+
+La migration V11 reste nécessaire si elle n'a pas encore été exécutée :
+MIGRATION-V11-BACPRO-AUTO.sql
+
+GITHUB
+------
+1. Décompresser le ZIP.
+2. Envoyer tous les fichiers à la racine :
+   FigaroMN/base-pedagogique
+3. Accepter les remplacements.
+4. Commit changes.
+5. Tester en priorité :
+   Seconde → Séquence 1 → Cours → Exercices → Évaluation.

@@ -9,9 +9,36 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const compCodes = Object.keys(CFG.competencies).sort((a,b)=>Number(a.slice(1))-Number(b.slice(1)));
 let selectedSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||1);
+if(!Number.isFinite(selectedSequence)||selectedSequence<1||selectedSequence>6)selectedSequence=1;
+window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
 
 let me=null, dbSessions=[], progress=[], evaluations=[], attempts=[], autoStatus=[], indicatorResults=[];
 let isTeacher=false;
+
+function selectSequence(no){
+ const n=Number(no);
+ selectedSequence=(Number.isFinite(n)&&n>=1&&n<=6)?n:1;
+ window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
+ return selectedSequence;
+}
+
+function openExercisesSelected(){
+ const n=selectSequence(selectedSequence);
+ if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
+   window.FigaroBacAuto.openExercisesForSequence(n);
+ }else{
+   view("exercises");
+ }
+}
+
+function openEvaluationsSelected(){
+ const n=selectSequence(selectedSequence);
+ if(window.FigaroBacAuto && typeof window.FigaroBacAuto.openEvaluationsForSequence==="function"){
+   window.FigaroBacAuto.openEvaluationsForSequence(n);
+ }else{
+   view("evaluations");
+ }
+}
 
 function view(name){
  document.querySelectorAll("#fmn-level-master .main-view").forEach(s=>s.classList.add("hidden"));
@@ -65,13 +92,13 @@ function renderProgress(){
     <span class="num">${seq.no}</span>
     <span>
      <h3>Séquence ${seq.no} – ${esc(seq.title)}</h3>
-     <p>Code ${esc(seq.code)} · ${done} / 6 séances terminées</p>
+     <p>${done} / 6 séances terminées</p>
      <div class="sequence-progress"><span style="width:${pct}%"></span></div>
      <span class="open-hint">Ouvrir la séquence →</span>
     </span>
    </button>`;
  }).join("");
- grid.querySelectorAll(".step").forEach(b=>b.onclick=()=>{selectedSequence=Number(b.dataset.seq);window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;openCourse(selectedSequence);});
+ grid.querySelectorAll(".step").forEach(b=>b.onclick=()=>openCourse(selectSequence(b.dataset.seq)));
 }
 
 function renderCourses(){
@@ -79,18 +106,17 @@ function renderCourses(){
   <article class="menu-card">
    <div>
     <div class="top-icon">📘</div>
-    <span class="pill">SÉQUENCE ${seq.no} · ${esc(seq.code)}</span>
+    <span class="pill">SÉQUENCE ${seq.no}</span>
     <h3>${esc(seq.title)}</h3>
     <p>${seq.sessions.map(s=>esc(s.title)).slice(0,3).join(" · ")}…</p>
    </div>
    <div class="actions"><button class="btn blue open-course" data-seq="${seq.no}" type="button">Ouvrir le cours</button></div>
   </article>`).join("");
- document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>{selectedSequence=Number(b.dataset.seq);window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;openCourse(selectedSequence);});
+ document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>openCourse(selectSequence(b.dataset.seq)));
 }
 
 function openCourse(seqNo){
- selectedSequence=Number(seqNo||1);
- window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
+ selectedSequence=selectSequence(seqNo);
  const seq=CFG.sequences.find(x=>Number(x.no)===selectedSequence);
  const courseSet=(window.FIGAROMN_BACPRO_COURSE_DATA||{})[CFG.level]||[];
  const course=courseSet.find(x=>Number(x.no)===selectedSequence);
@@ -106,7 +132,7 @@ function openCourse(seqNo){
  $("fmn-course-detail").innerHTML=`
   <div class="content-head">
    <div>
-    <span class="pill">SÉQUENCE ${seq.no} · ${esc(seq.code)}</span>
+    <span class="pill">SÉQUENCE ${seq.no}</span>
     <h2>Séquence ${seq.no} – ${esc(seq.title)}</h2>
     <p>Le cours complet de la séquence est affiché dans cette page.</p>
    </div>
@@ -149,10 +175,7 @@ function openCourse(seqNo){
  $("fmn-course-note").addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
  $("fmn-course-done").onclick=()=>{try{localStorage.setItem(doneKey,"1");}catch(err){};$("fmn-course-done").textContent="✅ Cours terminé";};
  $("fmn-course-print").onclick=()=>window.print();
- $("fmn-course-to-ex").onclick=()=>{
-   if(window.FigaroBacAuto&&FigaroBacAuto.openExercisesForSequence)FigaroBacAuto.openExercisesForSequence(selectedSequence);
-   else view("exercises");
- };
+ $("fmn-course-to-ex").onclick=()=>openExercisesSelected();
 }
 
 
@@ -544,22 +567,31 @@ async function loadCloud(){
 document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=()=>{
  const target=b.dataset.view;
  if(target==="home"){view("home");return;}
- if(target==="courses"){view("courses");return;}
- if(target==="exercises"){
-   if(window.FigaroBacAuto&&FigaroBacAuto.openExercisesForSequence)FigaroBacAuto.openExercisesForSequence(selectedSequence);
-   else view("exercises");
-   return;
- }
- if(target==="evaluations"){
-   if(window.FigaroBacAuto&&FigaroBacAuto.openEvaluationsForSequence)FigaroBacAuto.openEvaluationsForSequence(selectedSequence);
-   else view("evaluations");
- }
+ if(target==="courses"){renderCourses();view("courses");return;}
+ if(target==="exercises"){openExercisesSelected();return;}
+ if(target==="evaluations"){openEvaluationsSelected();return;}
 });
 $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}
  location.href="index.html";
 };
 $("fmn-prof").onclick=()=>location.href="enseignant.html";
+
+
+/* Délégation de clics : évite qu'un re-rendu des cartes perde ses boutons. */
+document.getElementById("fmn-level-master").addEventListener("click",function(e){
+ const courseBtn=e.target.closest(".open-course");
+ if(courseBtn){
+   e.preventDefault();
+   openCourse(selectSequence(courseBtn.dataset.seq));
+   return;
+ }
+ const step=e.target.closest("#fmn-progress-grid .step");
+ if(step){
+   e.preventDefault();
+   openCourse(selectSequence(step.dataset.seq));
+ }
+});
 
 loadCloud();
 })();
