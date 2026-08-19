@@ -21,14 +21,11 @@ var state={
 function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c];});}
 function fr(v){if(v==null||!isFinite(Number(v)))return "—";return (Math.round(Number(v)*10)/10).toLocaleString("fr-FR");}
-function note20(score,total){return total?Math.round((Number(score)/Number(total)*20)*10)/10:0;}
-function levelInfo(pct){
- if(pct==null||!isFinite(Number(pct)))return {level:0,label:"À positionner",cls:"skill-wait"};
- pct=Number(pct);
- if(pct>=85)return {level:4,label:"Maîtrisé",cls:"skill-mait"};
- if(pct>=70)return {level:3,label:"Acquis",cls:"skill-acq"};
- if(pct>=50)return {level:2,label:"En cours d’acquisition",cls:"skill-eca"};
- return {level:1,label:"Non acquis",cls:"skill-na"};
+function note20(score,total){
+ score=Number(score||0);
+ total=Number(total||0);
+ if(total<=0)return 0;
+ return Math.round((score/total*20)*10)/10;
 }
 function show(name){
  document.querySelectorAll("#fmn-level-master .main-view").forEach(function(s){s.classList.add("hidden");});
@@ -129,6 +126,195 @@ function allCodes(){
  DATA.exercises.forEach(function(e){(e.comps||[]).forEach(function(c){if(out.indexOf(c)===-1)out.push(c);});});
  DATA.evaluations.forEach(function(e){(e.comps||[]).forEach(function(c){if(out.indexOf(c)===-1)out.push(c);});});
  return out.sort(function(a,b){return Number(a.slice(1))-Number(b.slice(1));});
+}
+
+function codesForSequence(kind,seq){
+ var list=kind==="exercise"
+  ? DATA.exercises.filter(function(x){return Number(x.sequence)===Number(seq);})
+  : DATA.evaluations.filter(function(x){return Number(x.sequence)===Number(seq);});
+ var out=[];
+ list.forEach(function(item){
+  (item.comps||[]).forEach(function(c){if(out.indexOf(c)===-1)out.push(c);});
+ });
+ return out.sort(function(a,b){return Number(a.slice(1))-Number(b.slice(1));});
+}
+
+function sequenceAttemptFilter(kind,seq){
+ return function(a){
+  if(kind==="exercise"){
+   var ok=false;
+   DATA.exercises.filter(function(x){return Number(x.sequence)===Number(seq);}).forEach(function(ex){
+    var db=dbSession(ex.sequence,ex.situation);
+    if(db && a.session_id===db.id)ok=true;
+   });
+   return ok;
+  }
+  var db=dbSession(seq,6);
+  return !!(db && a.session_id===db.id);
+ };
+}
+
+function sequenceActivityCounts(kind,seq){
+ var list=kind==="exercise"
+  ? DATA.exercises.filter(function(x){return Number(x.sequence)===Number(seq);})
+  : DATA.evaluations.filter(function(x){return Number(x.sequence)===Number(seq);});
+ var completed=0,attempts=0;
+ list.forEach(function(item){
+  var rows=kind==="exercise"
+   ? attemptRows("exercise",item.sequence,item.situation)
+   : evalRows(item.sequence);
+  if(rows.length)completed++;
+  attempts+=rows.length;
+ });
+ return {completed:completed,total:list.length,attempts:attempts};
+}
+
+function skillCounters(agg,codes){
+ var r={mastered:0,acquired:0,progress:0,notAcquired:0,pending:0};
+ (codes||[]).forEach(function(code){
+  var c=competenceFromAggregate(agg,code);
+  if(!c.complete){r.pending++;return;}
+  if(c.level.level>=4)r.mastered++;
+  else if(c.level.level>=3)r.acquired++;
+  else if(c.level.level>=2)r.progress++;
+  else r.notAcquired++;
+ });
+ return r;
+}
+
+function kpiSkillsHTML(c){
+ return '<div class="summary-kpis">'+
+  '<div><span>Maîtrisé</span><strong>'+c.mastered+'</strong></div>'+
+  '<div><span>Acquis</span><strong>'+c.acquired+'</strong></div>'+
+  '<div><span>En cours</span><strong>'+c.progress+'</strong></div>'+
+  '<div><span>Non acquis</span><strong>'+c.notAcquired+'</strong></div>'+
+  '<div><span>À positionner</span><strong>'+c.pending+'</strong></div>'+
+ '</div>';
+}
+
+function printSummaryBlock(targetId,title){
+ var el=$(targetId);if(!el)return;
+ var w=window.open("","_blank");
+ if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
+ w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc(title)+'</title>'+
+  '<style>body{font-family:Arial,sans-serif;padding:24px;color:#18323f}h1,h2,h3{color:#06283d}.summary-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.summary-kpis div{border:1px solid #d9e6ea;border-radius:10px;padding:10px;text-align:center}.summary-kpis span{display:block;color:#607680}.summary-kpis strong{font-size:1.4rem}.indicator-comp{border:1px solid #d9e6ea;border-radius:12px;padding:12px;margin:10px 0}.indicator-row{padding:7px 0;border-bottom:1px dashed #d9e6ea}.skill-badge,.pill{display:inline-block;padding:5px 8px;border-radius:999px;background:#eef1f2}</style>'+
+  '</head><body><h1>'+esc(title)+'</h1>'+el.innerHTML+'</body></html>');
+ w.document.close();
+ setTimeout(function(){w.print();},250);
+}
+
+function renderSequenceExerciseSummary(seq,targetId){
+ var target=$(targetId);if(!target)return;
+ var codes=codesForSequence("exercise",seq);
+ var agg=aggregateIndicators("exercise",sequenceAttemptFilter("exercise",seq));
+ var counts=sequenceActivityCounts("exercise",seq);
+ var counters=skillCounters(agg,codes);
+ var title=(CFG.sequences.find(function(s){return Number(s.no)===Number(seq);})||{}).title||("Séquence "+seq);
+
+ target.className="skill-dashboard sequence-summary";
+ target.innerHTML=
+  '<h3>📊 Bilan de la séquence '+seq+' – exercices</h3>'+
+  '<p><strong>'+counts.completed+' / '+counts.total+' exercices réalisés · '+counts.attempts+' tentative'+(counts.attempts>1?"s":"")+' enregistrée'+(counts.attempts>1?"s":"")+'.</strong></p>'+
+  '<p>Cette synthèse utilise uniquement les exercices de la séquence <strong>'+esc(title)+'</strong>.</p>'+
+  '<div class="method-box"><strong>🧮 Calcul automatique</strong><br>'+
+   'Question → indicateur → pourcentage de l’indicateur → compétence.<br>'+
+   'Toutes les tentatives des exercices de cette séquence sont prises en compte.</div>'+
+  '<button type="button" class="btn blue summary-print" id="print-seq-ex-summary">🖨️ Imprimer / PDF – bilan de la séquence</button>'+
+  kpiSkillsHTML(counters)+
+  indicatorAcquisitionHTML(agg,codes,
+   'Synthèse des exercices de la séquence '+seq+' uniquement. Un indicateur sans résultat reste « À positionner ».')+
+  '<div class="exercise-to-eval">'+
+   '<button type="button" class="btn orange" id="summary-go-eval">✅ Passer à l’évaluation de la séquence '+seq+' →</button>'+
+   '<small>L’évaluation complétera les mêmes indicateurs et calculera en parallèle une note sur 20.</small>'+
+  '</div>';
+
+ $("print-seq-ex-summary").onclick=function(){printSummaryBlock(targetId,"Bilan exercices – Séquence "+seq+" – "+title);};
+ $("summary-go-eval").onclick=function(){openEvaluationsForSequence(seq);};
+}
+
+function evaluationNoteStats(seq){
+ var rows=evalRows(seq);
+ if(!rows.length)return {attempts:0,last:null,best:null};
+ var notes=rows.map(function(r){return note20(r.score,r.total);});
+ return {attempts:rows.length,last:notes[notes.length-1],best:Math.max.apply(null,notes)};
+}
+
+function globalEvaluationNoteStats(){
+ var latestPerEval=[],allNotes=[],attempts=0,completed=0;
+ DATA.evaluations.forEach(function(ev){
+  var rows=evalRows(ev.sequence);
+  if(rows.length){
+   completed++;
+   attempts+=rows.length;
+   var notes=rows.map(function(r){return note20(r.score,r.total);});
+   allNotes=allNotes.concat(notes);
+   latestPerEval.push(notes[notes.length-1]);
+  }
+ });
+ var avg=latestPerEval.length
+  ? Math.round((latestPerEval.reduce(function(a,b){return a+b;},0)/latestPerEval.length)*10)/10
+  : null;
+ return {
+  completed:completed,total:DATA.evaluations.length,attempts:attempts,
+  averageLatest:avg,
+  best:allNotes.length?Math.max.apply(null,allNotes):null
+ };
+}
+
+function renderEvaluationSummaries(seq,targetId){
+ var target=$(targetId);if(!target)return;
+ var ev=DATA.evaluations.find(function(x){return Number(x.sequence)===Number(seq);});
+ if(!ev){target.innerHTML="";return;}
+
+ var seqCodes=codesForSequence("evaluation",seq);
+ var seqAgg=aggregateIndicators("evaluation",sequenceAttemptFilter("evaluation",seq));
+ var seqCount=skillCounters(seqAgg,seqCodes);
+ var note=evaluationNoteStats(seq);
+
+ var globalAgg=aggregateIndicators("evaluation");
+ var globalCodes=allCodes();
+ var globalCount=skillCounters(globalAgg,globalCodes);
+ var gs=globalEvaluationNoteStats();
+
+ target.className="evaluation-summaries";
+ target.innerHTML=
+  '<section class="skill-dashboard sequence-summary" id="eval-sequence-summary">'+
+   '<h3>📊 Bilan de l’évaluation – Séquence '+seq+'</h3>'+
+   '<p><strong>'+esc(ev.title)+'</strong></p>'+
+   '<div class="note-kpis">'+
+    '<div><span>Tentatives</span><strong>'+note.attempts+'</strong></div>'+
+    '<div><span>Dernière note</span><strong>'+(note.last!==null?fr(note.last)+' /20':'—')+'</strong></div>'+
+    '<div><span>Meilleure note</span><strong>'+(note.best!==null?fr(note.best)+' /20':'—')+'</strong></div>'+
+   '</div>'+
+   '<div class="method-box"><strong>🧮 Deux calculs en parallèle</strong><br>'+
+    '1. Note /20 = réponses correctes ÷ nombre total de questions × 20.<br>'+
+    '2. Question → indicateur → pourcentage → niveau de compétence.</div>'+
+   '<button type="button" class="btn blue" id="print-seq-eval-summary">🖨️ Imprimer / PDF – bilan de cette évaluation</button>'+
+   kpiSkillsHTML(seqCount)+
+   indicatorAcquisitionHTML(seqAgg,seqCodes,
+    'Résultats cumulés de toutes les tentatives de cette évaluation uniquement.')+
+  '</section>'+
+
+  '<section class="skill-dashboard global-eval-summary" id="eval-global-summary">'+
+   '<h3>📈 Synthèse générale – toutes les évaluations du niveau</h3>'+
+   '<p><strong>'+gs.completed+' / '+gs.total+' évaluations réalisées · '+gs.attempts+' tentative'+(gs.attempts>1?"s":"")+' enregistrée'+(gs.attempts>1?"s":"")+'.</strong></p>'+
+   '<p>Toutes les anciennes et nouvelles tentatives enregistrées sont prises en compte pour les indicateurs.</p>'+
+   '<div class="note-kpis">'+
+    '<div><span>Évaluations réalisées</span><strong>'+gs.completed+' / '+gs.total+'</strong></div>'+
+    '<div><span>Moyenne des dernières notes</span><strong>'+(gs.averageLatest!==null?fr(gs.averageLatest)+' /20':'—')+'</strong></div>'+
+    '<div><span>Meilleure note obtenue</span><strong>'+(gs.best!==null?fr(gs.best)+' /20':'—')+'</strong></div>'+
+   '</div>'+
+   '<div class="method-box"><strong>📊 Méthode de calcul</strong><br>'+
+    'Chaque indicateur reçoit son propre pourcentage. Le pourcentage de la compétence est la moyenne des indicateurs positionnés. '+
+    'Une compétence reste « À positionner » tant que tous ses indicateurs requis n’ont pas été travaillés.</div>'+
+   '<button type="button" class="btn blue" id="print-global-eval-summary">🖨️ Imprimer / PDF – synthèse générale</button>'+
+   kpiSkillsHTML(globalCount)+
+   indicatorAcquisitionHTML(globalAgg,globalCodes,
+    'Synthèse cumulative de toutes les évaluations déjà réalisées dans ce niveau.')+
+  '</section>';
+
+ $("print-seq-eval-summary").onclick=function(){printSummaryBlock("eval-sequence-summary","Bilan évaluation – Séquence "+seq);};
+ $("print-global-eval-summary").onclick=function(){printSummaryBlock("eval-global-summary","Synthèse générale des évaluations – "+CFG.label);};
 }
 function renderGlobalSummary(kind,targetId,extraAgg){
  var target=$(targetId);if(!target)return;
@@ -298,12 +484,14 @@ function showHistory(kind,item){
 }
 function rebuildExercises(){
  var grid=$("fmn-exercise-grid");if(!grid)return;
- var bySeq={};DATA.exercises.forEach(function(e){if(!bySeq[e.sequence])bySeq[e.sequence]=[];bySeq[e.sequence].push(e);});
+ activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ var items=DATA.exercises.filter(function(e){return Number(e.sequence)===activeSequence;});
+ var done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
+ var title=(CFG.sequences.find(function(s){return Number(s.no)===activeSequence;})||{}).title||("Séquence "+activeSequence);
  grid.className="exercise-course-list";
- grid.innerHTML=Object.keys(bySeq).map(function(k){
-  var seq=Number(k),items=bySeq[k],done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
-  var title=(CFG.sequences.find(function(s){return s.no===seq;})||{}).title||("Séquence "+seq);
-  return '<details class="exercise-course" open data-exercise-course-index="'+(seq-1)+'"><summary><span class="course-icon">⛵</span><span><strong>Séquence '+seq+' – '+esc(title)+'</strong><small>'+items.length+' exercices dans cette séquence</small></span><span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
+ grid.innerHTML=
+  '<details class="exercise-course" open data-exercise-course-index="'+(activeSequence-1)+'">'+
+   '<summary><span class="course-icon">⛵</span><span><strong>Séquence '+activeSequence+' – '+esc(title)+'</strong><small>'+items.length+' exercices dans cette séquence</small></span><span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
    '<div class="situation-grid">'+items.map(function(ex){
     var rows=attemptRows("exercise",ex.sequence,ex.situation),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
     var agg=aggregateIndicators("exercise",function(a){var db=dbSession(ex.sequence,ex.situation);return db&&a.session_id===db.id;});
@@ -320,10 +508,10 @@ function rebuildExercises(){
        '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice</button>')+
       '<button type="button" class="btn light" data-print-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer l’exercice</button>'+
      '</div></article>';
-   }).join("")+'</div><div class="exercise-to-eval"><button type="button" class="btn orange" data-go-eval="'+seq+'">✅ Aller à l’évaluation de la séquence '+seq+'</button><small>L’évaluation est protégée par un code enseignant.</small></div></details>';
- }).join("");
+   }).join("")+'</div>'+
+  '</details>';
  bindExerciseButtons();
- renderGlobalSummary("exercise","fmn-ex-skill-summary");
+ renderSequenceExerciseSummary(activeSequence,"fmn-ex-skill-summary");
 }
 function findExercise(seq,sit){return DATA.exercises.find(function(e){return e.sequence===Number(seq)&&e.situation===Number(sit);});}
 function findEval(seq){return DATA.evaluations.find(function(e){return e.sequence===Number(seq);});}
@@ -333,7 +521,6 @@ function bindExerciseButtons(){
  grid.querySelectorAll("[data-redo-ex]").forEach(function(b){b.onclick=function(){var code=prompt("Code enseignant pour refaire l’exercice :");if(code===null)return;if(code.trim().toLowerCase()!==String(DATA.redoExerciseCode||"refaire").toLowerCase()){alert("Code incorrect.");return;}var x=b.dataset.redoEx.split("|");openExercise(findExercise(x[0],x[1]),true);};});
  grid.querySelectorAll("[data-history-ex]").forEach(function(b){b.onclick=function(){var x=b.dataset.historyEx.split("|");showHistory("exercise",findExercise(x[0],x[1]));};});
  grid.querySelectorAll("[data-print-ex]").forEach(function(b){b.onclick=function(){var x=b.dataset.printEx.split("|"),ex=findExercise(x[0],x[1]);printBlankExercise(ex);};});
- grid.querySelectorAll("[data-go-eval]").forEach(function(b){b.onclick=function(){show("evaluations");var card=document.querySelector('[data-evaluation-index="'+(Number(b.dataset.goEval)-1)+'"]');if(card)setTimeout(function(){card.scrollIntoView({behavior:"smooth",block:"center"});},120);};});
 }
 function printBlankExercise(ex){
  var w=window.open("","_blank");if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
@@ -358,7 +545,7 @@ function openExercise(ex,forceRedo){
   successIndicatorsPanelHTML(ex.comps)+
   '<div class="skill-calc-box"><strong>📈 Acquisition 100 % automatique</strong><p>Chaque réponse alimente automatiquement l’indicateur officiel auquel la question est rattachée. Le niveau de compétence est recalculé sans saisie manuelle.</p></div>'+
   '<div class="score">Score : <strong id="bac-ex-score">0 / '+ex.questions.length+'</strong></div><div id="bac-ex-live"></div>'+qhtml+'<div id="bac-ex-end" class="result hidden"></div></div>';
- $("bac-back-ex").onclick=function(){rebuildExercises();show("exercises");};
+ $("bac-back-ex").onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ex.sequence;activeSequence=ex.sequence;rebuildExercises();show("exercises");};
  function updateLive(){
   liveAgg=currentAttemptIndicatorAggregate(ex.questions,responses);
   $("bac-ex-live").innerHTML=indicatorAcquisitionHTML(liveAgg,ex.comps,answered===ex.questions.length?'Résultat final de la tentative.':'Résultat provisoire : les indicateurs évoluent après chaque réponse.');
@@ -396,19 +583,21 @@ function openExercise(ex,forceRedo){
 }
 function rebuildEvaluations(){
  var grid=$("fmn-eval-grid");if(!grid)return;
+ activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ var ev=DATA.evaluations.find(function(x){return Number(x.sequence)===activeSequence;});
  grid.className="menu-grid";
- grid.innerHTML=DATA.evaluations.map(function(ev,i){
-  var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
-  var agg=aggregateIndicators("evaluation",function(a){var db=dbSession(ev.sequence,6);return db&&a.session_id===db.id;});
-  return '<article class="menu-card" data-evaluation-index="'+i+'"><div><div class="top-icon">✅</div><h3>'+esc(ev.title)+' – 18 questions notées sur 20</h3><p>'+esc(ev.desc||"")+'</p>'+
+ if(!ev){grid.innerHTML="<p>Aucune évaluation disponible pour cette séquence.</p>";return;}
+ var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
+ var agg=aggregateIndicators("evaluation",function(a){var db=dbSession(ev.sequence,6);return db&&a.session_id===db.id;});
+ grid.innerHTML='<article class="menu-card" data-evaluation-index="'+(activeSequence-1)+'"><div><div class="top-icon">✅</div><h3>'+esc(ev.title)+' – 18 questions notées sur 20</h3><p>'+esc(ev.desc||"")+'</p>'+
    '<span class="pill">18 questions · note /20</span> <span class="pill">'+(best?'Meilleure note : '+fr(note20(best.score,best.total))+'/20':'Non réalisée')+'</span> <span class="pill">'+(rows.length?'✅ Évaluation terminée':'Compétences à positionner')+'</span> <span class="pill">Tentatives : '+rows.length+'</span> '+(last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
    indicatorAcquisitionHTML(agg,ev.comps,'')+'</div>'+
    (rows.length?
     '<div class="actions"><button type="button" class="btn light" disabled>✅ Évaluation terminée</button><button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔁 Refaire l’évaluation</button><button type="button" class="btn blue" data-history-eval="'+ev.sequence+'">📚 Historique complet ('+rows.length+')</button></div>':
     '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'"><button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div><div class="msg" aria-live="polite"></div></div>')+
    '</article>';
- }).join("");
- bindEvalButtons();renderGlobalSummary("evaluation","fmn-eval-skill-summary");
+ bindEvalButtons();
+ renderEvaluationSummaries(activeSequence,"fmn-eval-skill-summary");
 }
 function bindEvalButtons(){
  var grid=$("fmn-eval-grid");if(!grid)return;
@@ -427,10 +616,10 @@ function openEvaluation(ev,forceRedo){
  detail.innerHTML='<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button><span class="pill">'+esc((ev.comps||[]).join(" · "))+'</span></div>'+
   '<div class="content-box"><h2>'+esc(ev.title)+'</h2><div class="competences"><strong>Compétences évaluées :</strong><br>'+esc((ev.comps||[]).map(function(c){return c+" – "+(ALL.competencies[c]||"");}).join(" · "))+'</div>'+
   successIndicatorsPanelHTML(ev.comps)+
-  '<div class="skill-calc-box"><strong>📈 Acquisition 100 % automatique</strong><p>Chaque réponse est reliée à un indicateur du référentiel. Le pourcentage de chaque indicateur puis le niveau de la compétence sont calculés automatiquement.</p></div>'+
+  '<div class="skill-calc-box"><strong>📈 Calcul 100 % automatique</strong><p>Chaque réponse produit deux résultats en parallèle : 1) elle alimente l’indicateur associé pour calculer le pourcentage puis le niveau de compétence ; 2) elle entre dans le calcul de la note de l’évaluation sur 20.</p><p><strong>Note /20 = réponses correctes ÷ nombre total de questions × 20.</strong></p></div>'+
   '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 /20</span></div>'+
   '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-live"></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div></div>';
- $("bac-back-eval").onclick=function(){rebuildEvaluations();show("evaluations");};
+ $("bac-back-eval").onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");};
  var qbox=$("bac-eval-question"),next=$("bac-eval-next");
  function update(){
   $("bac-eval-score").textContent="Score : "+score+" / "+ev.questions.length+" · Note : "+fr(note20(score,ev.questions.length))+" /20";
@@ -460,7 +649,7 @@ function openEvaluation(ev,forceRedo){
   var resultBox=$("bac-eval-result");resultBox.classList.remove("hidden");resultBox.innerHTML="<h3>Enregistrement automatique…</h3>";
   try{
    var result=await saveAttempt("evaluation",ev,responses,score),agg=currentAttemptIndicatorAggregate(ev.questions,responses);
-   resultBox.innerHTML='<h3>Évaluation terminée</h3><p>Réponses correctes : <strong>'+score+' / '+ev.questions.length+'</strong></p><p>Note : <span class="note20">'+fr(result.note20)+' / 20</span></p><p>Réussite globale : <strong>'+fr(result.percent)+' %</strong></p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+
+   resultBox.innerHTML='<h3>Évaluation terminée</h3><p>Réponses correctes : <strong>'+score+' / '+ev.questions.length+'</strong></p><p>Note automatique : <span class="note20">'+fr(result.note20)+' / 20</span></p><p>Réussite globale : <strong>'+fr(result.percent)+' %</strong></p><p class="small">Calcul de la note : réponses correctes ÷ '+ev.questions.length+' × 20.</p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+
     '<h3>📊 Pourcentage par indicateur puis niveau de compétence</h3>'+indicatorAcquisitionHTML(agg,ev.comps,'Résultat automatique de cette évaluation.')+
     '<div class="toolbar"><button type="button" class="btn light" disabled>✅ Tentative synchronisée</button><button type="button" class="btn green" id="bac-pdf-eval">🖨️ Enregistrer en PDF avec réponses</button><button type="button" class="btn blue" id="bac-history-eval-now">📚 Historique complet</button></div>';
    $("bac-pdf-eval").onclick=function(){printReport(ev.title,ev,result,responses);};
@@ -481,6 +670,18 @@ async function init(){
  }
 }
 window.FIGAROMN_BACPRO_AUTO_ACTIVE=true;
-window.FigaroBacAuto={init:init,reload:reload,rebuildExercises:rebuildExercises,rebuildEvaluations:rebuildEvaluations};
+function openExercisesForSequence(no){
+ activeSequence=Number(no||1);window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
+ rebuildExercises();show("exercises");
+}
+function openEvaluationsForSequence(no){
+ activeSequence=Number(no||1);window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
+ rebuildEvaluations();show("evaluations");
+}
+window.FigaroBacAuto={
+ init:init,reload:reload,rebuildExercises:rebuildExercises,rebuildEvaluations:rebuildEvaluations,
+ openExercisesForSequence:openExercisesForSequence,
+ openEvaluationsForSequence:openEvaluationsForSequence
+};
 setTimeout(init,150);
 })();

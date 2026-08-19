@@ -894,3 +894,70 @@
 #fmn-level-master .indicator-synthesis{margin-top:9px;padding:9px 11px;border-left:4px solid var(--cyan);background:#eef6f8;border-radius:8px;font-size:12px;line-height:1.45}
 #fmn-level-master .method-box{margin:10px 0 14px;padding:12px;border:1px solid var(--border);border-radius:11px;background:#eefaf5;font-size:12px;line-height:1.55}
 #fmn-level-master .skill-wait{background:#eef1f2;color:#607680}
+
+
+#fmn-level-master .flow-course{padding:18px}
+#fmn-level-master .flow-course-part{border:1px solid var(--border);border-radius:15px;background:#fff;margin:16px 0;padding:18px}
+#fmn-level-master .flow-course-head{border-bottom:1px solid var(--border);margin-bottom:12px;padding-bottom:10px}
+#fmn-level-master .flow-course-head h3{margin:8px 0;color:var(--navy)}
+#fmn-level-master .flow-course-resource{line-height:1.55}
+#fmn-level-master .flow-course-resource img{max-width:100%;height:auto}
+#fmn-level-master .flow-course-resource .grid2{display:grid;grid-template-columns:1fr;gap:12px}
+#fmn-level-master .flow-note{margin-top:20px;padding:18px;border-radius:15px;background:#f5f9fa}
+#fmn-level-master .flow-note textarea{width:100%;min-height:145px;padding:13px;border:2px solid var(--border);border-radius:11px;font:inherit;resize:vertical}
+#fmn-level-master .flow-actions{margin:16px 0}
+#fmn-level-master .flow-actions .btn{flex:1;min-width:230px}
+@media print{
+ #fmn-level-master .nav,#fmn-level-master .top-actions,#fmn-level-master #fmn-back-courses,
+ #fmn-level-master .flow-actions,#fmn-level-master .exercise-to-eval{display:none!important}
+}
+
+
+#fmn-level-master .sequence-summary,
+#fmn-level-master .global-eval-summary{
+ margin-top:22px;
+ border:1px solid var(--border);
+ border-radius:16px;
+ padding:18px;
+ background:#f8fbfc;
+}
+#fmn-level-master .global-eval-summary{margin-top:28px;background:#f4f9fa}
+#fmn-level-master .summary-kpis{
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:10px;
+ margin:16px 0;
+}
+#fmn-level-master .summary-kpis>div,
+#fmn-level-master .note-kpis>div{
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:12px;
+ text-align:center;
+ background:#fff;
+}
+#fmn-level-master .summary-kpis span,
+#fmn-level-master .note-kpis span{
+ display:block;
+ color:var(--muted);
+ font-size:12px;
+}
+#fmn-level-master .summary-kpis strong,
+#fmn-level-master .note-kpis strong{
+ display:block;
+ margin-top:4px;
+ color:var(--navy);
+ font-size:1.35rem;
+}
+#fmn-level-master .note-kpis{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+ margin:16px 0;
+}
+#fmn-level-master .summary-print{margin-bottom:4px}
+#fmn-level-master .evaluation-summaries{margin-top:18px}
+@media(max-width:800px){
+ #fmn-level-master .summary-kpis{grid-template-columns:repeat(2,1fr)}
+ #fmn-level-master .note-kpis{grid-template-columns:1fr}
+}

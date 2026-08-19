@@ -1,0 +1,38 @@
+FIGAROMN V12.1 – NOTE /20 + ACQUISITION AUTOMATIQUE
+=====================================================
+
+Pour chaque évaluation Bac Pro :
+
+1. L'élève répond aux questions.
+2. Chaque question est reliée à un indicateur.
+3. Chaque indicateur reçoit automatiquement un pourcentage.
+4. Les indicateurs alimentent la compétence.
+5. La compétence est calculée automatiquement.
+
+EN PARALLÈLE :
+6. La note de l'évaluation est calculée automatiquement sur 20.
+
+FORMULE
+-------
+Note /20 = nombre de réponses correctes / nombre total de questions × 20
+
+Exemples avec 18 questions :
+18 bonnes réponses = 20 /20
+15 bonnes réponses = 16,7 /20
+12 bonnes réponses = 13,3 /20
+9 bonnes réponses = 10 /20
+
+IMPORTANT
+---------
+La note /20 et le niveau d'acquisition sont deux résultats distincts.
+La note ne remplace pas le calcul par indicateurs.
+
+PARCOURS
+--------
+Accueil → Cours → Exercices → Évaluation
+
+SUPABASE
+--------
+Aucune nouvelle migration pour V12.1.
+Conserver la migration V11 déjà exécutée :
+MIGRATION-V11-BACPRO-AUTO.sql

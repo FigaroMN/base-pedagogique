@@ -1,0 +1,84 @@
+FIGAROMN V13 – SYNTHÈSES EXERCICES ET ÉVALUATIONS
+==================================================
+
+Cette version reprend toutes les mises à jour précédentes.
+
+1. FIN DES EXERCICES D'UNE SÉQUENCE
+------------------------------------
+Après les 6 exercices de la séquence, l'élève voit maintenant :
+
+- nombre d'exercices réalisés / 6 ;
+- nombre total de tentatives ;
+- Maîtrisé / Acquis / En cours / Non acquis / À positionner ;
+- détail de chaque indicateur travaillé ;
+- pourcentage de chaque indicateur ;
+- synthèse de chaque compétence ;
+- bouton Imprimer / PDF du bilan de séquence ;
+- bouton Passer à l'évaluation de la séquence.
+
+IMPORTANT :
+Cette synthèse utilise UNIQUEMENT les exercices de la séquence ouverte.
+
+2. ÉVALUATION DE LA SÉQUENCE
+-----------------------------
+Sous l'évaluation apparaissent :
+
+- nombre de tentatives ;
+- dernière note /20 ;
+- meilleure note /20 ;
+- détail indicateurs -> compétences ;
+- bilan automatique de l'évaluation ;
+- impression / PDF.
+
+Calcul de la note :
+bonnes réponses / nombre total de questions × 20.
+
+3. SYNTHÈSE GÉNÉRALE DE TOUTES LES ÉVALUATIONS
+-----------------------------------------------
+En dessous du bilan de l'évaluation sélectionnée :
+
+- nombre d'évaluations réalisées / 6 ;
+- nombre total de tentatives ;
+- moyenne des DERNIÈRES notes de chaque évaluation réalisée ;
+- meilleure note obtenue ;
+- Maîtrisé / Acquis / En cours / Non acquis / À positionner ;
+- détail cumulatif des indicateurs ;
+- niveau cumulatif des compétences ;
+- impression / PDF de la synthèse générale.
+
+Toutes les tentatives enregistrées continuent à alimenter les indicateurs.
+
+4. CALCUL AUTOMATIQUE
+----------------------
+Question
+  -> indicateur
+  -> pourcentage de l'indicateur
+  -> moyenne des indicateurs
+  -> compétence
+
+Tant que tous les indicateurs requis d'une compétence ne sont pas
+positionnés, la compétence reste "À positionner".
+
+Seuils pédagogiques locaux :
+0 à 49 %   : Non acquis
+50 à 69 %  : En cours d'acquisition
+70 à 84 %  : Acquis
+85 à 100 % : Maîtrisé
+
+5. SUPABASE
+------------
+AUCUNE nouvelle migration pour V13.
+
+Il faut conserver la migration V11 déjà exécutée :
+MIGRATION-V11-BACPRO-AUTO.sql
+
+6. GITHUB
+----------
+1. Décompresser l'archive V13.
+2. Envoyer tous les fichiers décompressés à la racine de :
+   FigaroMN/base-pedagogique
+3. Accepter les remplacements.
+4. Commit changes.
+5. Tester :
+   Cours -> 6 exercices -> bilan de séquence -> évaluation
+   -> note /20 -> bilan évaluation -> synthèse générale.

@@ -1,0 +1,62 @@
+FIGAROMN V12 – PARCOURS BAC PRO CONTINU
+========================================
+
+Cette version supprime du parcours élève l'ouverture des anciennes pages
+de séances. Les anciens fichiers peuvent rester dans le dépôt, mais
+ils ne sont plus utilisés par la navigation principale Bac Pro.
+
+PARCOURS
+--------
+1. ACCUEIL
+L'élève peut :
+- cliquer sur "Cours" en haut ;
+- ou cliquer directement sur une séquence de "Ma progression".
+
+2. COURS
+L'élève choisit Séquence 1, 2, 3, 4, 5 ou 6.
+Le cours complet de la séquence est affiché dans la même interface.
+
+Le cours comprend :
+- les contenus pédagogiques des 6 séances ;
+- une synthèse personnelle sauvegardée ;
+- marquer le cours terminé ;
+- impression / PDF ;
+- bouton "Passer aux exercices de cette séquence".
+
+3. EXERCICES
+L'onglet Exercices affiche UNIQUEMENT les 6 exercices de la séquence
+sélectionnée.
+
+Chaque exercice conserve le moteur V11 :
+question -> indicateur -> pourcentage indicateur -> compétence.
+
+Toutes les tentatives, scores, notes /20 et historiques sont conservés.
+
+4. ÉVALUATION
+À la fin des exercices :
+"Passer à l'évaluation de la séquence".
+
+L'onglet Évaluations affiche UNIQUEMENT l'évaluation de la séquence
+sélectionnée.
+
+L'évaluation contient 18 questions et reste protégée par son code enseignant.
+
+BOUTONS DU HAUT
+---------------
+Accueil / Cours / Exercices / Évaluations sont toujours accessibles.
+Exercices et Évaluations utilisent la dernière séquence choisie.
+
+SUPABASE
+--------
+Aucune nouvelle migration pour V12.
+La migration obligatoire reste :
+MIGRATION-V11-BACPRO-AUTO.sql
+
+INSTALLATION
+------------
+1. Décompresser le ZIP V12.
+2. Envoyer tous les fichiers décompressés à la racine GitHub.
+3. Accepter les remplacements.
+4. Commit changes.
+5. Tester avec un élève :
+Accueil -> Séquence 1 -> Cours -> Exercices -> Évaluation.

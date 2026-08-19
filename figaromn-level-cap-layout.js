@@ -8,6 +8,7 @@ if(!CFG) return;
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const compCodes = Object.keys(CFG.competencies).sort((a,b)=>Number(a.slice(1))-Number(b.slice(1)));
+let selectedSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||1);
 
 let me=null, dbSessions=[], progress=[], evaluations=[], attempts=[], autoStatus=[], indicatorResults=[];
 let isTeacher=false;
@@ -70,7 +71,7 @@ function renderProgress(){
     </span>
    </button>`;
  }).join("");
- grid.querySelectorAll(".step").forEach(b=>b.onclick=()=>openCourse(Number(b.dataset.seq)));
+ grid.querySelectorAll(".step").forEach(b=>b.onclick=()=>{selectedSequence=Number(b.dataset.seq);window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;openCourse(selectedSequence);});
 }
 
 function renderCourses(){
@@ -84,43 +85,74 @@ function renderCourses(){
    </div>
    <div class="actions"><button class="btn blue open-course" data-seq="${seq.no}" type="button">Ouvrir le cours</button></div>
   </article>`).join("");
- document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>openCourse(Number(b.dataset.seq)));
+ document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>{selectedSequence=Number(b.dataset.seq);window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;openCourse(selectedSequence);});
 }
 
 function openCourse(seqNo){
- const seq=CFG.sequences.find(x=>x.no===seqNo);
- if(!seq)return;
- const done=doneCount(seqNo);
+ selectedSequence=Number(seqNo||1);
+ window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
+ const seq=CFG.sequences.find(x=>Number(x.no)===selectedSequence);
+ const courseSet=(window.FIGAROMN_BACPRO_COURSE_DATA||{})[CFG.level]||[];
+ const course=courseSet.find(x=>Number(x.no)===selectedSequence);
+ if(!seq||!course)return;
+
+ const userKey=(me&&me.id)?me.id:"local";
+ const noteKey="fmn_course_note|"+userKey+"|"+CFG.level+"|"+selectedSequence;
+ const doneKey="fmn_course_done|"+userKey+"|"+CFG.level+"|"+selectedSequence;
+ let savedNote="",courseDone=false;
+ try{savedNote=localStorage.getItem(noteKey)||"";courseDone=localStorage.getItem(doneKey)==="1";}catch(e){}
+
+ const comps=[...new Set(course.sessions.flatMap(s=>s.comps||[]))];
  $("fmn-course-detail").innerHTML=`
   <div class="content-head">
    <div>
     <span class="pill">SÉQUENCE ${seq.no} · ${esc(seq.code)}</span>
-    <h2>${esc(seq.title)}</h2>
-    <p>${done} / 6 séances terminées</p>
+    <h2>Séquence ${seq.no} – ${esc(seq.title)}</h2>
+    <p>Le cours complet de la séquence est affiché dans cette page.</p>
    </div>
    <button class="btn light" id="fmn-back-courses" type="button">← Mes cours</button>
   </div>
-  <div class="content-box">
-   <div class="context"><strong>Contexte de progression :</strong> cette séquence est organisée en 6 séances successives. Chaque séance conserve son cours, son activité, ses exercices, son TP ou son évaluation déjà présents dans FigaroMN.</div>
-   <h4>Les 6 séances de la séquence</h4>
-   <div class="session-list">
-    ${seq.sessions.map(s=>{
-      const st=sessionStatus(seq.no,s.no);
-      return `<div class="session-row">
-       <div class="sicon">${s.icon}</div>
-       <div>
-        <h4>Séance ${s.no} · ${esc(s.title)}</h4>
-        <p>${esc(s.type)}${s.objective?" · "+esc(s.objective):""}</p>
-        <span class="status-pill ${st==="completed"?"done":st==="started"?"started":""}">${statusText(st)}</span>
-       </div>
-       <div class="session-action"><a class="btn blue" href="${esc(s.url)}">Ouvrir</a></div>
-      </div>`;
-    }).join("")}
+
+  <div class="content-box flow-course">
+   <div class="info"><strong>Compétences travaillées :</strong> ${comps.length?comps.join(" · "):"—"}</div>
+
+   ${course.sessions.map(s=>`
+    <section class="flow-course-part">
+     <div class="flow-course-head">
+      <span class="pill">SÉANCE ${s.no}</span>
+      <h3>${esc(s.title)}</h3>
+      ${s.objective?`<p><strong>Objectif :</strong> ${esc(s.objective)}</p>`:""}
+     </div>
+     <div class="flow-course-resource">${s.html}</div>
+    </section>
+   `).join("")}
+
+   <section class="flow-note">
+    <h3>✍️ Ma synthèse personnelle</h3>
+    <textarea id="fmn-course-note" placeholder="Écris ici ce que tu dois retenir…">${esc(savedNote)}</textarea>
+    <div class="small">💾 Sauvegarde automatique sur cet appareil</div>
+   </section>
+
+   <div class="actions flow-actions">
+    <button type="button" class="btn green" id="fmn-course-done">${courseDone?"✅ Cours terminé":"✅ Marquer le cours terminé"}</button>
+    <button type="button" class="btn blue" id="fmn-course-print">🖨️ Imprimer / Enregistrer en PDF</button>
    </div>
-   <div class="safety"><strong>🛡️ Sécurité / environnement :</strong> avant toute intervention, prendre en compte la mise hors énergie ou la consignation si nécessaire, les EPI, la ventilation, les risques électriques, incendie/explosion, les produits dangereux, la stabilité de l’embarcation, la protection de l’environnement et les prescriptions applicables.</div>
+
+   <div class="exercise-to-eval">
+    <button type="button" class="btn orange" id="fmn-course-to-ex">📝 Passer aux exercices de cette séquence →</button>
+    <small>Les exercices restent dans FigaroMN et alimentent automatiquement les indicateurs et compétences.</small>
+   </div>
   </div>`;
+
  view("course-detail");
  $("fmn-back-courses").onclick=()=>view("courses");
+ $("fmn-course-note").addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
+ $("fmn-course-done").onclick=()=>{try{localStorage.setItem(doneKey,"1");}catch(err){};$("fmn-course-done").textContent="✅ Cours terminé";};
+ $("fmn-course-print").onclick=()=>window.print();
+ $("fmn-course-to-ex").onclick=()=>{
+   if(window.FigaroBacAuto&&FigaroBacAuto.openExercisesForSequence)FigaroBacAuto.openExercisesForSequence(selectedSequence);
+   else view("exercises");
+ };
 }
 
 
@@ -509,7 +541,20 @@ async function loadCloud(){
  }
 }
 
-document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=()=>view(b.dataset.view));
+document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=()=>{
+ const target=b.dataset.view;
+ if(target==="home"){view("home");return;}
+ if(target==="courses"){view("courses");return;}
+ if(target==="exercises"){
+   if(window.FigaroBacAuto&&FigaroBacAuto.openExercisesForSequence)FigaroBacAuto.openExercisesForSequence(selectedSequence);
+   else view("exercises");
+   return;
+ }
+ if(target==="evaluations"){
+   if(window.FigaroBacAuto&&FigaroBacAuto.openEvaluationsForSequence)FigaroBacAuto.openEvaluationsForSequence(selectedSequence);
+   else view("evaluations");
+ }
+});
 $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}
  location.href="index.html";
