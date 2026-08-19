@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nouveau mot de passe · FigaroMN</title>
+<style>
+:root{
+ --navy:#06283d;--blue:#0b5d7a;--cyan:#19b8d3;--green:#16895a;
+ --red:#c93f49;--bg:#eef6f8;--text:#18323f;--muted:#607680;--border:#d9e6ea;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.top{background:var(--navy);color:#fff;padding:16px}
+.shell{width:min(620px,calc(100% - 28px));margin:auto}
+.top a{color:#fff;text-decoration:none;font-weight:900}
+.wrap{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:28px 0}
+.card{width:100%;background:#fff;border:1px solid var(--border);border-radius:22px;padding:28px;box-shadow:0 14px 38px rgba(6,40,61,.13)}
+.icon{text-align:center;font-size:48px}
+h1{text-align:center;color:var(--navy);margin:10px 0}
+.intro{text-align:center;color:var(--muted);line-height:1.5}
+label{display:block;margin-top:17px;font-weight:900;color:var(--navy)}
+input{width:100%;margin-top:7px;padding:13px;border:2px solid var(--border);border-radius:11px;font:inherit}
+input:focus{outline:3px solid rgba(25,184,211,.16);border-color:var(--cyan)}
+button,.btnlink{display:block;width:100%;margin-top:13px;border:0;border-radius:11px;padding:13px;background:var(--blue);color:#fff;font-weight:900;text-align:center;text-decoration:none;cursor:pointer;font:inherit}
+.btnlink{background:var(--green)}
+.msg{min-height:24px;margin-top:11px;font-weight:900;line-height:1.45}
+.err{color:var(--red)}.ok{color:var(--green)}
+.hidden{display:none!important}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:14px}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell"><a href="index.html">⚓ FigaroMN</a></div></header>
+<main class="shell wrap">
+ <section class="card">
+  <div class="icon" aria-hidden="true">🔑</div>
+  <h1>Nouveau mot de passe</h1>
+  <p class="intro" id="intro">Choisissez un nouveau mot de passe pour votre compte FigaroMN.</p>
+
+  <form id="resetForm">
+   <label for="password1">Nouveau mot de passe
+    <input id="password1" type="password" minlength="6" autocomplete="new-password" required>
+   </label>
+   <label for="password2">Confirmer le mot de passe
+    <input id="password2" type="password" minlength="6" autocomplete="new-password" required>
+   </label>
+   <button type="submit" id="saveBtn">Enregistrer le nouveau mot de passe</button>
+  </form>
+
+  <div id="msg" class="msg" aria-live="polite"></div>
+  <a id="returnBtn" class="btnlink hidden" href="index.html">Retour à FigaroMN</a>
+  <p class="note">La modification du mot de passe ne crée pas un nouveau compte : vos travaux restent associés à votre identifiant FigaroMN.</p>
+ </section>
+</main>
+
+<script src="supabase-config.js"></script>
+<script src="figaromn-cloud.js"></script>
+<script>
+(function(){
+ "use strict";
+
+ const form=document.getElementById("resetForm");
+ const msg=document.getElementById("msg");
+ const p1=document.getElementById("password1");
+ const p2=document.getElementById("password2");
+ const returnBtn=document.getElementById("returnBtn");
+ const intro=document.getElementById("intro");
+
+ const hash=new URLSearchParams((location.hash||"").replace(/^#/,""));
+ const accessToken=hash.get("access_token")||"";
+ const type=hash.get("type")||"";
+ const errorDescription=hash.get("error_description")||hash.get("error")||"";
+
+ function showError(text){
+   msg.className="msg err";
+   msg.textContent=text;
+ }
+
+ if(errorDescription){
+   form.classList.add("hidden");
+   intro.textContent="Le lien de récupération n'est plus utilisable.";
+   showError(decodeURIComponent(errorDescription.replace(/\+/g," ")));
+   returnBtn.classList.remove("hidden");
+   return;
+ }
+
+ if(!accessToken || (type && type!=="recovery")){
+   form.classList.add("hidden");
+   intro.textContent="Lien de récupération manquant ou invalide.";
+   showError("Demandez un nouveau lien de réinitialisation à votre enseignant.");
+   returnBtn.classList.remove("hidden");
+   return;
+ }
+
+ form.addEventListener("submit",async function(e){
+   e.preventDefault();
+   msg.className="msg";
+   msg.textContent="Enregistrement…";
+
+   if(p1.value!==p2.value){
+     showError("Les deux mots de passe ne correspondent pas.");
+     p2.focus();
+     return;
+   }
+
+   try{
+     await FigaroCloud.updatePasswordWithRecovery(accessToken,p1.value);
+     try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}
+     form.classList.add("hidden");
+     intro.textContent="Votre mot de passe a été modifié.";
+     msg.className="msg ok";
+     msg.textContent="Vous pouvez maintenant vous reconnecter avec le même compte. Vos travaux sont conservés.";
+     returnBtn.classList.remove("hidden");
+   }catch(err){
+     showError(err.message||"Impossible de modifier le mot de passe.");
+   }
+ });
+})();
+</script>
+</body>
+</html>

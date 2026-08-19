@@ -76,6 +76,54 @@ async function signOut(){
   clearSession();
 }
 
+async function publicAuthApi(path, options){
+  options = options || {};
+  var headers = Object.assign({
+    "apikey": CFG.key,
+    "Content-Type": "application/json"
+  }, options.headers || {});
+
+  var response = await fetch(CFG.url + path, Object.assign({}, options, {headers: headers}));
+  var raw = await response.text();
+  var data = null;
+  try { data = raw ? JSON.parse(raw) : null; } catch(e){ data = raw; }
+
+  if(!response.ok){
+    var msg = (data && (data.message || data.msg || data.error_description || data.error))
+      || ("Erreur HTTP " + response.status);
+    var err = new Error(msg);
+    err.status = response.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
+async function requestPasswordReset(email, redirectTo){
+  email = String(email || "").trim();
+  if(!email) throw new Error("Adresse e-mail requise.");
+  var path = "/auth/v1/recover";
+  if(redirectTo){
+    path += "?redirect_to=" + encodeURIComponent(String(redirectTo));
+  }
+  return publicAuthApi(path,{
+    method:"POST",
+    body:JSON.stringify({email:email})
+  });
+}
+
+async function updatePasswordWithRecovery(accessToken, newPassword){
+  accessToken = String(accessToken || "").trim();
+  newPassword = String(newPassword || "");
+  if(!accessToken) throw new Error("Lien de récupération invalide ou expiré.");
+  if(newPassword.length < 6) throw new Error("Le mot de passe doit contenir au moins 6 caractères.");
+  return publicAuthApi("/auth/v1/user",{
+    method:"PUT",
+    headers:{Authorization:"Bearer " + accessToken},
+    body:JSON.stringify({password:newPassword})
+  });
+}
+
 async function profile(){
   var s = loadSession();
   if(!s || !s.user) return null;
@@ -125,6 +173,8 @@ function esc(value){
 window.FigaroCloud = {
   api:api, table:table,
   signUp:signUp, signIn:signIn, signOut:signOut,
+  requestPasswordReset:requestPasswordReset,
+  updatePasswordWithRecovery:updatePasswordWithRecovery,
   profile:profile, requireRole:requireRole,
   session:loadSession, esc:esc
 };

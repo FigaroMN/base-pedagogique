@@ -26,7 +26,7 @@
 (async function(){
  const p=await FigaroCloud.requireRole("student");if(!p)return;
  const $=id=>document.getElementById(id),labels={seconde:"Seconde BAC PRO MN",premiere:"Première BAC PRO MN",terminale:"Terminale BAC PRO MN"};
- logout.onclick=async()=>{await FigaroCloud.signOut();location.href="bac-pro.html";};
+ logout.onclick=async()=>{await FigaroCloud.signOut();location.href="index.html";};
  if(p.archived_at){document.querySelector("main").innerHTML="<section class='hero'><h1>Compte archivé</h1><p>Contacte ton enseignant.</p></section>";return;}
  welcome.textContent="Bonjour "+(p.full_name||"élève");
  async function safe(name,q){try{return await FigaroCloud.table(name,q||"");}catch(e){return [];}}

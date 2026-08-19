@@ -1,0 +1,59 @@
+FIGAROMN V5 – IDENTIFICATION DES ÉLÈVES
+==========================================
+
+OBJECTIF
+-------
+Le simple code CAP "tcapt" est supprimé du parcours élève.
+Tous les élèves utilisent maintenant un compte personnel FigaroMN.
+
+PARCOURS ÉLÈVE
+--------------
+CAP :
+Accueil > CAP > Identification élève > CAP
+
+BAC PRO :
+Accueil > BAC PRO > choix du niveau
+> Seconde / Première / Terminale
+> Identification élève
+> espace du niveau
+
+PREMIÈRE CONNEXION
+------------------
+L'élève renseigne :
+- Nom et prénom
+- Adresse e-mail
+- Mot de passe personnel
+
+CONNEXIONS SUIVANTES
+--------------------
+- Adresse e-mail
+- Mot de passe
+
+SÉCURITÉ / SÉPARATION DES DONNÉES CAP
+--------------------------------------
+Les données locales du widget CAP sont désormais préfixées par
+l'identifiant Supabase de l'élève. Deux élèves utilisant le même
+ordinateur ne partagent donc plus le même historique local CAP.
+
+SUPABASE À FAIRE UNE FOIS
+-------------------------
+1. Ouvrir Supabase > SQL Editor.
+2. Exécuter :
+   MIGRATION-AUTH-ELEVES-CAP-BACPRO.sql
+3. Ne pas supprimer les comptes existants.
+
+GITHUB
+------
+1. Décompresser le patch.
+2. Charger tous les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Accepter les remplacements.
+4. Commit sur main.
+5. Attendre GitHub Pages.
+6. Tester d'abord avec un élève test.
+
+IMPORTANT
+---------
+L'identification CAP est maintenant Supabase.
+Les résultats détaillés du widget CAP restent pour cette V5 stockés
+localement par compte et par navigateur. Leur synchronisation complète
+dans le tableau professeur Supabase fera l'objet d'une migration dédiée.

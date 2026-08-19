@@ -14,7 +14,7 @@ button,input,select,textarea{font:inherit}.shell{width:min(1220px,calc(100% - 28
 .card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 8px 24px rgba(6,40,61,.05)}
 .card h2,.card h3{color:var(--navy);margin-top:0}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;background:#fff;margin-top:5px}
-.level-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.level-tabs button{border:0;border-radius:11px;padding:12px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}.level-tabs button.active{background:var(--navy);color:#fff}
+.level-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}.level-tabs button{border:0;border-radius:11px;padding:12px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}.level-tabs button.active{background:var(--navy);color:#fff}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}.kpi{padding:14px;border:1px solid var(--border);border-radius:14px;background:#fff}.kpi span{display:block;color:var(--muted);font-size:.78rem}.kpi strong{display:block;color:var(--navy);font-size:1.5rem;margin-top:4px}
 .tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:980px}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;font-size:.88rem}th{background:#e8f2f5;color:var(--navy);position:sticky;top:0}
 .student-name{font-weight:900;color:var(--navy)}.bar{height:8px;background:#dce9ed;border-radius:999px;overflow:hidden;margin-top:6px}.bar span{display:block;height:100%;background:var(--green)}
@@ -36,6 +36,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <button type="button" data-level="seconde">2️⃣ Seconde</button>
 <button type="button" data-level="premiere">1️⃣ Première</button>
 <button type="button" data-level="terminale">🏁 Terminale</button>
+<button type="button" data-level="cap">⚓ CAP</button>
 </div>
 <div class="grid3">
 <label>Classe<select id="filterClass"><option value="">Toutes les classes</option></select></label>
@@ -56,7 +57,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <section class="card"><h2>3 · Gestion des classes</h2>
 <div class="grid3">
 <label>Nom de la classe<input id="newClassName" placeholder="Ex. 2MN"></label>
-<label>Niveau<select id="newClassLevel"><option value="seconde">Seconde</option><option value="premiere">Première</option><option value="terminale">Terminale</option></select></label>
+<label>Niveau<select id="newClassLevel"><option value="seconde">Seconde</option><option value="premiere">Première</option><option value="terminale">Terminale</option><option value="cap">CAP</option></select></label>
 <label>Année scolaire<input id="newClassYear" placeholder="2026-2027"></label>
 </div><br><button class="btn good" id="createClass" type="button">Créer la classe</button><div id="classMsg" class="msg"></div>
 <hr style="border:0;border-top:1px solid var(--border);margin:22px 0">
@@ -87,11 +88,11 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 "use strict";
 const me=await FigaroCloud.requireRole("teacher"); if(!me)return;
 const $=id=>document.getElementById(id);
-const labels={seconde:"Seconde",premiere:"Première",terminale:"Terminale"};
+const labels={cap:"CAP",seconde:"Seconde",premiere:"Première",terminale:"Terminale"};
 let selectedLevel="",classes=[],classMap={},profiles=[],memberships=[],sessions=[],progress=[],evaluations=[],attempts=[],autoStatus=[],observations=[],interactive=[];
 let refreshTimer=null, busy=false;
 
-$("logout").onclick=async()=>{await FigaroCloud.signOut();location.href="bac-pro.html";};
+$("logout").onclick=async()=>{await FigaroCloud.signOut();location.href="index.html";};
 
 async function safeTable(name,query){
  try{return await FigaroCloud.table(name,query||"");}
@@ -192,10 +193,14 @@ function renderStudents(){
    <td>${ev.n?`<strong>${ev.avg.toFixed(1)} /20</strong><div class="small">${ev.n} tentative(s)</div>`:"—"}</td>
    <td>${esc(autoText)}</td>
    <td><span class="pill ${isRecent(last)?"live":""}">${esc(ago(last))}</span></td>
-   <td><button class="btn light viewStudent" data-id="${p.id}" type="button">Voir le suivi</button></td>
+   <td><div class="actions">
+    <button class="btn light viewStudent" data-id="${p.id}" type="button">Voir le suivi</button>
+    <button class="btn orange resetPassword" data-id="${p.id}" type="button">🔑 Réinitialiser</button>
+   </div></td>
   </tr>`;
  }).join("")||"<tr><td colspan='9'>Aucun élève pour ce filtre.</td></tr>";
  document.querySelectorAll(".viewStudent").forEach(b=>b.onclick=()=>openStudent(b.dataset.id));
+ document.querySelectorAll(".resetPassword").forEach(b=>b.onclick=()=>sendPasswordReset(b.dataset.id,b));
 }
 function renderSelects(){
  const active=profiles.filter(p=>!p.archived_at);
@@ -226,6 +231,31 @@ async function loadLive(){
  }catch(e){$("pageMsg").textContent="Erreur de suivi : "+e.message;$("liveBadge").textContent="● Actualisation en erreur";$("liveBadge").className="pill badpill";}
  finally{busy=false;}
 }
+async function sendPasswordReset(id,button){
+ const p=profiles.find(x=>x.id===id);
+ if(!p)return;
+ if(!p.email){
+   alert("Aucune adresse e-mail n'est enregistrée pour cet élève.");
+   return;
+ }
+ const who=p.full_name||p.email;
+ if(!confirm("Envoyer un lien de réinitialisation du mot de passe à "+who+"\\n\\n"+p.email+" ?"))return;
+
+ const oldText=button?button.textContent:"";
+ if(button){button.disabled=true;button.textContent="Envoi…";}
+ try{
+   const redirect=new URL("nouveau-mot-de-passe.html",location.href).toString();
+   await FigaroCloud.requestPasswordReset(p.email,redirect);
+   $("pageMsg").textContent="Lien de réinitialisation envoyé à "+p.email+". Le compte et les travaux de l'élève sont conservés.";
+   $("pageMsg").className="msg ok";
+ }catch(e){
+   $("pageMsg").textContent="Réinitialisation impossible : "+e.message;
+   $("pageMsg").className="msg";
+ }finally{
+   if(button){button.disabled=false;button.textContent=oldText;}
+ }
+}
+
 function openStudent(id){
  const p=profiles.find(x=>x.id===id);if(!p)return;
  $("studentModalTitle").textContent=p.full_name||p.email||"Élève";
@@ -245,9 +275,13 @@ function openStudent(id){
  const auto=autoStatus.filter(x=>x.student_id===id).sort((a,b)=>Number(a.competency_code.slice(1))-Number(b.competency_code.slice(1)));
  const skills=auto.length?auto.map(s=>`<div class="skill"><strong>${esc(s.competency_code)}</strong><div>${s.is_complete?esc(s.acquisition_label)+" · "+(s.percent==null?"—":s.percent+" %"):"À positionner"}</div><div class="small">${s.indicators_positioned}/${s.indicators_required} indicateurs</div></div>`).join(""):"<div class='small'>Aucun indicateur synchronisé.</div>";
  const evalList=evaluations.filter(x=>x.student_id===id).slice(0,12).map(x=>{const s=sm[x.session_id];return `<tr><td>${fmtDate(x.submitted_at)}</td><td>${s?`Séq. ${s.period} · Séance ${s.session_no}`:"—"}</td><td><strong>${x.score}/20</strong></td><td>${x.attempt_no}</td></tr>`;}).join("")||"<tr><td colspan='4'>Aucune évaluation.</td></tr>";
- $("studentModalBody").innerHTML=`<h3>Progression annuelle</h3><div class="seq-grid">${seqHtml}</div>
+ $("studentModalBody").innerHTML=`<div class="actions" style="margin-bottom:18px">
+  <button id="modalResetPassword" class="btn orange" type="button">🔑 Réinitialiser le mot de passe</button>
+ </div>
+ <h3>Progression annuelle</h3><div class="seq-grid">${seqHtml}</div>
  <h3 style="margin-top:22px">Compétences calculées automatiquement</h3><div class="skill-grid">${skills}</div>
  <h3 style="margin-top:22px">Historique récent des évaluations</h3><div class="tablewrap"><table><thead><tr><th>Date</th><th>Séance</th><th>Note</th><th>Tentative</th></tr></thead><tbody>${evalList}</tbody></table></div>`;
+ $("modalResetPassword").onclick=function(){sendPasswordReset(id,this);};
  $("studentModal").classList.add("show");
 }
 $("closeModal").onclick=()=>$("studentModal").classList.remove("show");

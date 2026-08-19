@@ -1,0 +1,63 @@
+FIGAROMN – V4 CAP INTÉGRÉ
+===========================
+
+Cette version repart de la V3 complète et conserve les mises à jour précédentes.
+
+NOUVEAU
+-------
+- Le CAP est maintenant hébergé DIRECTEMENT dans GitHub Pages.
+- Il n'y a plus de renvoi obligatoire vers evoluxiaprime.com/periode1cap.
+- Code d'accès CAP : tcapt
+- cap.html reprend le widget CAP fourni :
+  * 7 séquences
+  * 35 exercices formatifs
+  * 7 évaluations
+  * historique des tentatives
+  * calcul par indicateurs puis compétences
+  * impression / enregistrement PDF
+- Nouvelle page d'accueil :
+  * Progression BAC PRO
+  * Progression CAP
+  * Accès professeur
+- Nouveau acces-prof.html :
+  * choix BAC PRO
+  * choix CAP
+- choix-niveau.html redevient uniquement BAC PRO.
+- Toutes les mises à jour Bac Pro précédentes sont conservées :
+  progression de cycle, 108 séances, suivi enseignant, indicateurs,
+  compétences, Supabase et migrations déjà présentes.
+
+FICHIERS PRINCIPAUX NOUVEAUX / MODIFIÉS
+----------------------------------------
+index.html
+acces-prof.html
+cap-acces.html
+cap.html
+choix-niveau.html
+
+MISE À JOUR GITHUB
+------------------
+1. Télécharger et DÉCOMPRESSER l'archive ZIP.
+2. Aller dans FigaroMN/base-pedagogique.
+3. Charger TOUS les fichiers décompressés à la racine du dépôt.
+4. Accepter le remplacement des fichiers existants.
+5. Commit sur la branche main.
+6. Attendre GitHub Pages.
+7. Tester :
+   https://figaromn.github.io/base-pedagogique/index.html
+
+TEST CAP
+--------
+Accueil > Progression CAP
+Code : tcapt
+
+ATTENTION
+---------
+Le code tcapt est un verrou pédagogique côté navigateur et non une
+authentification informatique forte.
+
+SUPABASE
+--------
+Cette intégration CAP ne nécessite pas de nouvelle migration Supabase.
+Les migrations Bac Pro déjà exécutées ne doivent pas être relancées
+uniquement pour installer le CAP.

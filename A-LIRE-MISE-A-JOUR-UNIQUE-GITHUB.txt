@@ -1,0 +1,51 @@
+FIGAROMN – MISE À JOUR UNIQUE GITHUB
+====================================
+
+Cette archive regroupe TOUTES les mises à jour déjà réalisées :
+- Cycle BAC PRO
+- CAP intégré dans GitHub
+- Identification élève CAP / Seconde / Première / Terminale
+- Suivi enseignant par niveau / classe
+- Exercices, évaluations, indicateurs et compétences
+- Réinitialisation du mot de passe élève
+- Page nouveau-mot-de-passe.html
+- Fichiers Supabase et migrations déjà ajoutés
+
+INSTALLATION GITHUB
+-------------------
+1. Télécharger et DÉCOMPRESSER cette archive.
+2. Ouvrir le dépôt :
+   FigaroMN/base-pedagogique
+3. Cliquer sur Add file > Upload files.
+4. Envoyer TOUS les fichiers décompressés à la RACINE du dépôt.
+5. Accepter le remplacement des fichiers existants.
+6. Commit changes sur la branche main.
+7. Attendre le déploiement GitHub Pages.
+8. Tester :
+   https://figaromn.github.io/base-pedagogique/index.html
+
+IMPORTANT
+---------
+- Ne pas envoyer le ZIP directement dans le dépôt.
+- Il faut envoyer les fichiers décompressés.
+- Cette archive remplace les anciens patchs : vous n'avez plus besoin
+  d'envoyer séparément les versions V4, V5 ou V6.
+
+SUPABASE
+--------
+Si la migration V5 d'identification CAP/BAC PRO n'a PAS encore été exécutée :
+exécuter une seule fois :
+MIGRATION-AUTH-ELEVES-CAP-BACPRO.sql
+
+Pour la réinitialisation du mot de passe, vérifier dans Supabase :
+Authentication > URL Configuration > Redirect URLs
+
+Ajouter :
+https://figaromn.github.io/base-pedagogique/nouveau-mot-de-passe.html
+
+Si les migrations précédentes ont déjà été exécutées, ne pas les relancer
+uniquement pour cette mise à jour.
+
+VERSION
+-------
+FigaroMN – Mise à jour unique GitHub

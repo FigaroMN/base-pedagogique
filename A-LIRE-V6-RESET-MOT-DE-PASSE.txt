@@ -1,0 +1,72 @@
+FIGAROMN V6 – RÉINITIALISATION DES MOTS DE PASSE
+================================================
+
+Cette version conserve toute la V5 :
+- CAP intégré dans GitHub ;
+- identification personnelle des élèves ;
+- CAP / Seconde / Première / Terminale ;
+- suivi enseignant ;
+- progression, exercices, évaluations et compétences ;
+- comptes Supabase existants.
+
+NOUVEAU
+-------
+Dans l'espace Enseignant, chaque élève possède maintenant :
+- Voir le suivi
+- Réinitialiser le mot de passe
+
+Le bouton envoie un lien de récupération à l'adresse e-mail de l'élève.
+L'élève ouvre le lien et choisit son nouveau mot de passe sur :
+nouveau-mot-de-passe.html
+
+LE TRAVAIL EST CONSERVÉ
+-----------------------
+La réinitialisation ne supprime pas le compte et ne crée pas un nouvel élève.
+L'identifiant Supabase reste le même. Les données rattachées à cet identifiant
+restent donc conservées.
+
+AUTONOMIE ÉLÈVE
+---------------
+La fenêtre de connexion élève possède aussi :
+"Mot de passe oublié ?"
+
+Le professeur peut donc envoyer le lien, ou l'élève peut le demander lui-même.
+
+AUCUNE NOUVELLE MIGRATION SQL
+-----------------------------
+Cette V6 ne nécessite pas de modification des tables Supabase.
+
+RÉGLAGE SUPABASE À VÉRIFIER UNE FOIS
+-------------------------------------
+Dans Supabase :
+Authentication > URL Configuration > Redirect URLs
+
+Ajouter l'URL suivante :
+https://figaromn.github.io/base-pedagogique/nouveau-mot-de-passe.html
+
+Si ton dépôt GitHub Pages utilise une autre adresse, ajouter l'adresse
+correspondante de nouveau-mot-de-passe.html.
+
+IMPORTANT
+---------
+Supabase limite les envois d'e-mails d'authentification. Éviter de cliquer
+plusieurs fois de suite sur "Réinitialiser".
+
+INSTALLATION GITHUB
+-------------------
+1. Décompresser le ZIP.
+2. Envoyer TOUS les fichiers décompressés à la racine de :
+   FigaroMN/base-pedagogique
+3. Accepter les remplacements.
+4. Commit changes sur main.
+5. Attendre GitHub Pages.
+6. Tester avec un compte élève test.
+
+FICHIERS PRINCIPAUX MODIFIÉS / AJOUTÉS
+---------------------------------------
+figaromn-cloud.js
+enseignant.html
+connexion-eleve.html
+connexion.html
+nouveau-mot-de-passe.html
+A-LIRE-V6-RESET-MOT-DE-PASSE.txt

@@ -22,7 +22,9 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
 <form id="loginForm">
 <label>E-mail<input id="loginEmail" type="email" autocomplete="username" required></label><br><br>
 <label>Mot de passe<input id="loginPassword" type="password" autocomplete="current-password" required></label><br><br>
-<button class="btn good" type="submit">Se connecter</button><div id="loginMsg" class="msg"></div>
+<button class="btn good" type="submit">Se connecter</button>
+<button class="btn light" id="forgotBtn" type="button">Mot de passe oublié ?</button>
+<div id="loginMsg" class="msg"></div>
 </form></section>
 <section class="card" id="signupCard"><h2>Créer un compte élève</h2>
 <p class="muted">Le compte est créé sans confirmation e-mail. L'enseignant pourra ensuite le rattacher à sa classe.</p>
@@ -39,11 +41,12 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
  const q=new URLSearchParams(location.search);
  const mode=q.get("mode")==="enseignant"?"enseignant":"eleve";
  const level=["seconde","premiere","terminale"].includes(q.get("level"))?q.get("level"):"";
+ const cycle=q.get("cycle")==="cap"?"cap":"bacpro";
  const expected=mode==="enseignant"?"teacher":"student";
 
  modeBadge.textContent=mode==="enseignant"?"🔐 ENSEIGNANT":"🎓 ÉLÈVE";
  pageTitle.textContent=mode==="enseignant"?"Connexion Enseignant":"Connexion Élève";
- pageIntro.textContent=level?"Niveau choisi : "+({seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[level]):"";
+ pageIntro.textContent=cycle==="cap"?"Cycle choisi : CAP Maintenance Nautique":(level?"Niveau choisi : "+({seconde:"Seconde",premiere:"Première",terminale:"Terminale"}[level]):"");
  if(mode==="enseignant") signupCard.style.display="none";
 
  const current=FigaroCloud.session();
@@ -51,7 +54,7 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
    try{
      const p=await FigaroCloud.profile();
      if(p&&p.role===expected){
-       location.href=(expected==="teacher"?"enseignant.html":"eleve.html")+(level?"?level="+level:"");
+       location.href=expected==="teacher"?(cycle==="cap"?"cap.html?mode=enseignant":("enseignant.html"+(level?"?level="+level:""))):("eleve.html"+(level?"?level="+level:""));
        return;
      }
      await FigaroCloud.signOut();
@@ -70,8 +73,21 @@ label{font-weight:800}input,select,textarea{width:100%;font:inherit;padding:11px
          :"Ce compte n'est pas un compte élève.";
        return;
      }
-     location.href=(p.role==="teacher"?"enseignant.html":"eleve.html")+(level?"?level="+level:"");
+     location.href=p.role==="teacher"?(cycle==="cap"?"cap.html?mode=enseignant":("enseignant.html"+(level?"?level="+level:""))):("eleve.html"+(level?"?level="+level:""));
    }catch(err){ loginMsg.textContent="Connexion impossible : "+err.message; }
+ };
+
+
+ forgotBtn.onclick=async function(){
+   const email=loginEmail.value.trim();
+   if(!email){loginMsg.textContent="Saisis d'abord ton adresse e-mail.";loginEmail.focus();return;}
+   loginMsg.textContent="Envoi du lien…";forgotBtn.disabled=true;
+   try{
+     const redirect=new URL("nouveau-mot-de-passe.html",location.href).toString();
+     await FigaroCloud.requestPasswordReset(email,redirect);
+     loginMsg.textContent="Si cette adresse correspond à un compte, un lien de réinitialisation a été envoyé.";
+   }catch(err){loginMsg.textContent="Impossible d'envoyer le lien : "+err.message;}
+   finally{forgotBtn.disabled=false;}
  };
 
  signupForm.onsubmit=async function(e){
