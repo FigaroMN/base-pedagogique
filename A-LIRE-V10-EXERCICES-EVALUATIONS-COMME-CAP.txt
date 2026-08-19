@@ -1,0 +1,96 @@
+FIGAROMN V10 – EXERCICES ET ÉVALUATIONS BAC PRO COMME LE CAP
+================================================================
+
+Cette version conserve toutes les mises à jour V9.
+
+NOUVEAU : EXERCICES BAC PRO
+---------------------------
+Seconde, Première et Terminale utilisent maintenant la même disposition
+que le CAP dans l'onglet Exercices :
+
+- regroupement par séquence ;
+- 6 situations / exercices par séquence ;
+- cartes en 2 colonnes ;
+- compétences travaillées ;
+- meilleur score ;
+- nombre de tentatives ;
+- dernière note /20 ;
+- niveau d'acquisition par compétence ;
+- bouton Faire l'exercice ;
+- bouton Exercice terminé ;
+- bouton Refaire l'exercice ;
+- historique complet des tentatives ;
+- impression de l'exercice ;
+- PDF / impression de la dernière tentative.
+
+CODE POUR REFAIRE UN EXERCICE
+-----------------------------
+refaire
+
+Le code est identique pour Seconde, Première et Terminale.
+
+NOUVEAU : ÉVALUATIONS BAC PRO
+-----------------------------
+Même disposition que le CAP :
+
+- 6 cartes d'évaluation par niveau ;
+- note /20 ;
+- meilleure note ;
+- dernière note ;
+- nombre de tentatives ;
+- compétences évaluées ;
+- niveau d'acquisition ;
+- code enseignant avant la première ouverture ;
+- code enseignant pour refaire une évaluation ;
+- historique complet ;
+- PDF / impression.
+
+CODE POUR REFAIRE UNE ÉVALUATION
+--------------------------------
+evaluation
+
+CODES D'ACCÈS AUX ÉVALUATIONS
+-----------------------------
+
+SECONDE
+Évaluation 1 : MN2A26
+Évaluation 2 : MN2B26
+Évaluation 3 : MN2C26
+Évaluation 4 : MN2D26
+Évaluation 5 : MN2E26
+Évaluation 6 : MN2F26
+
+PREMIÈRE
+Évaluation 1 : MN1A26
+Évaluation 2 : MN1B26
+Évaluation 3 : MN1C26
+Évaluation 4 : MN1D26
+Évaluation 5 : MN1E26
+Évaluation 6 : MN1F26
+
+TERMINALE
+Évaluation 1 : MNTA26
+Évaluation 2 : MNTB26
+Évaluation 3 : MNTC26
+Évaluation 4 : MNTD26
+Évaluation 5 : MNTE26
+Évaluation 6 : MNTF26
+
+IMPORTANT
+---------
+Ces codes sont des verrous pédagogiques côté navigateur.
+GitHub Pages est un site statique : ils ne constituent pas des secrets
+informatiques forts.
+
+SUPABASE
+--------
+Aucune nouvelle migration Supabase n'est nécessaire pour cette V10.
+Conserver la migration V9 déjà prévue pour le suivi détaillé CAP.
+
+INSTALLATION
+------------
+1. Décompresser l'archive V10.
+2. Envoyer tous les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Accepter les remplacements.
+4. Commit changes sur main.
+5. Tester un exercice et une évaluation sur chaque niveau.
