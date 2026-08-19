@@ -33,6 +33,17 @@ function note20(score,total){
  if(total<=0)return 0;
  return Math.round((score/total*20)*10)/10;
 }
+
+function levelInfo(pct){
+ if(pct==null || !isFinite(Number(pct))){
+  return {level:0,label:"À positionner",cls:"skill-wait"};
+ }
+ pct=Number(pct);
+ if(pct<50)return {level:1,label:"Non acquis",cls:"skill-na"};
+ if(pct<70)return {level:2,label:"En cours d’acquisition",cls:"skill-eca"};
+ if(pct<85)return {level:3,label:"Acquis",cls:"skill-acq"};
+ return {level:4,label:"Maîtrisé",cls:"skill-mait"};
+}
 function show(name){
  document.querySelectorAll("#fmn-level-master .main-view").forEach(function(s){s.classList.add("hidden");});
  var el=$("fmn-view-"+name);if(el)el.classList.remove("hidden");

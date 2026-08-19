@@ -1,0 +1,51 @@
+FIGAROMN V16 – EXERCICES / ÉVALUATIONS + VALIDATION DES SÉANCES
+================================================================
+
+CORRECTION PRINCIPALE
+---------------------
+L'erreur "levelInfo is not defined" est corrigée.
+
+Cette fonction calcule :
+- À positionner
+- Non acquis
+- En cours d'acquisition
+- Acquis
+- Maîtrisé
+
+Les onglets Exercices et Évaluations peuvent de nouveau afficher
+les indicateurs et les niveaux d'acquisition.
+
+VALIDATION DES SÉANCES
+----------------------
+Dans chaque cours, chacune des 6 séances possède maintenant :
+
+[ ✅ Valider la séance faite ]
+
+Quand l'élève clique :
+- session_progress est enregistré dans Supabase avec status=completed ;
+- la barre de progression de l'accueil est mise à jour ;
+- le bouton devient "Séance validée".
+
+IMPORTANT
+---------
+Cette validation indique seulement que la séance a été faite.
+Elle ne valide pas automatiquement une compétence.
+
+Les compétences restent calculées par :
+question -> indicateur -> % -> compétence.
+
+Les évaluations conservent en plus la note automatique /20.
+
+SUPABASE
+--------
+Aucune nouvelle migration SQL V16.
+La table session_progress et ses droits sont déjà utilisés par FigaroMN.
+
+INSTALLATION GITHUB
+-------------------
+1. Décompresser le ZIP V16.
+2. Envoyer tous les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Accepter les remplacements.
+4. Commit changes.
+5. Tester avec un compte élève :
+   Séquence -> Cours -> Valider une séance -> Exercices -> Évaluations.

@@ -134,6 +134,99 @@ function renderCourses(){
  document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>openCourse(selectSequence(b.dataset.seq)));
 }
 
+
+async function validateSessionDone(period,no,button,statusBox){
+ if(isTeacher){
+  if(statusBox)statusBox.textContent="La validation de séance est réservée au compte élève.";
+  return;
+ }
+ if(!me || !me.id){
+  if(statusBox)statusBox.textContent="Compte élève non chargé.";
+  return;
+ }
+
+ const db=sessionDb(period,no);
+ if(!db){
+  if(statusBox)statusBox.textContent="Séance Supabase introuvable.";
+  return;
+ }
+
+ if(button){
+  button.disabled=true;
+  button.textContent="⏳ Enregistrement…";
+ }
+
+ const now=new Date().toISOString();
+ const existing=pRow(period,no);
+
+ try{
+  if(existing){
+   await FigaroCloud.table(
+    "session_progress",
+    "student_id=eq."+encodeURIComponent(me.id)+"&session_id=eq."+encodeURIComponent(db.id),
+    {
+     method:"PATCH",
+     headers:{Prefer:"return=minimal"},
+     body:JSON.stringify({
+      status:"completed",
+      completed_at:now,
+      updated_at:now
+     })
+    }
+   );
+   existing.status="completed";
+   existing.completed_at=now;
+   existing.updated_at=now;
+  }else{
+   await FigaroCloud.table(
+    "session_progress",
+    "",
+    {
+     method:"POST",
+     headers:{Prefer:"return=minimal"},
+     body:JSON.stringify({
+      student_id:me.id,
+      session_id:db.id,
+      status:"completed",
+      started_at:now,
+      completed_at:now,
+      updated_at:now
+     })
+    }
+   );
+   progress.push({
+    student_id:me.id,
+    session_id:db.id,
+    status:"completed",
+    started_at:now,
+    completed_at:now,
+    updated_at:now
+   });
+  }
+
+  if(button){
+   button.textContent="✅ Séance validée";
+   button.classList.remove("orange");
+   button.classList.add("green");
+   button.disabled=true;
+  }
+  if(statusBox){
+   statusBox.textContent="Séance terminée · enregistrée dans le suivi";
+   statusBox.classList.add("done");
+  }
+
+  renderProgress();
+ }catch(err){
+  if(button){
+   button.disabled=false;
+   button.textContent="✅ Valider la séance faite";
+  }
+  if(statusBox){
+   statusBox.textContent="Enregistrement impossible : "+(err.message||"erreur inconnue");
+  }
+ }
+}
+
 function openCourse(seqNo){
  selectedSequence=selectSequence(seqNo);
  const seq=CFG.sequences.find(x=>Number(x.no)===selectedSequence);
@@ -162,13 +255,35 @@ function openCourse(seqNo){
    <div class="info"><strong>Compétences travaillées :</strong> ${comps.length?comps.join(" · "):"—"}</div>
 
    ${course.sessions.map(s=>`
-    <section class="flow-course-part">
+    <section class="flow-course-part ${sessionStatus(seq.no,s.no)==="completed"?"flow-session-done":""}">
      <div class="flow-course-head">
-      <span class="pill">SÉANCE ${s.no}</span>
+      <div class="flow-session-titleline">
+       <span class="pill">SÉANCE ${s.no}</span>
+       <span class="status-pill ${sessionStatus(seq.no,s.no)==="completed"?"done":""}" data-session-status="${seq.no}|${s.no}">
+        ${sessionStatus(seq.no,s.no)==="completed"?"Séance terminée":"À réaliser"}
+       </span>
+      </div>
       <h3>${esc(s.title)}</h3>
       ${s.objective?`<p><strong>Objectif :</strong> ${esc(s.objective)}</p>`:""}
      </div>
+
      <div class="flow-course-resource">${s.html}</div>
+
+     ${!isTeacher?`
+      <div class="flow-session-validate">
+       <div>
+        <strong>Suivi de la séance ${s.no}</strong>
+        <p>Valide la séance lorsqu’elle a réellement été réalisée.</p>
+       </div>
+       <button
+        type="button"
+        class="btn ${sessionStatus(seq.no,s.no)==="completed"?"green":"orange"}"
+        data-validate-session="${seq.no}|${s.no}"
+        ${sessionStatus(seq.no,s.no)==="completed"?"disabled":""}>
+        ${sessionStatus(seq.no,s.no)==="completed"?"✅ Séance validée":"✅ Valider la séance faite"}
+       </button>
+      </div>
+     `:""}
     </section>
    `).join("")}
 
@@ -194,6 +309,17 @@ function openCourse(seqNo){
  $("fmn-course-note").addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
  $("fmn-course-done").onclick=()=>{try{localStorage.setItem(doneKey,"1");}catch(err){};$("fmn-course-done").textContent="✅ Cours terminé";};
  $("fmn-course-print").onclick=()=>window.print();
+
+ document.querySelectorAll("#fmn-course-detail [data-validate-session]").forEach(btn=>{
+  btn.onclick=async()=>{
+   const parts=btn.dataset.validateSession.split("|").map(Number);
+   const status=document.querySelector('#fmn-course-detail [data-session-status="'+parts[0]+'|'+parts[1]+'"]');
+   await validateSessionDone(parts[0],parts[1],btn,status);
+   const section=btn.closest(".flow-course-part");
+   if(section && btn.disabled)section.classList.add("flow-session-done");
+  };
+ });
+
  $("fmn-course-to-ex").onclick=()=>openExercisesSelected();
 }
 
