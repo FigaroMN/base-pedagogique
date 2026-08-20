@@ -536,7 +536,7 @@ function rebuildExercises(){
  var title=(CFG.sequences.find(function(s){return Number(s.no)===activeSequence;})||{}).title||("Séquence "+activeSequence);
  grid.className="exercise-course-list";
  grid.innerHTML=
-  '<details class="exercise-course" open data-exercise-course-index="'+(activeSequence-1)+'">'+
+  '<details class="exercise-course" data-exercise-course-index="'+(activeSequence-1)+'">'+
    '<summary><span class="course-icon">⛵</span><span><strong>Séquence '+activeSequence+' – '+esc(title)+'</strong><small>'+items.length+' exercices dans cette séquence</small></span><span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
    '<div class="situation-grid">'+items.map(function(ex){
     var rows=attemptRows("exercise",ex.sequence,ex.situation),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;

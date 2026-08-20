@@ -1,0 +1,50 @@
+FIGAROMN V22.4 – CORRECTION DEFINITIVE ACCORDEON EXERCICES BAC PRO
+===================================================================
+
+CAUSE TROUVEE
+-------------
+L'affichage BAC PRO des exercices est généré par :
+figaromn-bacpro-auto-v161.js
+
+La V22.3 avait corrigé l'ancien moteur d'affichage, mais le moteur
+automatique V161 continuait à ajouter l'attribut HTML « open » sur
+toutes les séquences.
+
+NOUVEAU COMPORTEMENT
+---------------------
+Quand l'élève clique sur l'onglet « Exercices » :
+- les 7 séquences sont visibles sous forme de lignes ;
+- elles sont TOUTES FERMEES ;
+- aucun exercice n'est affiché sous les lignes.
+
+Quand l'élève clique sur une séquence :
+- cette séquence s'ouvre ;
+- les autres restent fermées ;
+- si une autre séquence est ouverte, la précédente se referme.
+
+Depuis le bouton « exercices de cette séquence » d'un cours :
+- la séquence concernée reste directement ciblée.
+
+CACHE
+-----
+Les pages Seconde, Première et Terminale appellent maintenant :
+figaromn-bacpro-auto-v161.js?v=224
+
+Cela force le navigateur à charger la correction au lieu de réutiliser
+une ancienne copie mise en cache.
+
+CAP
+---
+Le comportement fermé au chargement déjà installé en V22.3 est conservé.
+
+SUPABASE
+--------
+Aucune modification Supabase.
+
+INSTALLATION
+------------
+1. Décompresser le patch.
+2. Envoyer tous les fichiers à la RACINE de FigaroMN/base-pedagogique.
+3. Accepter le remplacement.
+4. Attendre la publication GitHub Pages.
+5. Actualiser la page avec Ctrl+F5.

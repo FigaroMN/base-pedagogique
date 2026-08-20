@@ -553,7 +553,7 @@ function rebuildExercises(){
   var done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
   var title=(CFG.sequences.find(function(s){return Number(s.no)===seqNo;})||{}).title||("Séquence "+seqNo);
 
-  return '<details class="exercise-course" open data-exercise-course-index="'+(seqNo-1)+'">'+
+  return '<details class="exercise-course"'+(activeSequence===0?'':' open')+' data-exercise-course-index="'+(seqNo-1)+'">'+
    '<summary><span class="course-icon">⛵</span><span><strong>Séquence '+seqNo+' – '+esc(title)+'</strong>'+
    '<small>6 séances · 1 exercice formatif par séance</small></span>'+
    '<span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
@@ -582,6 +582,20 @@ function rebuildExercises(){
  }).join("");
 
  bindExerciseButtons();
+
+ // Accordéon des séquences :
+ // - entrée par l'onglet Exercices : toutes les séquences sont fermées ;
+ // - clic sur une séquence : elle seule s'ouvre ;
+ // - arrivée depuis un cours : seule la séquence concernée peut être ouverte.
+ var exerciseGroups=grid.querySelectorAll(".exercise-course");
+ exerciseGroups.forEach(function(group){
+  group.addEventListener("toggle",function(){
+   if(!group.open)return;
+   exerciseGroups.forEach(function(other){
+    if(other!==group)other.open=false;
+   });
+  });
+ });
 
  if(activeSequence===0){
   renderGlobalSummary("exercise","fmn-ex-skill-summary",null);
