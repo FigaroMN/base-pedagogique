@@ -1,0 +1,41 @@
+FIGAROMN V22.3 – EXERCICES FERMES AU CHARGEMENT
+===================================================
+
+MODIFICATION DEMANDEE
+---------------------
+Quand l'élève clique sur l'onglet « Exercices » :
+- toutes les séquences d'exercices arrivent fermées ;
+- rien ne s'ouvre automatiquement ;
+- l'élève doit cliquer sur une séquence pour l'ouvrir.
+
+COMPORTEMENT APPLIQUE A :
+- CAP
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+DETAIL
+------
+Dans la page « Mes exercices », les blocs de séquences sont
+désormais fermés par défaut, comme sur votre image.
+
+Ce qui reste inchangé :
+- un clic sur une séquence l'ouvre normalement ;
+- les résultats / historiques / impressions restent actifs ;
+- la navigation entre les séances reste libre (V22.2 conservée).
+
+CAS PARTICULIER
+---------------
+Les fonctions internes qui envoient volontairement l'élève vers une
+séquence précise peuvent toujours ouvrir la bonne séquence si besoin.
+En revanche, l'entrée normale par l'onglet « Exercices » affiche
+désormais tout fermé.
+
+SUPABASE
+--------
+Aucune modification Supabase n'est nécessaire.
+
+INSTALLATION
+------------
+Décompresser le patch V22.3 à la racine de FigaroMN/base-pedagogique
+et remplacer les fichiers existants.

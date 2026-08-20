@@ -414,8 +414,7 @@ function openCourse(seqNo,sessionNo){
  }
 
  function unlocked(no){
-  if(isTeacher||Number(no)===1)return true;
-  return finished(Number(no)-1);
+  return true;
  }
 
  function firstAvailable(){
@@ -441,11 +440,11 @@ function openCourse(seqNo,sessionNo){
 
  const stepHTML=[1,2,3,4,5,6].map(n=>{
   const sn=course.sessions.find(x=>Number(x.no)===n);
-  const isDone=finished(n),isUnlocked=unlocked(n),isCurrent=n===current;
-  const state=isDone?"✅ Terminée":isUnlocked?"À réaliser":"🔒 Verrouillée";
+  const isDone=finished(n),isCurrent=n===current;
+  const state=isDone?"✅ Terminée":isCurrent?"📍 En cours":"Accessible";
   return `<button type="button"
-    class="fmn22-session-step ${isDone?"done":""} ${isCurrent?"current":""} ${!isUnlocked?"locked":""}"
-    data-flow-session="${n}" ${!isUnlocked?"disabled aria-disabled=\"true\"":""}>
+    class="fmn22-session-step ${isDone?"done":""} ${isCurrent?"current":""}"
+    data-flow-session="${n}">
     <span class="fmn22-num">${n}</span>
     Séance ${n}
     <small>${esc(sn?sn.title:"")}</small>
@@ -466,7 +465,7 @@ function openCourse(seqNo,sessionNo){
 
   <div class="fmn22-sequence-intro">
    <h2>Séquence ${seq.no} – ${esc(seq.title)}</h2>
-   <p><strong>Parcours :</strong> 6 séances. Tu avances séance par séance. Chaque séance comprend son cours, son activité, ses réponses et son exercice.</p>
+   <p><strong>Parcours :</strong> 6 séances. Tu peux ouvrir librement la séance précédente ou suivante. La validation sert uniquement à enregistrer ta progression.</p>
    <div class="sequence-progress"><span style="width:${Math.round(doneSessions/6*100)}%"></span></div>
   </div>
 
@@ -486,8 +485,8 @@ function openCourse(seqNo,sessionNo){
    <div class="info"><strong>Compétences travaillées :</strong> ${(s.comps||[]).join(" · ")||"—"}</div>
 
    <div class="fmn22-path">
-    <strong>Ordre de travail :</strong> 1. Lire et comprendre le cours → 2. Réaliser l’activité et écrire les réponses →
-    3. Faire l’exercice de la séance → 4. Valider la séance → 5. Passer à la suivante.
+    <strong>Ordre conseillé :</strong> 1. Lire le cours → 2. Réaliser l’activité et écrire les réponses →
+    3. Faire l’exercice → 4. Valider la séance. Tu peux néanmoins naviguer librement entre les 6 séances.
    </div>
 
    <div class="safety">
@@ -508,6 +507,14 @@ function openCourse(seqNo,sessionNo){
 
    ${!isTeacher?`
    <div class="fmn22-session-actions">
+    ${current>1
+      ? `<button type="button" class="btn light" id="fmn22-prev-session">← Séance ${current-1}</button>`
+      : `<button type="button" class="btn light" disabled aria-disabled="true">← Début de la séquence</button>`}
+
+    ${current<6
+      ? `<button type="button" class="btn green" id="fmn22-next-session">Séance ${current+1} →</button>`
+      : `<button type="button" class="btn green" id="fmn22-go-eval">✅ Évaluation de la séquence →</button>`}
+
     <button type="button" class="btn orange" id="fmn22-do-exercise">
      ${currentExerciseDone?"📊 Voir / refaire depuis l’espace Exercices":"📝 Faire l’exercice de la séance"}
     </button>
@@ -519,20 +526,13 @@ function openCourse(seqNo,sessionNo){
       ${currentValidated?"✅ Cours de la séance validé":"✅ Valider le cours de la séance"}
     </button>
 
-    <button type="button" class="btn light" id="fmn22-print-session">🖨️ Imprimer / PDF la séance</button>
-
-    ${current<6
-      ? `<button type="button" class="btn green" id="fmn22-next-session" ${currentFinished?"":"disabled aria-disabled=\"true\""}>
-          Séance ${current+1} →
-         </button>`
-      : `<button type="button" class="btn green" id="fmn22-go-eval" ${allSequenceDone?"":"disabled aria-disabled=\"true\""}>
-          ✅ Évaluation de la séquence →
-         </button>`}
+    <button type="button" class="btn light wide" id="fmn22-print-session">🖨️ Imprimer / PDF la séance</button>
    </div>
 
-   ${!currentFinished
-     ? `<div class="fmn22-lock-note">🔒 Pour débloquer la séance suivante, il faut avoir <strong>validé le cours de cette séance</strong> et <strong>réalisé son exercice</strong>.</div>`
-     : ""}
+   <div class="fmn22-lock-note">
+    ↔️ <strong>Navigation libre :</strong> tu peux consulter les 6 séances dans l’ordre que tu souhaites.
+    La validation et les exercices servent au suivi de ta progression, mais ne bloquent plus les boutons précédent / suivant.
+   </div>
    `:""}
 
    ${current===6?`
@@ -599,6 +599,9 @@ function openCourse(seqNo,sessionNo){
   await validateSessionDone(seq.no,current,valBtn,status);
   openCourse(seq.no,current);
  };
+
+ const prev=$("fmn22-prev-session");
+ if(prev)prev.onclick=()=>openCourse(seq.no,current-1);
 
  const next=$("fmn22-next-session");
  if(next)next.onclick=()=>openCourse(seq.no,current+1);
@@ -760,7 +763,7 @@ function renderExercises(){
  if(window.FIGAROMN_BACPRO_AUTO_ACTIVE)return;
  $("fmn-exercise-grid").innerHTML=CFG.sequences.map(seq=>{
    const finished=seq.sessions.filter(s=>sessionAttemptRows(seq.no,s.no).length>0).length;
-   return `<details class="exercise-course" open data-exercise-course-index="${seq.no-1}">
+   return `<details class="exercise-course" data-exercise-course-index="${seq.no-1}">
     <summary>
      <span class="course-icon">⛵</span>
      <span><strong>Séquence ${seq.no} – ${esc(seq.title)}</strong><small>6 exercices dans cette séquence</small></span>
@@ -1018,7 +1021,8 @@ $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}
  location.href="index.html";
 };
-$("fmn-prof").onclick=()=>location.href="enseignant.html";
+const profBtn=$("fmn-prof");
+if(profBtn)profBtn.onclick=()=>location.href="enseignant.html";
 
 
 /* Délégation de clics : évite qu'un re-rendu des cartes perde ses boutons. */

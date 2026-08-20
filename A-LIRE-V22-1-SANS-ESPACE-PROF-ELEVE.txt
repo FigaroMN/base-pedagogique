@@ -1,0 +1,30 @@
+FIGAROMN V22.1 – SUPPRESSION DU BOUTON PROFESSEUR DANS L'ESPACE ELEVE
+============================================================================
+
+MODIFICATION
+------------
+Dans les espaces élèves :
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+le bouton « 🔐 Espace professeur » placé dans le bandeau supérieur a été supprimé.
+
+CONSERVÉ
+--------
+- le bouton Déconnexion ;
+- la navigation Accueil / Cours / Exercices / Évaluations / Outils /
+  Applications interactives ;
+- l'accès professeur depuis la page d'accueil générale ;
+- l'espace enseignant ;
+- le CAP et sa logique actuelle ;
+- toutes les progressions et données.
+
+SUPABASE
+--------
+Aucune modification Supabase.
+
+INSTALLATION
+------------
+Décompresser le patch V22.1 et déposer les fichiers à la racine de
+FigaroMN/base-pedagogique en acceptant le remplacement.

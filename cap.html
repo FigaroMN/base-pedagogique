@@ -1285,8 +1285,7 @@ function capSessionFinished(courseIndex,sessionNo){
  return !!readCapSessionDone(courseIndex,sessionNo) && capSessionExercisesDone(courseIndex,sessionNo);
 }
 function capSessionUnlocked(courseIndex,sessionNo){
- if(Number(sessionNo)===1)return true;
- return capSessionFinished(courseIndex,Number(sessionNo)-1);
+ return true;
 }
 function capFirstAvailableSession(courseIndex){
  for(var i=1;i<=6;i++){
@@ -1394,11 +1393,11 @@ function openCourse(index,sessionNo){
  var allDone=capSequenceAllDone(index);
 
  var stepHtml=sessions.map(function(item){
-  var n=item.no,done=capSessionFinished(index,n),unlock=capSessionUnlocked(index,n);
-  return '<button type="button" class="fmn22-session-step '+(done?'done ':'')+(n===current?'current ':'')+(!unlock?'locked':'')+'" data-cap-flow-session="'+n+'" '+(!unlock?'disabled aria-disabled="true"':'')+'>'+
+  var n=item.no,done=capSessionFinished(index,n);
+  return '<button type="button" class="fmn22-session-step '+(done?'done ':'')+(n===current?'current ':'')+'" data-cap-flow-session="'+n+'">'+
    '<span class="fmn22-num">'+n+'</span>Séance '+n+
    '<small>'+esc(item.title)+'</small>'+
-   '<small>'+(done?'✅ Terminée':unlock?'À réaliser':'🔒 Verrouillée')+'</small>'+
+   '<small>'+(done?'✅ Terminée':n===current?'📍 En cours':'Accessible')+'</small>'+
   '</button>';
  }).join("");
 
@@ -1431,7 +1430,7 @@ function openCourse(index,sessionNo){
 
   '<div class="fmn22-sequence-intro">'+
    '<h2>'+esc(c.title)+'</h2>'+
-   '<p><strong>Parcours :</strong> 6 séances. Le contenu de la séquence est réparti dans ces 6 étapes. Chaque séance possède son cours, son activité et ses exercices.</p>'+
+   '<p><strong>Parcours :</strong> 6 séances. Le contenu de la séquence est réparti dans ces 6 étapes. Les 6 séances sont accessibles librement avec les boutons précédent / suivant.</p>'+
    '<div class="sequence-progress"><span style="width:'+Math.round(doneCount/6*100)+'%"></span></div>'+
   '</div>'+
 
@@ -1446,7 +1445,7 @@ function openCourse(index,sessionNo){
    '<h3>'+esc(s.title)+'</h3>'+
    '<div class="context"><strong>Situation professionnelle :</strong> '+esc(c.context||"")+'</div>'+
    '<div class="competences"><strong>🎯 Objectif de la séance :</strong> '+esc(s.objective||c.objective||"")+'<br><br>'+compHtml(s.comps||c.comps)+'</div>'+
-   '<div class="fmn22-path"><strong>Ordre de travail :</strong> 1. Cours → 2. Activité et réponses → 3. Exercice(s) → 4. Validation → 5. Séance suivante.</div>'+
+   '<div class="fmn22-path"><strong>Ordre conseillé :</strong> 1. Cours → 2. Activité et réponses → 3. Exercice(s) → 4. Validation. Tu peux revenir à la séance précédente ou avancer à la suivante à tout moment.</div>'+
    '<div class="safety"><strong>Avant toute action :</strong> identifier les risques, sécuriser le poste, consulter la documentation applicable et ne jamais inventer une valeur constructeur.</div>'+
    body+
 
@@ -1465,18 +1464,21 @@ function openCourse(index,sessionNo){
    '</div>'+
 
    '<div class="fmn22-session-actions">'+
+    (current>1
+      ? '<button type="button" class="btn light" id="capmn22-prev">← Séance '+(current-1)+'</button>'
+      : '<button type="button" class="btn light" disabled aria-disabled="true">← Début de la séquence</button>')+
+    (current<6
+      ? '<button type="button" class="btn green" id="capmn22-next">Séance '+(current+1)+' →</button>'
+      : '<button type="button" class="btn green" id="capmn22-eval">✅ Évaluation de la séquence →</button>')+
     '<button type="button" class="btn" id="capmn22-do-ex">'+
      (exDone?'📊 Voir / refaire depuis Exercices':'📝 Faire '+(exercises.length>1?'les exercices':'l’exercice')+' de la séance')+
     '</button>'+
     '<button type="button" class="btn '+(validated?'green':'blue')+'" id="capmn22-validate" '+(validated?'disabled':'')+'>'+
      (validated?'✅ Cours de la séance validé':'✅ Valider le cours de la séance')+
     '</button>'+
-    '<button type="button" class="btn light" id="capmn22-print">🖨️ Imprimer / PDF la séance</button>'+
-    (current<6
-      ? '<button type="button" class="btn green" id="capmn22-next" '+(finished?'':'disabled aria-disabled="true"')+'>Séance '+(current+1)+' →</button>'
-      : '<button type="button" class="btn green" id="capmn22-eval" '+(allDone?'':'disabled aria-disabled="true"')+'>✅ Évaluation de la séquence →</button>')+
+    '<button type="button" class="btn light wide" id="capmn22-print">🖨️ Imprimer / PDF la séance</button>'+
    '</div>'+
-   (!finished?'<div class="fmn22-lock-note">🔒 La séance suivante sera débloquée lorsque le cours sera validé et que tous les exercices de cette séance seront réalisés.</div>':'')+
+   '<div class="fmn22-lock-note">↔️ <strong>Navigation libre :</strong> les 6 séances peuvent être consultées sans verrouillage. La validation sert uniquement au suivi de progression.</div>'+
    (current===6?'<div class="summary"><strong>À retenir :</strong> '+esc(c.summary||"")+'</div>':'')+
   '</section>';
 
@@ -1515,6 +1517,9 @@ function openCourse(index,sessionNo){
   window.FIGAROMN_CAP_FLOW_RETURN={course:index,session:current};
   openExercise(nextEx,false);
  };
+
+ var prev=detail.querySelector("#capmn22-prev");
+ if(prev)prev.onclick=function(){openCourse(index,current-1);};
 
  var next=detail.querySelector("#capmn22-next");
  if(next)next.onclick=function(){openCourse(index,current+1);};
@@ -3008,7 +3013,7 @@ function rebuildExerciseGrid(){
   var group=document.createElement("details");
   group.className="exercise-course";
   group.setAttribute("data-exercise-course-index",String(courseIndex));
-  group.open=true;
+  group.open=false;
 
   var courseTitle=String(course.title||"").replace(/^Séquence \d+ – /,"");
   group.innerHTML=

@@ -1,0 +1,49 @@
+FIGAROMN V22.2 – NAVIGATION LIBRE ENTRE LES 6 SEANCES
+==============================================================
+
+MODIFICATION APPLIQUEE A :
+- CAP
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+NOUVELLE LOGIQUE
+----------------
+Les 6 séances d'une séquence sont maintenant toutes accessibles.
+
+L'élève peut :
+- cliquer directement sur Séance 1, 2, 3, 4, 5 ou 6 ;
+- utiliser le bouton « ← Séance précédente » ;
+- utiliser le bouton « Séance suivante → » ;
+- revenir en arrière à tout moment ;
+- avancer même si la séance précédente n'est pas encore validée.
+
+SUPPRESSION DU VERROUILLAGE
+---------------------------
+La validation du cours et la réalisation de l'exercice ne bloquent
+plus la navigation.
+
+Ils servent toujours à :
+- enregistrer la progression ;
+- afficher « séance terminée » ;
+- alimenter le suivi professeur ;
+- calculer les indicateurs et compétences via les exercices.
+
+EVALUATION
+----------
+Depuis la séance 6, le bouton vers l'évaluation reste accessible.
+L'évaluation conserve son propre code enseignant.
+
+PROGRESSION
+-----------
+La barre de progression continue de compter uniquement les séances
+réellement validées / terminées.
+
+SUPABASE
+--------
+Aucune modification Supabase n'est nécessaire pour V22.2.
+
+INSTALLATION
+------------
+Décompresser le patch V22.2 à la racine de
+FigaroMN/base-pedagogique et accepter le remplacement des fichiers.
