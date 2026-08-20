@@ -1,0 +1,103 @@
+FIGAROMN V20 – 40 APPLICATIONS INTERACTIVES
+===========================================
+
+AJOUTÉ À :
+- CAP
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+NOUVEL ONGLET
+-------------
+🎮 Applications interactives
+
+OBJECTIF
+--------
+Proposer des activités bonus aux élèves qui ont terminé le travail
+principal, toujours en lien avec la Maintenance Nautique.
+
+40 JEUX
+-------
+Thèmes couverts :
+- Sécurité atelier
+- Électricité
+- Mesures et multimètre
+- Diagnostic
+- Propulsion
+- Équipements embarqués
+- Atelier
+- Relation client
+- Qualité
+- Environnement
+- Communication / anglais professionnel
+- Révision générale
+
+TROIS TYPES DE JEUX
+-------------------
+1. Quiz interactifs avec correction immédiate
+2. Remise en ordre de procédures
+3. Jeux d'association
+
+EXEMPLES
+--------
+- Briefing sécurité atelier
+- Polarité express
+- Multimètre
+- Batterie
+- Feux de navigation
+- Pompe de cale
+- Relais
+- Incendie / explosion
+- Diagnostic intermittent
+- Guindeau
+- Trim
+- Électronique embarquée
+- Réception client
+- Ordre de réparation
+- Devis
+- Facture
+- Méthode diagnostic
+- Mise en sécurité électrique
+- Réception d'une embarcation
+- Gestion des déchets
+- Vocabulaire anglais
+- Grand défi Maintenance Nautique
+
+SUIVI LOCAL
+-----------
+Chaque jeu conserve :
+- meilleur score
+- nombre de tentatives
+- statut réussi à partir de 75 %
+
+Le tableau de bord affiche :
+- 40 jeux disponibles
+- nombre de jeux réussis
+- nombre de tentatives
+- moyenne des meilleurs scores
+
+IMPORTANT
+---------
+Ces jeux sont des activités de révision et de détente pédagogique.
+Ils NE VALIDENT PAS :
+- une séance
+- un indicateur
+- une compétence
+- une évaluation
+
+Ils ne modifient donc pas le suivi officiel des compétences.
+
+SÉCURITÉ
+--------
+Aucune valeur constructeur précise (serrage, pression, tolérance, etc.)
+n'est inventée dans les jeux. Les activités rappellent de consulter
+la documentation adaptée au matériel réel.
+
+SUPABASE
+--------
+Aucune nouvelle migration.
+Les scores des jeux sont sauvegardés localement dans le navigateur.
+
+INSTALLATION
+------------
+Installer directement la V20 complète à la racine GitHub.

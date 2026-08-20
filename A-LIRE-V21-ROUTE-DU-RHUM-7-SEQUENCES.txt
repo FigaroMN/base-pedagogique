@@ -1,0 +1,63 @@
+FIGAROMN V21 – ROUTE DU RHUM 2026 + 7 SÉQUENCES BAC PRO
+================================================================
+
+NOUVELLE ARCHITECTURE
+---------------------
+Seconde : 7 séquences × 6 séances = 42 séances / exercices formatifs
+Première : 7 séquences × 6 séances = 42 séances / exercices formatifs
+Terminale : 7 séquences × 6 séances = 42 séances / exercices formatifs
+
+TOTAL CYCLE BAC PRO :
+21 séquences
+126 séances / exercices formatifs
+21 évaluations de séquence
+
+SÉQUENCE 1 AJOUTÉE
+------------------
+Route du Rhum 2026, avec progression différenciée selon le niveau.
+
+Les 6 anciennes séquences sont décalées en séquences 2 à 7.
+
+ÉVALUATIONS
+-----------
+Chaque nouvelle séquence Route du Rhum comporte :
+- 6 exercices formatifs de 5 questions ;
+- calcul question -> indicateur -> % -> compétence ;
+- une évaluation de 18 questions ;
+- note automatique /20 ;
+- historique des tentatives ;
+- bilan par indicateurs et compétences.
+
+Nouveaux codes Route du Rhum :
+Seconde   : MN2R26
+Première  : MN1R26
+Terminale : MNTR26
+
+Les anciens codes sont conservés pour les anciennes séquences,
+même si leur numéro visuel passe de 1..6 à 2..7.
+
+SUPABASE – OBLIGATOIRE
+----------------------
+Exécuter UNE FOIS :
+MIGRATION-V21-ROUTE-DU-RHUM-7-SEQUENCES.sql
+
+Cette migration conserve les UUID des anciennes sessions.
+Les progressions, tentatives et travaux déjà liés à ces UUID ne sont
+donc pas supprimés.
+
+IMPORTANT :
+La V21 bloque volontairement les exercices / évaluations Bac Pro si
+la migration Supabase V21 n'est pas détectée. Cela évite d'enregistrer
+des résultats Route du Rhum dans une ancienne séquence 1.
+
+ORDRE D'INSTALLATION RECOMMANDÉ
+-------------------------------
+1. Mettre les fichiers V21 sur GitHub.
+2. Exécuter immédiatement la migration V21 dans Supabase.
+3. Attendre le déploiement GitHub Pages.
+4. Tester avec un compte élève :
+   Route du Rhum -> Cours -> exercices -> évaluation.
+5. Vérifier qu'une ancienne progression est maintenant visible sur
+   la même séquence historique, décalée d'un numéro.
+
+Les onglets Outils et Applications interactives V20 sont conservés.

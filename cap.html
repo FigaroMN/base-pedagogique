@@ -47,6 +47,7 @@ html,body{margin:0;background:#eef6f8}
 </style>
 
 <link rel="stylesheet" href="figaromn-tools-v19.css?v=19">
+<link rel="stylesheet" href="figaromn-games-v20.css?v=20">
 </head>
 <body>
 <header id="fmn-capbar">
@@ -76,7 +77,7 @@ html,body{margin:0;background:#eef6f8}
 #capmn26-master .header h1{margin:7px 0 4px;font-size:31px}
 #capmn26-master .header h2{margin:0;font-size:20px;font-weight:500}
 #capmn26-master .header p{max-width:800px;margin:13px auto 0;line-height:1.55}
-#capmn26-master .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+#capmn26-master .nav{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 #capmn26-master .nav button{border:0;border-radius:11px;padding:12px 10px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}
 #capmn26-master .nav button.active{background:var(--navy);color:#fff}
 #capmn26-master .nav button:hover,#capmn26-master .nav button:focus-visible{outline:3px solid rgba(25,184,211,.18)}
@@ -936,6 +937,7 @@ html,body{margin:0;background:#eef6f8}
   <button type="button" data-view="exercises">📝 Exercices</button>
   <button type="button" data-view="evaluations">✅ Évaluations</button>
   <button type="button" data-view="tools">🧰 Outils</button>
+  <button type="button" data-view="games">🎮 Applications interactives</button>
  </nav>
 
  <div class="body">
@@ -996,6 +998,7 @@ html,body{margin:0;background:#eef6f8}
 
   <section id="capmn26-eval-detail" class="hidden"></section>
   <section id="capmn26-tools" class="hidden"><div id="figaromn-tools" data-level="cap"></div></section>
+  <section id="capmn26-games" class="hidden"><div id="figaromn-games" data-level="cap"></div></section>
 
  </div>
 </div>
@@ -1152,7 +1155,8 @@ var sections={
  exerciseDetail:root.querySelector("#capmn26-exercise-detail"),
  evaluations:root.querySelector("#capmn26-evaluations"),
  evalDetail:root.querySelector("#capmn26-eval-detail"),
- tools:root.querySelector("#capmn26-tools")
+ tools:root.querySelector("#capmn26-tools"),
+ games:root.querySelector("#capmn26-games")
 };
 
 function capStorageKey(k){
@@ -3684,6 +3688,7 @@ function print17(box,title){
  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc17(title)+'</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#18323f;line-height:1.5}h1,h2,h3{color:#06283d}.a{border:1px solid #d7e4e8;border-radius:12px;padding:14px;margin:12px 0;page-break-inside:avoid}.r{min-height:70px;border-top:1px dashed #ccdce1;padding-top:10px}.c{border-left:5px solid #4b8f64;background:#f2faf5}</style></head><body><h1>'+esc17(title)+'</h1><h2>Mes réponses</h2>'+
   answers.map(function(a){return '<div class="a"><h3>'+esc17(a.p)+'</h3><div class="r">'+(a.v?esc17(a.v).replace(/\n/g,"<br>"):"<em>Réponse non renseignée</em>")+'</div></div>';}).join("")+
   '<div class="a c"><h3>Conclusion / compte rendu professionnel</h3><div class="r">'+((conc&&conc.value)?esc17(conc.value).replace(/\n/g,"<br>"):"<em>Conclusion non renseignée</em>")+'</div></div><script src="figaromn-tools-v19.js?v=19"></script>
+<script src="figaromn-games-v20.js?v=20"></script>
 </body></html>');
  w.document.close();
  setTimeout(function(){w.print();},250);

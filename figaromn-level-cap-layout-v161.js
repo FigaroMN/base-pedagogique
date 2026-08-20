@@ -11,7 +11,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const compCodes = Object.keys(CFG.competencies).sort((a,b)=>Number(a.slice(1))-Number(b.slice(1)));
 let selectedSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||1);
-if(!Number.isFinite(selectedSequence)||selectedSequence<1||selectedSequence>6)selectedSequence=1;
+if(!Number.isFinite(selectedSequence)||selectedSequence<1||selectedSequence>7)selectedSequence=1;
 window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
 
 let me=null, dbSessions=[], progress=[], evaluations=[], attempts=[], autoStatus=[], indicatorResults=[];
@@ -19,7 +19,7 @@ let isTeacher=false;
 
 function selectSequence(no){
  const n=Number(no);
- selectedSequence=(Number.isFinite(n)&&n>=1&&n<=6)?n:1;
+ selectedSequence=(Number.isFinite(n)&&n>=1&&n<=7)?n:1;
  window.FIGAROMN_CURRENT_SEQUENCE=selectedSequence;
  return selectedSequence;
 }
@@ -904,6 +904,7 @@ document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=
  if(target==="exercises"){openExercisesSelected();return;}
  if(target==="evaluations"){openEvaluationsSelected();return;}
  if(target==="tools"){view("tools");return;}
+ if(target==="games"){view("games");return;}
 });
 $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}

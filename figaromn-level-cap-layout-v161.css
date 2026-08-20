@@ -14,7 +14,7 @@
 #fmn-level-master .header h1{margin:7px 0 4px;font-size:31px}
 #fmn-level-master .header h2{margin:0;font-size:20px;font-weight:500}
 #fmn-level-master .header p{max-width:800px;margin:13px auto 0;line-height:1.55}
-#fmn-level-master .nav{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+#fmn-level-master .nav{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 #fmn-level-master .nav button{border:0;border-radius:11px;padding:12px 10px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}
 #fmn-level-master .nav button.active{background:var(--navy);color:#fff}
 #fmn-level-master .nav button:hover,#fmn-level-master .nav button:focus-visible{outline:3px solid rgba(25,184,211,.18)}

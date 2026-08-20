@@ -1,0 +1,35 @@
+FIGAROMN V21 – CODES D'ACCÈS AUX ÉVALUATIONS BAC PRO
+=====================================================
+
+SECONDE
+-------
+Séquence 1 – Route du Rhum 2026 : MN2R26
+Séquence 2 – Bases électriques et multimètre : MN2A26
+Séquence 3 – Feux de navigation : MN2B26
+Séquence 4 – Pompe de cale : MN2C26
+Séquence 5 – Relais et circuits de puissance : MN2D26
+Séquence 6 – Guindeau : découverte et installation : MN2E26
+Séquence 7 – Synthèse annuelle et transfert : MN2F26
+
+PREMIÈRE
+--------
+Séquence 1 – Route du Rhum 2026 : MN1R26
+Séquence 2 – Mesures électriques et diagnostic préparatoire : MN1A26
+Séquence 3 – Diagnostic des feux de navigation : MN1B26
+Séquence 4 – Diagnostic pompe de cale : MN1C26
+Séquence 5 – Guindeau et forte puissance : MN1D26
+Séquence 6 – Relais, trim et systèmes réversibles : MN1E26
+Séquence 7 – Entretien, réparation et restitution : MN1F26
+
+TERMINALE
+---------
+Séquence 1 – Route du Rhum 2026 : MNTR26
+Séquence 2 – Diagnostic méthodologique avancé : MNTA26
+Séquence 3 – Production, stockage et distribution : MNTB26
+Séquence 4 – Trim, flaps et actionneurs : MNTC26
+Séquence 5 – Guindeau et aide à la manœuvre : MNTD26
+Séquence 6 – Prise en charge et restitution : MNTE26
+Séquence 7 – Préparation certificative et bilan : MNTF26
+
+Le code « refaire » des exercices et évaluations reste inchangé dans
+le moteur existant.

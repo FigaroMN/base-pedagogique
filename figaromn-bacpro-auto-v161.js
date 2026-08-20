@@ -14,7 +14,7 @@ if(!DATA)return;
 /* Séquence actuellement sélectionnée dans le parcours Bac Pro.
    Cette variable doit exister avant le premier rendu Exercices/Évaluations. */
 var activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||1);
-if(!isFinite(activeSequence) || activeSequence<1 || activeSequence>6)activeSequence=1;
+if(!isFinite(activeSequence) || activeSequence<1 || activeSequence>7)activeSequence=1;
 window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
 
 var state={
@@ -405,6 +405,13 @@ async function ensureReady(){
   if(p.archived_at)throw new Error("Ce compte est archivé.");
   state.profile=p;
   await reload();
+  var v21Session=state.sessions.find(function(s){
+   return Number(s.period)===1 && Number(s.session_no)===1 &&
+     String(s.title||"").toLowerCase().indexOf("route du rhum")!==-1;
+  });
+  if(!v21Session){
+   throw new Error("Migration Supabase V21 requise avant d’utiliser les exercices et évaluations.");
+  }
   return true;
  })();
 
@@ -724,7 +731,7 @@ async function init(){
 window.FIGAROMN_BACPRO_AUTO_ACTIVE=true;
 function normalizeSequence(no){
  var n=Number(no||1);
- if(!isFinite(n)||n<1||n>6)n=1;
+ if(!isFinite(n)||n<1||n>7)n=1;
  return n;
 }
 async function openExercisesForSequence(no){
