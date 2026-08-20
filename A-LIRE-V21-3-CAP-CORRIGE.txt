@@ -1,0 +1,57 @@
+FIGAROMN V21.3 – CORRECTION CAP
+================================
+
+PROBLÈME CORRIGÉ
+----------------
+Dans cap.html, les balises JavaScript des outils et des jeux avaient
+été insérées à l'intérieur de la fonction d'impression des réponses.
+
+Conséquences :
+- du code JavaScript apparaissait sous la page ;
+- l'onglet Outils restait vide ;
+- Applications interactives pouvait avoir un comportement incomplet ;
+- la zone Mes réponses pouvait casser l'affichage.
+
+CORRECTION
+----------
+- cap.html réparé ;
+- script Mes réponses refermé correctement ;
+- Outils chargé dans le vrai bas de page ;
+- Applications interactives chargées dans le vrai bas de page ;
+- nouveaux noms de fichiers pour éviter le cache :
+  figaromn-tools-v213.js
+  figaromn-tools-v213.css
+  figaromn-games-v213.js
+  figaromn-games-v213.css
+
+CAP CONSERVÉ
+------------
+- Accueil
+- Cours
+- Exercices
+- Évaluations
+- Outils Blanchet Nautique
+- Applications interactives
+- Mes réponses dans les activités
+- Impression / PDF
+- progression existante
+
+SUPABASE
+--------
+Aucune modification Supabase n'est nécessaire pour cette correction CAP.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V21.3.
+2. Envoyer les fichiers à la racine de FigaroMN/base-pedagogique.
+3. Accepter le remplacement de cap.html.
+4. Commit changes.
+5. Attendre GitHub Pages.
+6. Recharger la page CAP.
+
+À tester :
+CAP -> Outils -> Ordre de réparation
+CAP -> Outils -> État des lieux
+CAP -> Outils -> Calculatrice scientifique
+CAP -> Applications interactives
+CAP -> Cours -> Mes réponses

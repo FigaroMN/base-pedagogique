@@ -1,0 +1,116 @@
+FIGAROMN V22 – PARCOURS PROPRE PAR SEQUENCE ET 6 SEANCES
+================================================================
+
+LOGIQUE UNIQUE POUR :
+- CAP
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+PARCOURS ELEVE
+--------------
+SEQUENCE
+   ↓
+6 SEANCES
+   ↓
+SEANCE 1
+   1. Cours de la séance
+   2. Situation / activité
+   3. Réponses écrites de l'élève
+   4. Exercice(s) de la séance
+   5. Validation de la séance
+   ↓
+SEANCE 2
+   ...
+   ↓
+SEANCE 6
+   ↓
+EVALUATION DE LA SEQUENCE
+
+DEBLOCAGE
+---------
+La séance suivante est débloquée uniquement lorsque :
+- le cours de la séance actuelle est validé ;
+- l'exercice ou les exercices associés sont réalisés.
+
+BAC PRO
+-------
+Chaque séquence contient exactement :
+- 6 séances
+- 6 exercices formatifs, soit 1 par séance
+- 1 évaluation de séquence
+
+Avec V21 Route du Rhum :
+- 7 séquences par niveau
+- 42 séances par niveau
+- 42 exercices formatifs par niveau
+- 7 évaluations par niveau
+
+CAP
+---
+Les 7 séquences sont également réparties en 6 séances.
+
+Le contenu existant est conservé mais découpé :
+- Route du Rhum : les 12 parties du cours sont réparties sur 6 séances.
+- Séquences 2 à 7 : les 4 parties de cours occupent les séances 1 à 4 ;
+  séance 5 = mise en application professionnelle ;
+  séance 6 = synthèse et préparation à l'évaluation.
+
+Les 35 exercices CAP existants ne sont pas supprimés afin de ne pas
+casser les historiques locaux.
+
+Répartition :
+- Séquence 1 : les 11 exercices Route du Rhum sont répartis sur 6 séances.
+- Séquences 2 à 7 : les 4 exercices existants occupent les séances 1 à 4.
+- Deux exercices de synthèse sont ajoutés aux séances 5 et 6 en
+  réutilisant des questions déjà présentes dans la séquence avec leurs
+  rattachements compétences / indicateurs.
+
+Ainsi chaque séance CAP possède au moins un exercice.
+
+EXERCICES
+---------
+Depuis une séance :
+- le bouton Exercice ouvre directement l'exercice associé ;
+- le bouton Retour ramène à la séance.
+
+Depuis l'onglet Exercices :
+- les exercices sont classés par séquence puis par séance.
+
+EVALUATIONS
+-----------
+L'évaluation intervient après les 6 séances et les exercices.
+Les codes existants sont conservés.
+
+REPONSES ELEVES
+---------------
+Chaque séance possède ses propres zones d'écriture :
+- réponses / traces écrites ;
+- conclusion / compte rendu professionnel ;
+- sauvegarde automatique locale ;
+- impression / PDF de la séance.
+
+COMPETENCES
+-----------
+Aucune règle de calcul des compétences n'a été supprimée.
+Le principe reste :
+question -> indicateur -> pourcentage -> compétence.
+Les évaluations conservent la note automatique sur 20.
+
+OUTILS ET JEUX
+--------------
+Conservés :
+- Outils Blanchet Nautique
+- 40 applications interactives
+
+SUPABASE
+--------
+V22 n'ajoute aucune nouvelle table et aucune nouvelle migration.
+
+Pour le BAC PRO à 7 séquences, la migration V21.2 doit néanmoins avoir
+été exécutée avec succès auparavant afin que Supabase accepte period 1..7.
+
+INSTALLATION
+------------
+Installer directement la V22 complète ou le patch V22 à la racine
+de FigaroMN/base-pedagogique.

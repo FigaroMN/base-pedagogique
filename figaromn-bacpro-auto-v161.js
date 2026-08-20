@@ -535,38 +535,59 @@ function showHistory(kind,item){
 }
 function rebuildExercises(){
  var grid=$("fmn-exercise-grid");if(!grid)return;
- activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE);
+ if(!isFinite(activeSequence))activeSequence=0;
+
  if(!state.profile){
   grid.innerHTML='<div class="content-box"><strong>⏳ Chargement des exercices…</strong><p>Connexion au suivi de l’élève en cours.</p></div>';
   return;
  }
- var items=DATA.exercises.filter(function(e){return Number(e.sequence)===activeSequence;});
- var done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
- var title=(CFG.sequences.find(function(s){return Number(s.no)===activeSequence;})||{}).title||("Séquence "+activeSequence);
+
+ var seqNos=activeSequence===0
+  ? CFG.sequences.map(function(s){return Number(s.no);})
+  : [activeSequence];
+
  grid.className="exercise-course-list";
- grid.innerHTML=
-  '<details class="exercise-course" open data-exercise-course-index="'+(activeSequence-1)+'">'+
-   '<summary><span class="course-icon">⛵</span><span><strong>Séquence '+activeSequence+' – '+esc(title)+'</strong><small>'+items.length+' exercices dans cette séquence</small></span><span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
-   '<div class="situation-grid">'+items.map(function(ex){
+ grid.innerHTML=seqNos.map(function(seqNo){
+  var items=DATA.exercises.filter(function(e){return Number(e.sequence)===seqNo;});
+  var done=items.filter(function(e){return attemptRows("exercise",e.sequence,e.situation).length>0;}).length;
+  var title=(CFG.sequences.find(function(s){return Number(s.no)===seqNo;})||{}).title||("Séquence "+seqNo);
+
+  return '<details class="exercise-course" open data-exercise-course-index="'+(seqNo-1)+'">'+
+   '<summary><span class="course-icon">⛵</span><span><strong>Séquence '+seqNo+' – '+esc(title)+'</strong>'+
+   '<small>6 séances · 1 exercice formatif par séance</small></span>'+
+   '<span class="course-count">'+done+' / '+items.length+' terminé'+(done>1?"s":"")+'</span></summary>'+
+   '<div class="fmn22-ex-session-list">'+items.map(function(ex){
     var rows=attemptRows("exercise",ex.sequence,ex.situation),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
     var agg=aggregateIndicators("exercise",function(a){var db=dbSession(ex.sequence,ex.situation);return db&&a.session_id===db.id;});
-    return '<article class="situation-card"><div><span class="situation-label">Situation '+ex.situation+'</span><h3>'+esc(ex.title)+'</h3>'+
-     '<p class="situation-context">'+esc(ex.objective||"")+'</p>'+
+    return '<section class="fmn22-ex-session-group"><div class="fmn22-ex-session-head">'+
+     '<h4>Séance '+ex.situation+' – '+esc(ex.title)+'</h4>'+
+     '<span class="pill">'+(rows.length?'✅ Exercice terminé':'À réaliser')+'</span></div>'+
+     '<div class="fmn22-ex-session-body"><p class="situation-context">'+esc(ex.objective||"")+'</p>'+
      '<span class="pill">'+esc((ex.comps||[]).join(" · "))+'</span> '+
      '<span class="pill">'+(best?'Meilleur score : '+fr(best.score)+'/'+fr(best.total):'Non réalisé')+'</span> '+
      '<span class="pill">Tentatives : '+rows.length+'</span> '+
      (last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
      indicatorAcquisitionHTML(agg,ex.comps,'')+
-     '</div><div class="actions">'+
+     '<div class="actions">'+
       (rows.length?
-       '<button type="button" class="btn light" disabled>✅ Exercice terminé</button><button type="button" class="btn red" data-redo-ex="'+ex.sequence+'|'+ex.situation+'">🔁 Refaire l’exercice</button><button type="button" class="btn blue" data-history-ex="'+ex.sequence+'|'+ex.situation+'">📚 Historique complet ('+rows.length+')</button>':
-       '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice</button>')+
+       '<button type="button" class="btn light" disabled>✅ Exercice terminé</button>'+
+       '<button type="button" class="btn red" data-redo-ex="'+ex.sequence+'|'+ex.situation+'">🔁 Refaire l’exercice</button>'+
+       '<button type="button" class="btn blue" data-history-ex="'+ex.sequence+'|'+ex.situation+'">📚 Historique ('+rows.length+')</button>':
+       '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice de la séance</button>')+
       '<button type="button" class="btn light" data-print-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer l’exercice</button>'+
-     '</div></article>';
+     '</div></div></section>';
    }).join("")+'</div>'+
   '</details>';
+ }).join("");
+
  bindExerciseButtons();
- renderSequenceExerciseSummary(activeSequence,"fmn-ex-skill-summary");
+
+ if(activeSequence===0){
+  renderGlobalSummary("exercise","fmn-ex-skill-summary",null);
+ }else{
+  renderSequenceExerciseSummary(activeSequence,"fmn-ex-skill-summary");
+ }
 }
 function findExercise(seq,sit){return DATA.exercises.find(function(e){return e.sequence===Number(seq)&&e.situation===Number(sit);});}
 function findEval(seq){return DATA.evaluations.find(function(e){return e.sequence===Number(seq);});}
@@ -600,7 +621,15 @@ function openExercise(ex,forceRedo){
   successIndicatorsPanelHTML(ex.comps)+
   '<div class="skill-calc-box"><strong>📈 Acquisition 100 % automatique</strong><p>Chaque réponse alimente automatiquement l’indicateur officiel auquel la question est rattachée. Le niveau de compétence est recalculé sans saisie manuelle.</p></div>'+
   '<div class="score">Score : <strong id="bac-ex-score">0 / '+ex.questions.length+'</strong></div><div id="bac-ex-live"></div>'+qhtml+'<div id="bac-ex-end" class="result hidden"></div></div>';
- $("bac-back-ex").onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ex.sequence;activeSequence=ex.sequence;rebuildExercises();show("exercises");};
+ $("bac-back-ex").onclick=function(){
+  if(window.FIGAROMN_RETURN_SESSION && window.FigaroMNLevelFlow && typeof window.FigaroMNLevelFlow.openCourse==="function"){
+    var r=window.FIGAROMN_RETURN_SESSION;
+    window.FIGAROMN_RETURN_SESSION=null;
+    window.FigaroMNLevelFlow.openCourse(r.sequence,r.session);
+    return;
+  }
+  window.FIGAROMN_CURRENT_SEQUENCE=ex.sequence;activeSequence=ex.sequence;rebuildExercises();show("exercises");
+ };
  function updateLive(){
   liveAgg=currentAttemptIndicatorAggregate(ex.questions,responses);
   $("bac-ex-live").innerHTML=indicatorAcquisitionHTML(liveAgg,ex.comps,answered===ex.questions.length?'Résultat final de la tentative.':'Résultat provisoire : les indicateurs évoluent après chaque réponse.');
@@ -638,25 +667,63 @@ function openExercise(ex,forceRedo){
 }
 function rebuildEvaluations(){
  var grid=$("fmn-eval-grid");if(!grid)return;
- activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE||activeSequence||1);
+ activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE);
+ if(!isFinite(activeSequence))activeSequence=0;
+
  if(!state.profile){
-  grid.innerHTML='<div class="content-box"><strong>⏳ Chargement de l’évaluation…</strong><p>Connexion au suivi de l’élève en cours.</p></div>';
+  grid.innerHTML='<div class="content-box"><strong>⏳ Chargement des évaluations…</strong><p>Connexion au suivi de l’élève en cours.</p></div>';
   return;
  }
- var ev=DATA.evaluations.find(function(x){return Number(x.sequence)===activeSequence;});
+
+ var evals=activeSequence===0
+  ? DATA.evaluations.slice().sort(function(a,b){return Number(a.sequence)-Number(b.sequence);})
+  : DATA.evaluations.filter(function(x){return Number(x.sequence)===activeSequence;});
+
  grid.className="menu-grid";
- if(!ev){grid.innerHTML="<p>Aucune évaluation disponible pour cette séquence.</p>";return;}
- var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
- var agg=aggregateIndicators("evaluation",function(a){var db=dbSession(ev.sequence,6);return db&&a.session_id===db.id;});
- grid.innerHTML='<article class="menu-card" data-evaluation-index="'+(activeSequence-1)+'"><div><div class="top-icon">✅</div><h3>'+esc(ev.title)+' – 18 questions notées sur 20</h3><p>'+esc(ev.desc||"")+'</p>'+
-   '<span class="pill">18 questions · note /20</span> <span class="pill">'+(best?'Meilleure note : '+fr(note20(best.score,best.total))+'/20':'Non réalisée')+'</span> <span class="pill">'+(rows.length?'✅ Évaluation terminée':'Compétences à positionner')+'</span> <span class="pill">Tentatives : '+rows.length+'</span> '+(last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
+ if(!evals.length){grid.innerHTML="<p>Aucune évaluation disponible.</p>";return;}
+
+ grid.innerHTML=evals.map(function(ev){
+  var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
+  var agg=aggregateIndicators("evaluation",function(a){var db=dbSession(ev.sequence,6);return db&&a.session_id===db.id;});
+  return '<article class="menu-card" data-evaluation-index="'+(ev.sequence-1)+'"><div><div class="top-icon">✅</div>'+
+   '<span class="pill">SÉQUENCE '+ev.sequence+'</span>'+
+   '<h3>'+esc(ev.title)+' – 18 questions notées sur 20</h3><p>'+esc(ev.desc||"")+'</p>'+
+   '<span class="pill">18 questions · note /20</span> '+
+   '<span class="pill">'+(best?'Meilleure note : '+fr(note20(best.score,best.total))+'/20':'Non réalisée')+'</span> '+
+   '<span class="pill">'+(rows.length?'✅ Évaluation terminée':'Compétences à positionner')+'</span> '+
+   '<span class="pill">Tentatives : '+rows.length+'</span> '+
+   (last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
    indicatorAcquisitionHTML(agg,ev.comps,'')+'</div>'+
    (rows.length?
-    '<div class="actions"><button type="button" class="btn light" disabled>✅ Évaluation terminée</button><button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔁 Refaire l’évaluation</button><button type="button" class="btn blue" data-history-eval="'+ev.sequence+'">📚 Historique complet ('+rows.length+')</button></div>':
-    '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'"><button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div><div class="msg" aria-live="polite"></div></div>')+
+    '<div class="actions"><button type="button" class="btn light" disabled>✅ Évaluation terminée</button>'+
+    '<button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔁 Refaire l’évaluation</button>'+
+    '<button type="button" class="btn blue" data-history-eval="'+ev.sequence+'">📚 Historique complet ('+rows.length+')</button></div>':
+    '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
+    '<button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div>'+
+    '<div class="msg" aria-live="polite"></div></div>')+
    '</article>';
+ }).join("");
+
  bindEvalButtons();
- renderEvaluationSummaries(activeSequence,"fmn-eval-skill-summary");
+
+ if(activeSequence===0){
+  var target=$("fmn-eval-skill-summary");
+  if(target){
+   var globalAgg=aggregateIndicators("evaluation");
+   var globalCodes=allCodes();
+   var globalCount=skillCounters(globalAgg,globalCodes);
+   var gs=globalEvaluationNoteStats();
+   target.className="skill-dashboard global-eval-summary";
+   target.innerHTML='<h3>📈 Synthèse générale – toutes les évaluations du niveau</h3>'+
+    '<p><strong>'+gs.completed+' / '+gs.total+' évaluations réalisées · '+gs.attempts+' tentative'+(gs.attempts>1?"s":"")+'.</strong></p>'+
+    '<div class="note-kpis"><div><span>Évaluations réalisées</span><strong>'+gs.completed+' / '+gs.total+'</strong></div>'+
+    '<div><span>Moyenne des dernières notes</span><strong>'+(gs.averageLatest!==null?fr(gs.averageLatest)+' /20':'—')+'</strong></div>'+
+    '<div><span>Meilleure note</span><strong>'+(gs.best!==null?fr(gs.best)+' /20':'—')+'</strong></div></div>'+
+    kpiSkillsHTML(globalCount)+indicatorAcquisitionHTML(globalAgg,globalCodes,'Synthèse cumulative de toutes les évaluations du niveau.');
+  }
+ }else{
+  renderEvaluationSummaries(activeSequence,"fmn-eval-skill-summary");
+ }
 }
 function bindEvalButtons(){
  var grid=$("fmn-eval-grid");if(!grid)return;
@@ -766,10 +833,44 @@ async function openEvaluationsForSequence(no){
   if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Évaluation indisponible</strong><p>'+esc(e.message)+'</p></div>';
  }
 }
+
+async function openExerciseForSession(seq,no){
+ activeSequence=normalizeSequence(seq);
+ window.FIGAROMN_CURRENT_SEQUENCE=activeSequence;
+ try{
+  await ensureReady();
+  var ex=findExercise(activeSequence,Number(no));
+  if(!ex)throw new Error("Exercice de la séance introuvable.");
+  window.FIGAROMN_RETURN_SESSION={sequence:activeSequence,session:Number(no)};
+  openExercise(ex,false);
+ }catch(e){
+  var grid=$("fmn-exercise-grid");
+  show("exercises");
+  if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Exercice indisponible</strong><p>'+esc(e.message)+'</p></div>';
+ }
+}
+async function openAllExercises(){
+ activeSequence=0;
+ window.FIGAROMN_CURRENT_SEQUENCE=0;
+ show("exercises");
+ try{await ensureReady();rebuildExercises();}
+ catch(e){var grid=$("fmn-exercise-grid");if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Exercices indisponibles</strong><p>'+esc(e.message)+'</p></div>';}
+}
+async function openAllEvaluations(){
+ activeSequence=0;
+ window.FIGAROMN_CURRENT_SEQUENCE=0;
+ show("evaluations");
+ try{await ensureReady();rebuildEvaluations();}
+ catch(e){var grid=$("fmn-eval-grid");if(grid)grid.innerHTML='<div class="content-box"><strong>⚠️ Évaluations indisponibles</strong><p>'+esc(e.message)+'</p></div>';}
+}
+
 window.FigaroBacAuto={
  init:init,reload:reload,rebuildExercises:rebuildExercises,rebuildEvaluations:rebuildEvaluations,
  openExercisesForSequence:openExercisesForSequence,
- openEvaluationsForSequence:openEvaluationsForSequence
+ openEvaluationsForSequence:openEvaluationsForSequence,
+ openExerciseForSession:openExerciseForSession,
+ openAllExercises:openAllExercises,
+ openAllEvaluations:openAllEvaluations
 };
 setTimeout(init,150);
 })();

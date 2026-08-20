@@ -1,0 +1,91 @@
+
+/* =========================================================
+   FIGAROMN V22 - PARCOURS SEQUENTIEL 6 SEANCES
+========================================================= */
+.fmn22-sequence-intro{
+ margin-bottom:16px;padding:16px;border:1px solid #d5e2e7;border-radius:14px;
+ background:linear-gradient(135deg,#f8fbfc,#eef6f8)
+}
+.fmn22-sequence-intro h2{margin:0 0 7px;color:#17324a}
+.fmn22-sequence-intro p{margin:5px 0;color:#607680;line-height:1.5}
+.fmn22-sequence-progress{
+ display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0 20px
+}
+.fmn22-session-step{
+ border:2px solid #d5e2e7;border-radius:12px;background:#fff;color:#17324a;
+ padding:10px 8px;text-align:center;font:inherit;font-weight:900;cursor:pointer;
+ min-height:82px
+}
+.fmn22-session-step small{display:block;margin-top:5px;font-size:11px;font-weight:700;color:#607680}
+.fmn22-session-step.current{border-color:#286b8f;background:#eaf5f8}
+.fmn22-session-step.done{border-color:#3f9466;background:#edf8f1}
+.fmn22-session-step.locked{opacity:.5;cursor:not-allowed;background:#f2f5f6}
+.fmn22-session-step .fmn22-num{
+ width:30px;height:30px;border-radius:50%;margin:0 auto 5px;background:#17324a;color:#fff;
+ display:flex;align-items:center;justify-content:center
+}
+.fmn22-session-step.done .fmn22-num{background:#2f875c}
+.fmn22-session-card{
+ border:1px solid #d5e2e7;border-radius:16px;background:#fff;padding:19px;margin-top:12px
+}
+.fmn22-session-card h3{font-size:24px;margin:0 0 7px;color:#17324a}
+.fmn22-session-meta{
+ display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 14px
+}
+.fmn22-badge{
+ display:inline-block;padding:5px 8px;border-radius:999px;background:#e7f0f4;
+ color:#286b8f;font-size:12px;font-weight:900
+}
+.fmn22-badge.good{background:#e9f7ee;color:#2f875c}
+.fmn22-badge.warn{background:#fff3e8;color:#b65e1f}
+.fmn22-path{
+ padding:12px 14px;border-left:5px solid #286b8f;background:#eef6f8;
+ border-radius:10px;margin:12px 0;line-height:1.5
+}
+.fmn22-activity{
+ margin-top:16px;padding:15px;border:1px solid #d5e2e7;border-radius:13px;background:#f8fbfc
+}
+.fmn22-activity h4{margin:0 0 9px;color:#17324a}
+.fmn22-answer{
+ display:block;margin:11px 0;font-weight:800;color:#17324a
+}
+.fmn22-answer textarea{
+ display:block;width:100%;min-height:92px;margin-top:6px;padding:11px;
+ border:2px solid #d5e2e7;border-radius:10px;font:inherit;resize:vertical;background:#fff;
+ box-sizing:border-box
+}
+.fmn22-save{font-size:12px;color:#3c7e55;font-weight:900;margin-top:8px}
+.fmn22-session-actions{
+ display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:17px
+}
+.fmn22-session-actions .btn{width:100%}
+.fmn22-session-actions .wide{grid-column:1/-1}
+.fmn22-lock-note{
+ margin-top:10px;padding:10px 12px;border-radius:9px;background:#fff5ed;color:#8a4c20;
+ font-size:12px;font-weight:800
+}
+.fmn22-session-exercises{
+ margin:14px 0;padding:13px;border:1px solid #d5e2e7;border-radius:12px;background:#f4f9fa
+}
+.fmn22-session-exercises strong{color:#17324a}
+.fmn22-session-exercises ul{margin:8px 0 0;padding-left:20px}
+.fmn22-ex-session-group{
+ margin:13px 0;border:1px solid #d5e2e7;border-radius:14px;background:#f9fcfd;overflow:hidden
+}
+.fmn22-ex-session-head{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+ padding:12px 14px;background:#edf5f7;border-bottom:1px solid #d5e2e7
+}
+.fmn22-ex-session-head h4{margin:0;color:#17324a}
+.fmn22-ex-session-body{padding:12px}
+@media(max-width:900px){
+ .fmn22-sequence-progress{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:620px){
+ .fmn22-sequence-progress{grid-template-columns:repeat(2,1fr)}
+ .fmn22-session-actions{grid-template-columns:1fr}
+ .fmn22-session-actions .wide{grid-column:auto}
+}
+@media print{
+ .fmn22-sequence-progress,.fmn22-session-actions,.fmn22-lock-note{display:none!important}
+}

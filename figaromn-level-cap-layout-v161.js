@@ -129,9 +129,9 @@ function renderCourses(){
     <div class="top-icon">📘</div>
     <span class="pill">SÉQUENCE ${seq.no}</span>
     <h3>${esc(seq.title)}</h3>
-    <p>${seq.sessions.map(s=>esc(s.title)).slice(0,3).join(" · ")}…</p>
+    <p><strong>6 séances progressives</strong> · ${seq.sessions.map(s=>esc(s.title)).slice(0,2).join(" · ")}…</p>
    </div>
-   <div class="actions"><button class="btn blue open-course" data-seq="${seq.no}" type="button">Ouvrir le cours</button></div>
+   <div class="actions"><button class="btn blue open-course" data-seq="${seq.no}" type="button">Ouvrir les 6 séances</button></div>
   </article>`).join("");
  document.querySelectorAll(".open-course").forEach(b=>b.onclick=()=>openCourse(selectSequence(b.dataset.seq)));
 }
@@ -392,90 +392,164 @@ function printSessionAnswers(sequenceNo,sessionNo){
  setTimeout(()=>w.print(),250);
 }
 
-function openCourse(seqNo){
+function openCourse(seqNo,sessionNo){
  selectedSequence=selectSequence(seqNo);
  const seq=CFG.sequences.find(x=>Number(x.no)===selectedSequence);
  const courseSet=(window.FIGAROMN_BACPRO_COURSE_DATA||{})[CFG.level]||[];
  const course=courseSet.find(x=>Number(x.no)===selectedSequence);
  if(!seq||!course)return;
 
+ function exerciseDone(no){
+  const db=sessionDb(seq.no,no);
+  if(!db||!me)return false;
+  return attempts.some(x=>
+   x.student_id===me.id &&
+   x.session_id===db.id &&
+   x.activity_type==="exercise"
+  );
+ }
+
+ function finished(no){
+  return sessionStatus(seq.no,no)==="completed" && exerciseDone(no);
+ }
+
+ function unlocked(no){
+  if(isTeacher||Number(no)===1)return true;
+  return finished(Number(no)-1);
+ }
+
+ function firstAvailable(){
+  for(let i=1;i<=6;i++){
+   if(unlocked(i) && !finished(i))return i;
+  }
+  return 6;
+ }
+
+ let current=Number(sessionNo||firstAvailable());
+ if(!isFinite(current)||current<1||current>6)current=firstAvailable();
+ if(!unlocked(current))current=firstAvailable();
+
+ const s=course.sessions.find(x=>Number(x.no)===current);
+ if(!s)return;
+
+ const doneSessions=[1,2,3,4,5,6].filter(n=>finished(n)).length;
+ const allSequenceDone=doneSessions===6;
  const userKey=(me&&me.id)?me.id:"local";
  const noteKey="fmn_course_note|"+userKey+"|"+CFG.level+"|"+selectedSequence;
- const doneKey="fmn_course_done|"+userKey+"|"+CFG.level+"|"+selectedSequence;
- let savedNote="",courseDone=false;
- try{savedNote=localStorage.getItem(noteKey)||"";courseDone=localStorage.getItem(doneKey)==="1";}catch(e){}
+ let savedNote="";
+ try{savedNote=localStorage.getItem(noteKey)||"";}catch(e){}
 
- const comps=[...new Set(course.sessions.flatMap(s=>s.comps||[]))];
+ const stepHTML=[1,2,3,4,5,6].map(n=>{
+  const sn=course.sessions.find(x=>Number(x.no)===n);
+  const isDone=finished(n),isUnlocked=unlocked(n),isCurrent=n===current;
+  const state=isDone?"✅ Terminée":isUnlocked?"À réaliser":"🔒 Verrouillée";
+  return `<button type="button"
+    class="fmn22-session-step ${isDone?"done":""} ${isCurrent?"current":""} ${!isUnlocked?"locked":""}"
+    data-flow-session="${n}" ${!isUnlocked?"disabled aria-disabled=\"true\"":""}>
+    <span class="fmn22-num">${n}</span>
+    Séance ${n}
+    <small>${esc(sn?sn.title:"")}</small>
+    <small>${state}</small>
+   </button>`;
+ }).join("");
+
+ const currentValidated=sessionStatus(seq.no,current)==="completed";
+ const currentExerciseDone=exerciseDone(current);
+ const currentFinished=currentValidated&&currentExerciseDone;
+ const exState=currentExerciseDone?"✅ Exercice terminé":"À réaliser";
+
  $("fmn-course-detail").innerHTML=`
   <div class="content-head">
-   <div>
-    <span class="pill">SÉQUENCE ${seq.no}</span>
-    <h2>Séquence ${seq.no} – ${esc(seq.title)}</h2>
-    <p>Le cours complet de la séquence est affiché dans cette page.</p>
-   </div>
-   <button class="btn light" id="fmn-back-courses" type="button">← Mes cours</button>
+   <button class="btn light" id="fmn-back-courses" type="button">← Mes séquences</button>
+   <span class="pill">SÉQUENCE ${seq.no} · ${doneSessions}/6 séances terminées</span>
   </div>
 
-  <div class="content-box flow-course">
-   <div class="info"><strong>Compétences travaillées :</strong> ${comps.length?comps.join(" · "):"—"}</div>
+  <div class="fmn22-sequence-intro">
+   <h2>Séquence ${seq.no} – ${esc(seq.title)}</h2>
+   <p><strong>Parcours :</strong> 6 séances. Tu avances séance par séance. Chaque séance comprend son cours, son activité, ses réponses et son exercice.</p>
+   <div class="sequence-progress"><span style="width:${Math.round(doneSessions/6*100)}%"></span></div>
+  </div>
 
-   ${course.sessions.map(s=>`
-    <section class="flow-course-part ${sessionStatus(seq.no,s.no)==="completed"?"flow-session-done":""}">
-     <div class="flow-course-head">
-      <div class="flow-session-titleline">
-       <span class="pill">SÉANCE ${s.no}</span>
-       <span class="status-pill ${sessionStatus(seq.no,s.no)==="completed"?"done":""}" data-session-status="${seq.no}|${s.no}">
-        ${sessionStatus(seq.no,s.no)==="completed"?"Séance terminée":"À réaliser"}
-       </span>
-      </div>
-      <h3>${esc(s.title)}</h3>
-      ${s.objective?`<p><strong>Objectif :</strong> ${esc(s.objective)}</p>`:""}
-     </div>
+  <div class="fmn22-sequence-progress" aria-label="Les 6 séances de la séquence">
+   ${stepHTML}
+  </div>
 
-     <div class="flow-course-resource">${s.html}</div>
+  <section class="fmn22-session-card">
+   <div class="fmn22-session-meta">
+    <span class="fmn22-badge">SÉANCE ${current}/6</span>
+    <span class="fmn22-badge ${currentValidated?"good":"warn"}">${currentValidated?"Cours validé":"Cours à valider"}</span>
+    <span class="fmn22-badge ${currentExerciseDone?"good":"warn"}">${exState}</span>
+   </div>
 
-     ${!isTeacher?answerFieldsHTML(seq.no,s):""}
+   <h3>${esc(s.title)}</h3>
+   ${s.objective?`<p><strong>🎯 Objectif :</strong> ${esc(s.objective)}</p>`:""}
+   <div class="info"><strong>Compétences travaillées :</strong> ${(s.comps||[]).join(" · ")||"—"}</div>
 
-     ${!isTeacher?`
-      <div class="flow-session-validate">
-       <div>
-        <strong>Suivi de la séance ${s.no}</strong>
-        <p>Valide la séance lorsqu’elle a réellement été réalisée.</p>
-       </div>
-       <button
-        type="button"
-        class="btn ${sessionStatus(seq.no,s.no)==="completed"?"green":"orange"}"
-        data-validate-session="${seq.no}|${s.no}"
-        ${sessionStatus(seq.no,s.no)==="completed"?"disabled":""}>
-        ${sessionStatus(seq.no,s.no)==="completed"?"✅ Séance validée":"✅ Valider la séance faite"}
-       </button>
-      </div>
-     `:""}
-    </section>
-   `).join("")}
+   <div class="fmn22-path">
+    <strong>Ordre de travail :</strong> 1. Lire et comprendre le cours → 2. Réaliser l’activité et écrire les réponses →
+    3. Faire l’exercice de la séance → 4. Valider la séance → 5. Passer à la suivante.
+   </div>
 
+   <div class="safety">
+    <strong>🛡️ Sécurité / qualité :</strong> identifier les risques, consulter la documentation applicable,
+    mettre hors énergie ou consigner lorsque nécessaire, utiliser les EPI adaptés et ne jamais inventer une valeur constructeur.
+   </div>
+
+   <div class="flow-course-resource">${s.html}</div>
+
+   ${!isTeacher?answerFieldsHTML(seq.no,s):""}
+
+   <div class="fmn22-session-exercises">
+    <strong>📝 Exercice associé à la séance ${current}</strong>
+    <p>${currentExerciseDone
+      ?"L’exercice formatif de cette séance est terminé. Son résultat alimente automatiquement les indicateurs et les compétences."
+      :"Réalise maintenant l’exercice de cette séance. Les réponses alimentent automatiquement les indicateurs et les compétences."}</p>
+   </div>
+
+   ${!isTeacher?`
+   <div class="fmn22-session-actions">
+    <button type="button" class="btn orange" id="fmn22-do-exercise">
+     ${currentExerciseDone?"📊 Voir / refaire depuis l’espace Exercices":"📝 Faire l’exercice de la séance"}
+    </button>
+
+    <button type="button"
+      class="btn ${currentValidated?"green":"blue"}"
+      id="fmn22-validate-session"
+      ${currentValidated?"disabled":""}>
+      ${currentValidated?"✅ Cours de la séance validé":"✅ Valider le cours de la séance"}
+    </button>
+
+    <button type="button" class="btn light" id="fmn22-print-session">🖨️ Imprimer / PDF la séance</button>
+
+    ${current<6
+      ? `<button type="button" class="btn green" id="fmn22-next-session" ${currentFinished?"":"disabled aria-disabled=\"true\""}>
+          Séance ${current+1} →
+         </button>`
+      : `<button type="button" class="btn green" id="fmn22-go-eval" ${allSequenceDone?"":"disabled aria-disabled=\"true\""}>
+          ✅ Évaluation de la séquence →
+         </button>`}
+   </div>
+
+   ${!currentFinished
+     ? `<div class="fmn22-lock-note">🔒 Pour débloquer la séance suivante, il faut avoir <strong>validé le cours de cette séance</strong> et <strong>réalisé son exercice</strong>.</div>`
+     : ""}
+   `:""}
+
+   ${current===6?`
    <section class="flow-note">
-    <h3>✍️ Ma synthèse personnelle</h3>
-    <textarea id="fmn-course-note" placeholder="Écris ici ce que tu dois retenir…">${esc(savedNote)}</textarea>
+    <h3>✍️ Synthèse personnelle de la séquence</h3>
+    <textarea id="fmn-course-note" placeholder="Écris ici ce que tu retiens de l’ensemble des 6 séances…">${esc(savedNote)}</textarea>
     <div class="small">💾 Sauvegarde automatique sur cet appareil</div>
-   </section>
-
-   <div class="actions flow-actions">
-    <button type="button" class="btn green" id="fmn-course-done">${courseDone?"✅ Cours terminé":"✅ Marquer le cours terminé"}</button>
-    <button type="button" class="btn blue" id="fmn-course-print">🖨️ Imprimer / Enregistrer en PDF</button>
-   </div>
-
-   <div class="exercise-to-eval">
-    <button type="button" class="btn orange" id="fmn-course-to-ex">📝 Passer aux exercices de cette séquence →</button>
-    <small>Les exercices restent dans FigaroMN et alimentent automatiquement les indicateurs et compétences.</small>
-   </div>
-  </div>`;
+   </section>`:""}
+  </section>`;
 
  view("course-detail");
- $("fmn-back-courses").onclick=()=>view("courses");
- $("fmn-course-note").addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
- $("fmn-course-done").onclick=()=>{try{localStorage.setItem(doneKey,"1");}catch(err){};$("fmn-course-done").textContent="✅ Cours terminé";};
- $("fmn-course-print").onclick=()=>window.print();
+
+ $("fmn-back-courses").onclick=()=>{renderCourses();view("courses");};
+
+ document.querySelectorAll("#fmn-course-detail [data-flow-session]").forEach(btn=>{
+  btn.onclick=()=>openCourse(seq.no,Number(btn.dataset.flowSession));
+ });
 
  document.querySelectorAll("#fmn-course-detail [data-session-answer]").forEach(ta=>{
   ta.addEventListener("input",()=>{
@@ -498,17 +572,41 @@ function openCourse(seqNo){
   };
  });
 
- document.querySelectorAll("#fmn-course-detail [data-validate-session]").forEach(btn=>{
-  btn.onclick=async()=>{
-   const parts=btn.dataset.validateSession.split("|").map(Number);
-   const status=document.querySelector('#fmn-course-detail [data-session-status="'+parts[0]+'|'+parts[1]+'"]');
-   await validateSessionDone(parts[0],parts[1],btn,status);
-   const section=btn.closest(".flow-course-part");
-   if(section && btn.disabled)section.classList.add("flow-session-done");
-  };
- });
+ const note=$("fmn-course-note");
+ if(note)note.addEventListener("input",e=>{try{localStorage.setItem(noteKey,e.target.value);}catch(err){}});
 
- $("fmn-course-to-ex").onclick=()=>openExercisesSelected();
+ const printBtn=$("fmn22-print-session");
+ if(printBtn)printBtn.onclick=()=>window.print();
+
+ const exBtn=$("fmn22-do-exercise");
+ if(exBtn)exBtn.onclick=()=>{
+  if(currentExerciseDone){
+   if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
+    window.FigaroBacAuto.openExercisesForSequence(seq.no);
+   }else openExercisesSelected();
+   return;
+  }
+  if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExerciseForSession==="function"){
+   window.FigaroBacAuto.openExerciseForSession(seq.no,current);
+  }else{
+   openExercisesSelected();
+  }
+ };
+
+ const valBtn=$("fmn22-validate-session");
+ if(valBtn)valBtn.onclick=async()=>{
+  const status=document.querySelector('[data-session-status="'+seq.no+'|'+current+'"]');
+  await validateSessionDone(seq.no,current,valBtn,status);
+  openCourse(seq.no,current);
+ };
+
+ const next=$("fmn22-next-session");
+ if(next)next.onclick=()=>openCourse(seq.no,current+1);
+
+ const evalBtn=$("fmn22-go-eval");
+ if(evalBtn)evalBtn.onclick=()=>openEvaluationsSelected();
+
+ window.FIGAROMN_LAST_COURSE_SESSION={sequence:seq.no,session:current};
 }
 
 
@@ -901,8 +999,18 @@ document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=
  const target=b.dataset.view;
  if(target==="home"){view("home");return;}
  if(target==="courses"){renderCourses();view("courses");return;}
- if(target==="exercises"){openExercisesSelected();return;}
- if(target==="evaluations"){openEvaluationsSelected();return;}
+ if(target==="exercises"){
+   if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openAllExercises==="function"){
+     window.FigaroBacAuto.openAllExercises();
+   }else openExercisesSelected();
+   return;
+ }
+ if(target==="evaluations"){
+   if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openAllEvaluations==="function"){
+     window.FigaroBacAuto.openAllEvaluations();
+   }else openEvaluationsSelected();
+   return;
+ }
  if(target==="tools"){view("tools");return;}
  if(target==="games"){view("games");return;}
 });
@@ -930,7 +1038,7 @@ document.getElementById("fmn-level-master").addEventListener("click",function(e)
 
 
 window.FigaroMNLevelFlow={
- openCourse:function(no){openCourse(selectSequence(no));},
+ openCourse:function(no,sessionNo){openCourse(selectSequence(no),sessionNo);},
  exercises:function(no){if(no)selectSequence(no);openExercisesSelected();},
  evaluations:function(no){if(no)selectSequence(no);openEvaluationsSelected();},
  home:function(){view("home");},
