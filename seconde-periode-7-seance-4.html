@@ -1,0 +1,363 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic simple sur pompe de cale · Seconde BAC PRO Maintenance Nautique</title><style>
+:root{--bg:#f4f7f9;--card:#fff;--ink:#1f2b38;--muted:#667784;--navy:#365976;--blue:#eaf2f6;--line:#dbe5ea;--warn:#fff2d8;--green:#eaf8f0;--red:#fdecec;--radius:18px}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}a{color:inherit}.shell{width:min(1220px,calc(100% - 28px));margin:auto}.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}.nav{min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand,.back{text-decoration:none;font-weight:850}.back{color:var(--navy)}.hero{padding:42px 0 22px}.eyebrow{display:inline-block;background:var(--blue);padding:6px 10px;border-radius:999px;font-weight:850;color:var(--navy);font-size:.85rem}h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:13px 0}h2{margin:0 0 12px}h3{margin:0 0 8px}.lead{color:var(--muted);max-width:900px}.section{padding:14px 0}.card,.printblock{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.item{border:1px solid var(--line);border-radius:13px;padding:15px;background:#fafcfd}.meta,.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:6px 9px;border-radius:9px;background:#edf2f5;font-size:.83rem;font-weight:750}.btn{border:0;border-radius:10px;padding:10px 13px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.light{background:#e8eef2;color:var(--ink)}.btn.print{background:#566b7a}.btn.warn{background:#875b00}.btn.good{background:#25694c}.session{margin:18px 0}.session-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:15px}.stype{font-size:.82rem;font-weight:900;color:var(--navy)}.notice{padding:13px;border-radius:12px;background:var(--warn);border:1px solid #edd49d}.safety{padding:13px;border-radius:12px;background:var(--red);border:1px solid #efc7c7}.widget-answers{display:grid;gap:8px;margin-top:12px}.widget-answers button{padding:10px;text-align:left;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}.feedback{font-weight:800;margin-top:10px}table{border-collapse:collapse;width:100%;min-width:760px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eef3f6}.tablewrap{overflow:auto}select,input,textarea{font:inherit;border:1px solid #bac8d1;border-radius:9px;padding:9px;width:100%;background:#fff}textarea{min-height:72px}.track-row{display:grid;grid-template-columns:150px 1fr 160px 1fr;gap:9px;align-items:start;margin:10px 0}.criterion{font-size:.88rem;margin:5px 0;display:block}.criterion input{width:auto}.studentbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}dialog{border:1px solid var(--line);border-radius:16px;width:min(92vw,430px);padding:0}dialog::backdrop{background:rgba(0,0,0,.55)}.dlg{padding:20px}.hidden{display:none!important}footer{padding:34px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}.track-row{grid-template-columns:1fr}.studentbar{grid-template-columns:1fr}}
+@media print{body{background:#fff}.top,.hero,.no-print,footer{display:none!important}body.print-mode .section,body.print-mode .session,body.print-mode .card,body.print-mode .printblock{display:none!important}body.print-mode .print-target{display:block!important;border:0;margin:0;padding:0}.print-target .no-print{display:none!important}@page{margin:12mm}}
+</style>
+<style>
+.fmn-type-nav{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:70px;z-index:12;background:#f4f7f9;padding:10px 0}
+.fmn-type-nav a{padding:9px 12px;border-radius:999px;text-decoration:none;font-weight:850;border:1px solid #dbe5ea;background:#fff}
+.session.fmn-cours{border-left:7px solid #365976}
+.session.fmn-td{border-left:7px solid #7a5a9b}
+.session.fmn-widget{border-left:7px solid #a36a16}
+.session.fmn-tp{border-left:7px solid #287458}
+.session.fmn-eval{border-left:7px solid #a44343}
+.fmn-kind{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.78rem;font-weight:900;margin-bottom:7px;background:#eef3f6}
+.fmn-section-title{margin:32px 0 12px;padding:12px 16px;border-radius:14px;background:#eaf2f6;border:1px solid #dbe5ea}
+@media print{.fmn-type-nav{display:none!important}}
+</style>
+<style>
+.fmn-period-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:20px 0 40px}
+.fmn-session-card{background:#fff;border:1px solid #dbe5ea;border-radius:18px;padding:22px;text-decoration:none;display:block;box-shadow:0 8px 22px rgba(20,45,60,.06)}
+.fmn-session-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(20,45,60,.10)}
+.fmn-session-card .num{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf2f6;color:#365976;font-weight:900;font-size:.8rem}
+.fmn-session-card h2{margin:10px 0 6px}.fmn-session-card p{color:#667784}
+.fmn-one-session{max-width:1100px;margin:auto}
+.fmn-session-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 24px}
+.fmn-session-nav a{padding:10px 13px;border-radius:10px;background:#e8eef2;text-decoration:none;font-weight:800}
+@media(max-width:780px){.fmn-period-menu{grid-template-columns:1fr}}
+@media print{.fmn-session-nav{display:none!important}}
+</style>
+
+<style>
+.fmn-cloudbar{margin:16px 0;padding:14px;border:1px solid #bcd6e2;background:#eef8fb;border-radius:14px}
+.fmn-cloudbar .fmn-cloud-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fmn-cloudbar button,.fmn-cloudbar a{border:0;border-radius:9px;padding:9px 12px;background:#365976;color:#fff;font-weight:800;text-decoration:none;cursor:pointer}
+.fmn-cloudbar .secondary{background:#e3edf2;color:#1d2a38}
+</style>
+
+<style>
+.fmn-expath{margin-top:14px;border:1px solid #cbdce4;border-radius:14px;background:#f9fcfd;padding:16px}
+.fmn-expath-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.fmn-progress{height:10px;background:#e5edf1;border-radius:999px;overflow:hidden;margin:12px 0}.fmn-progress>span{display:block;height:100%;background:#365976;width:0%}
+.fmn-q{padding:14px;border:1px solid #dbe5ea;border-radius:12px;background:#fff;margin:10px 0}
+.fmn-options{display:grid;gap:8px;margin-top:10px}.fmn-options button{padding:10px;border:1px solid #c9d5dc;background:#fff;border-radius:10px;text-align:left;cursor:pointer}
+.fmn-options button.correct{outline:2px solid #2d7a55}.fmn-options button.wrong{outline:2px solid #a44343}
+.fmn-exfeedback{font-weight:800;margin-top:10px}.fmn-score{font-weight:900;font-size:1.1rem}.fmn-exactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+</style>
+</head><body>
+<header class="top no-print"><div class="shell nav"><a class="brand" href="seconde-periode-7.html">⚓ Séquence 7</a><a class="back" href="seconde-periode-7.html">← Menu de la séquence</a></div></header>
+<main class="shell fmn-one-session">
+<section class="hero no-print"><span class="eyebrow">Seconde BAC PRO Maintenance Nautique · Séquence 7 · Séance 4</span>
+<h1>Diagnostic simple sur pompe de cale</h1>
+<div class="studentbar"><label>Élève<input class="studentName"></label><label>Classe<input class="studentClass" value="2nde BAC PRO MN"></label><label>Date<input class="studentDate" type="date"></label></div>
+<button type="button" class="btn good" id="saveStudent">Enregistrer l’élève</button>
+<div class="fmn-session-nav"><a href="seconde-periode-7-seance-3.html">← Séance précédente</a><a href="seconde-periode-7.html">Toutes les séances</a><a href="seconde-periode-7-seance-5.html">Séance suivante →</a></div>
+</section><div class="fmn-cloudbar no-print" id="fmnCloudBar">
+<strong>☁️ Suivi à distance</strong>
+<div class="fmn-cloud-actions">
+<span id="fmnCloudStatus">Vérification de la connexion…</span>
+<button type="button" id="fmnCompleteBtn" class="hidden">Marquer la séance terminée</button>
+<a id="fmnLoginLink" class="secondary hidden" href="connexion.html">Se connecter</a>
+</div>
+</div>
+<section class="section session printblock fmn-eval fmn-tp fmn-td fmn-widget fmn-cours" id="p6s4">
+<div class="session-head">
+<div><div class="stype">Séquence 7 · Séance 4 · TP</div><div class="fmn-kind">🔧 TP / ATELIER</div><h2>Diagnostic simple sur pompe de cale</h2><p class="lead">Transférer la méthode.</p></div>
+<button class="btn print no-print" onclick="FMN.print('p6s4')" type="button">🖨️ Imprimer la séance</button>
+</div>
+<div class="grid2">
+<div class="item"><h3>📘 Cours / ressource</h3>
+<p><strong>Objectif :</strong> Transférer la méthode.</p>
+<p>L’élève part d’une situation professionnelle de maintenance nautique. Il identifie le système, les risques, les documents et les informations nécessaires avant toute action.</p>
+<p>La démarche demandée est : <strong>observer → sécuriser → consulter la documentation → préparer → contrôler/intervenir → comparer → conclure → essayer → tracer</strong>.</p>
+<p>Pour <strong>Diagnostic simple sur pompe de cale</strong>, l’élève doit être capable de reformuler le besoin, repérer les organes utiles sur le schéma ou l’équipement, choisir les moyens adaptés et justifier sa conclusion à partir de preuves.</p>
+<p class="notice">Toute valeur de serrage, pression, tolérance ou caractéristique précise doit être fournie par le dossier technique ou une source constructeur fiable.</p>
+</div>
+<div class="item"><h3>🔧 TP / atelier</h3>
+<p><strong>Situation professionnelle :</strong> le chef d’atelier confie une embarcation ou une maquette portant sur « Diagnostic simple sur pompe de cale ».</p>
+<ol>
+<li>Identifier les risques et sécuriser le poste.</li>
+<li>Repérer les composants et les liaisons utiles.</li>
+<li>Consulter le schéma, la procédure et les valeurs attendues disponibles.</li>
+<li>Préparer l’outillage et les moyens de mesure.</li>
+<li>Réaliser l’activité demandée sans remplacer de pièce au hasard.</li>
+<li>Effectuer l’autocontrôle et les essais prévus.</li>
+<li>Renseigner le document de suivi et formuler une conclusion professionnelle.</li>
+</ol>
+<p><strong>Production attendue :</strong> fiche de préparation, tableau de contrôles, schéma annoté et compte rendu d’intervention.</p>
+</div>
+</div>
+<div class="item" id="p6s4-ex" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>📝 Exercices d’application</h3><button class="btn print no-print" onclick="FMN.print('p6s4-ex')" type="button">🖨️ Imprimer les exercices</button></div>
+<ol>
+<li>Distinguer <em>symptôme</em>, <em>hypothèse</em>, <em>contrôle</em>, <em>résultat</em> et <em>conclusion</em> pour « Diagnostic simple sur pompe de cale ».</li>
+<li>Repérer sur un schéma : source d’énergie, protections, commandes, récepteurs et liaisons.</li>
+<li>Proposer deux contrôles classés du plus simple au plus pertinent et préciser ce que chaque résultat permet de conclure.</li>
+<li>Citer trois risques ou précautions QHSE liés à l’intervention.</li>
+<li>Rédiger un compte rendu court exploitable par le chef d’atelier.</li>
+</ol>
+<details><summary><strong>Correction guidée</strong></summary>
+<p>Le symptôme décrit ce qui est observé ; l’hypothèse propose une cause possible ; le contrôle produit une preuve ; la conclusion s’appuie sur cette preuve. Les organes et valeurs exacts doivent être relevés sur le dossier fourni.</p>
+</details>
+</div>
+<div class="item" id="p6s4-widget" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>🧩 Exercice 4 de la séquence</h3><button class="btn print no-print" type="button" onclick="FMN.print('p6s4-widget')">🖨️ Imprimer</button></div>
+<div class="fmn-expath" data-questions='[{&quot;q&quot;: &quot;Avant toute intervention, quelle est la première démarche professionnelle ?&quot;, &quot;o&quot;: [&quot;Identifier les risques et consulter la documentation&quot;, &quot;Démonter immédiatement&quot;, &quot;Remplacer le composant le plus coûteux&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Sur une pompe de cale, quelle distinction aide au diagnostic ?&quot;, &quot;o&quot;: [&quot;Commande manuelle / commande automatique&quot;, &quot;Tribord / bâbord seulement&quot;, &quot;Couleur du flotteur&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Une conclusion de diagnostic doit s’appuyer sur :&quot;, &quot;o&quot;: [&quot;Une mesure ou une observation interprétée&quot;, &quot;Une supposition&quot;, &quot;L’habitude uniquement&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Si la pompe fonctionne en manuel mais pas en automatique, le contrôle prioritaire concerne surtout :&quot;, &quot;o&quot;: [&quot;La chaîne de commande automatique&quot;, &quot;La coque&quot;, &quot;Le tableau de bord complet&quot;], &quot;a&quot;: 0}, {&quot;q&quot;: &quot;Si une valeur constructeur précise n’est pas disponible, il faut :&quot;, &quot;o&quot;: [&quot;La rechercher dans une source fiable&quot;, &quot;L’inventer&quot;, &quot;Utiliser celle d’un autre modèle&quot;], &quot;a&quot;: 0}]'>
+ <div class="fmn-expath-head"><strong>Parcours de 5 exercices · Diagnostic simple sur pompe de cale</strong><span class="fmn-score">0 / 5</span></div>
+ <div class="fmn-progress"><span></span></div>
+ <div class="fmn-excontent"></div>
+ <div class="fmn-exfeedback"></div>
+ <div class="fmn-exactions no-print"><button type="button" class="btn fmn-next hidden">Exercice suivant</button><button type="button" class="btn light fmn-restart hidden">Recommencer</button></div>
+</div>
+</div>
+<div class="item" id="p6s4-comp" style="margin-top:14px">
+<div class="actions" style="justify-content:space-between"><h3>🎯 Suivi compétences — préparation CERISE Pro</h3><button class="btn print no-print" onclick="FMN.print('p6s4-comp')" type="button">🖨️ Imprimer le suivi</button></div>
+<p class="notice">Les codes, tâches et critères ci-dessous sont issus du référentiel. L’échelle 1 à 4 reste un outil pédagogique local à transcrire selon le paramétrage CERISE Pro de l’établissement.</p>
+<div class="item track" data-comp="C5">
+<strong>C5 — Constater le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 · T2.1.1 à T2.1.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> L’état du système est identifié.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les indices sont identifiés et listés avec un minimum d’intervention sur le système.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les essais sont réalisés en respectant les règles du constructeur et les conditions d’hygiène et de sécurité du travail.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C6">
+<strong>C6 — Hiérarchiser les hypothèses en lien avec le dysfonctionnement</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.1 / A2.2 · T2.1.4 à T2.1.6, T2.2.1</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les hypothèses émises sont pertinentes et en relation avec le dysfonctionnement constaté.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Les règles de sécurité sont respectées.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> La logique d’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> La hiérarchisation des résultats est pertinente.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> La synthèse met en évidence une démarche de diagnostic pertinente et logique.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C7">
+<strong>C7 — Valider les hypothèses</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.2 · T2.2.2 à T2.2.5</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Le choix des valeurs collectées est pertinent au regard du processus de diagnostic.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> Le protocole de mesure respecte les règles de sécurité.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les choix du matériel de mesure et des grandeurs relevées sont judicieux.</label><label class="criterion"><input class="crit" data-i="3" type="checkbox"/> L’utilisation des outils d’aide au diagnostic est maîtrisée.</label><label class="criterion"><input class="crit" data-i="4" type="checkbox"/> Les résultats, relevés ou observations sont correctement interprétés.</label><label class="criterion"><input class="crit" data-i="5" type="checkbox"/> La réflexion et le discernement permettent d’expliquer la cause première de la défaillance.</label><label class="criterion"><input class="crit" data-i="6" type="checkbox"/> L’intégrité de l’embarcation et de ses équipements est assurée.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<div class="item track" data-comp="C8">
+<strong>C8 — Identifier les éléments ou systèmes défectueux</strong>
+<div class="pill" style="display:inline-block;margin:7px 0">A2.3 · T2.3.1 à T2.3.4</div>
+<label class="criterion"><input class="crit" data-i="0" type="checkbox"/> Les éléments défectueux sont identifiés à partir des hypothèses.</label><label class="criterion"><input class="crit" data-i="1" type="checkbox"/> La nature de l’intervention est identifiée.</label><label class="criterion"><input class="crit" data-i="2" type="checkbox"/> Les conséquences sur les autres éléments et sur la maintenance sont identifiées.</label>
+<div class="track-row">
+<label>Niveau d’acquisition<select class="levelSelect"><option value="">Non positionné</option><option>1 · Non acquis</option><option>2 · En cours d’acquisition</option><option>3 · Acquis</option><option>4 · Maîtrisé</option></select></label>
+<label>Preuve / activité observée<textarea class="evidence" placeholder="Mesure, TP, oral, fiche, schéma…"></textarea></label>
+<label>Date<input class="obsdate" type="date"/></label>
+<label>Commentaire enseignant<textarea class="comment" placeholder="Point fort / remédiation"></textarea></label>
+</div>
+</div>
+<button class="btn good no-print saveTrack" type="button">Enregistrer le suivi</button><span class="feedback saveMsg"></span>
+</div>
+</section>
+
+</main><footer>Base pédagogique FigaroMN · Seconde BAC PRO Maintenance Nautique</footer>
+
+<script>
+(function(){
+"use strict";
+window.FMN=window.FMN||{};
+FMN.j=function(k,d){try{var x=localStorage.getItem(k);return x?JSON.parse(x):d}catch(e){return d}};
+FMN.s=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+FMN.student=function(){return FMN.j("fmn_student",{})||{}};
+FMN.setStudent=function(o){FMN.s("fmn_student",o)};
+FMN.print=function(id){
+ var el=document.getElementById(id);if(!el)return;
+ document.body.classList.add("print-mode");el.classList.add("print-target");
+ window.print();
+ setTimeout(function(){el.classList.remove("print-target");document.body.classList.remove("print-mode")},250);
+};
+FMN.log=function(level,title,detail){
+ var a=FMN.j("fmn_log_"+level,[]);
+ a.unshift({date:new Date().toLocaleString("fr-FR"),title:title,detail:detail||""});
+ FMN.s("fmn_log_"+level,a.slice(0,160));
+};
+})();
+</script>
+
+<script>
+(function(){var s=FMN.student();document.querySelector(".studentName").value=s.name||"";document.querySelector(".studentClass").value=s.class||"2nde BAC PRO MN";document.querySelector(".studentDate").value=s.date||new Date().toISOString().slice(0,10);document.getElementById("saveStudent").onclick=function(){FMN.setStudent({name:document.querySelector(".studentName").value.trim(),class:document.querySelector(".studentClass").value.trim(),date:document.querySelector(".studentDate").value});location.reload();};})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var L="seconde", P=6;
+var student=FMN.student();
+
+document.querySelectorAll(".widget-answers button").forEach(function(b){
+ b.onclick=function(){
+   var box=b.closest(".item"),f=box?box.querySelector(".feedback"):null;
+   if(f)f.textContent=b.dataset.ok==="1"?"Bonne réponse.":"Réponse à revoir : reprends la méthode professionnelle.";
+ };
+});
+
+function trackKey(box,c){
+ var s=FMN.student(),sess=box.closest(".session");
+ return "fmn_track|"+L+"|"+(s.name||"sans_nom")+"|"+P+"|"+(sess?sess.id:"eval")+"|"+c;
+}
+document.querySelectorAll(".track").forEach(function(box){
+ var c=box.dataset.comp,d=FMN.j(trackKey(box,c),{});
+ var sel=box.querySelector(".levelSelect"),ev=box.querySelector(".evidence"),dt=box.querySelector(".obsdate"),cm=box.querySelector(".comment");
+ if(sel)sel.value=d.level||"";if(ev)ev.value=d.evidence||"";if(dt)dt.value=d.date||"";if(cm)cm.value=d.comment||"";
+ (d.criteria||[]).forEach(function(i){var q=box.querySelector('.crit[data-i="'+i+'"]');if(q)q.checked=true;});
+});
+document.querySelectorAll(".saveTrack").forEach(function(btn){
+ btn.onclick=function(){
+  var area=btn.closest(".item")||document;
+  area.querySelectorAll(".track").forEach(function(box){
+   var c=box.dataset.comp,criteria=[];
+   box.querySelectorAll(".crit:checked").forEach(function(x){criteria.push(Number(x.dataset.i));});
+   FMN.s(trackKey(box,c),{
+    level:box.querySelector(".levelSelect")?box.querySelector(".levelSelect").value:"",
+    evidence:box.querySelector(".evidence")?box.querySelector(".evidence").value:"",
+    date:box.querySelector(".obsdate")?box.querySelector(".obsdate").value:"",
+    comment:box.querySelector(".comment")?box.querySelector(".comment").value:"",
+    criteria:criteria
+   });
+  });
+  var m=area.querySelector(".saveMsg");if(m)m.textContent="Suivi enregistré.";
+ };
+});
+
+document.querySelectorAll(".agenda-box").forEach(function(box){
+ var sess=box.closest(".session"),sid=sess?sess.id:"session",s=FMN.student();
+ var k="fmn_agenda|"+L+"|"+P+"|"+sid,d=FMN.j(k,{});
+ var q=function(sel){return box.querySelector(sel)};
+ if(q(".agendaDate"))q(".agendaDate").value=d.date||new Date().toISOString().slice(0,10);
+ if(q(".agendaDuration"))q(".agendaDuration").value=d.duration||"";
+ if(q(".agendaGroup"))q(".agendaGroup").value=d.group||(s.class||"");
+ if(q(".agendaSummary"))q(".agendaSummary").value=d.summary||"";
+ if(q(".agendaHomework"))q(".agendaHomework").value=d.homework||"";
+ if(q(".agendaSkills"))q(".agendaSkills").value=d.skills||"";
+ if(q(".agendaRemed"))q(".agendaRemed").value=d.remed||"";
+ (d.items||[]).forEach(function(v){Array.from(box.querySelectorAll(".agendaChecks input")).forEach(function(x){if(x.value===v)x.checked=true;});});
+ var ps=q(".agendaPrint");if(ps)ps.onclick=function(){FMN.print(sess.id)};
+ var sv=q(".agendaSave");if(sv)sv.onclick=function(){
+   var items=[];box.querySelectorAll(".agendaChecks input:checked").forEach(function(x){items.push(x.value)});
+   var data={date:q(".agendaDate").value,duration:q(".agendaDuration").value,group:q(".agendaGroup").value,items:items,summary:q(".agendaSummary").value,homework:q(".agendaHomework").value,skills:q(".agendaSkills").value,remed:q(".agendaRemed").value,title:sess?sess.querySelector("h2").textContent:"Séance"};
+   FMN.s(k,data);
+   var log=FMN.j("fmn_agenda_log_"+L,[]),idx=log.findIndex(function(x){return x.key===k});
+   var row={key:k,date:data.date,period:P,session:sid,title:data.title,items:items.join(", "),summary:data.summary,homework:data.homework,skills:data.skills,remed:data.remed,duration:data.duration,group:data.group};
+   if(idx>=0)log[idx]=row;else log.unshift(row);
+   FMN.s("fmn_agenda_log_"+L,log.slice(0,250));
+   var msg=q(".agendaMsg");if(msg)msg.textContent="Agenda enregistré.";
+ };
+ var cl=q(".agendaClear");if(cl)cl.onclick=function(){
+   if(confirm("Réinitialiser l’agenda de cette séance ?")){localStorage.removeItem(k);location.reload();}
+ };
+});
+
+document.querySelectorAll(".unlockEval").forEach(function(b){
+ b.onclick=function(){
+   var sec=b.closest("section"),dlg=sec.nextElementSibling;
+   if(!dlg||!dlg.showModal)return;
+   dlg.showModal();
+   var cancel=dlg.querySelector(".cancelCode");if(cancel)cancel.onclick=function(){dlg.close();};
+   var form=dlg.querySelector(".codeForm");
+   if(form)form.onsubmit=function(e){
+     e.preventDefault();
+     if(dlg.querySelector(".codeInput").value.trim().toUpperCase()===b.dataset.code){
+       dlg.close();sec.querySelector(".eval-lock").classList.add("hidden");sec.querySelector(".eval-zone").classList.remove("hidden");
+     }else dlg.querySelector(".codeErr").textContent="Code incorrect.";
+   };
+ };
+});
+document.querySelectorAll(".evalForm").forEach(function(form){
+ form.onsubmit=function(e){
+  e.preventDefault();var ans=JSON.parse(form.dataset.answers),good=0;
+  ans.forEach(function(a,i){var q=form.querySelector('input[name="q'+(i+1)+'"]:checked');if(q&&Number(q.value)===a)good++;});
+  var score=good*2;form.dataset.qscore=score;
+  var z=form.closest(".eval-zone"),r=z?z.querySelector(".evalResult"):null;if(r)r.textContent="Questions : "+score+" /10";
+ };
+});
+document.querySelectorAll(".saveFinalScore").forEach(function(b){
+ b.onclick=function(){
+   var z=b.closest(".eval-zone"),qs=Number(z.querySelector(".evalForm").dataset.qscore||0),ps=Math.max(0,Math.min(10,Number(z.querySelector(".proScore").value||0))),total=qs+ps,s=FMN.student(),key="fmn_notes|"+L+"|"+(s.name||"sans_nom"),d=FMN.j(key,{});
+   d["p"+P]=total;FMN.s(key,d);
+   z.querySelector(".finalScoreMsg").textContent="Note enregistrée : "+total+" /20";
+ };
+});
+})();
+</script>
+
+
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-tracking.js"></script>
+<script>
+(async function(){
+var LEVEL="seconde", PERIOD=6, SESSION_NO=4;
+var status=document.getElementById("fmnCloudStatus"),done=document.getElementById("fmnCompleteBtn"),login=document.getElementById("fmnLoginLink");
+if(!status)return;
+var sess=FigaroCloud.session();if(!sess||!sess.access_token){status.textContent="Non connecté : le suivi reste local.";login.classList.remove("hidden");return;}
+var prof=await FigaroCloud.profile();if(!prof||prof.role!=="student"){status.textContent="Mode enseignant : suivi élève non activé sur cette page.";return;}
+if(prof.archived_at){status.textContent="Compte archivé : synchronisation suspendue.";done.classList.add("hidden");return;}
+var rows=await FigaroCloud.table("sessions","level=eq."+LEVEL+"&period=eq."+PERIOD+"&session_no=eq."+SESSION_NO+"&select=id,title");
+if(!rows||!rows[0]){status.textContent="Séance non encore enregistrée dans Supabase. Exécute SETUP-SUPABASE-CONNECTE.sql.";return;}
+var dbs=rows[0],existing=await FigaroCloud.table("session_progress","student_id=eq."+prof.id+"&session_id=eq."+dbs.id+"&select=id,status");
+if(!existing||!existing.length){
+ await FigaroCloud.table("session_progress","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:prof.id,session_id:dbs.id,status:"started",started_at:new Date().toISOString()})});
+ status.textContent="Séance commencée — synchronisée.";
+}else status.textContent=existing[0].status==="completed"?"Séance terminée — synchronisée.":"Séance commencée — synchronisée.";
+if(!(existing&&existing[0]&&existing[0].status==="completed"))done.classList.remove("hidden");
+done.onclick=async function(){
+ await FigaroCloud.table("session_progress","student_id=eq."+prof.id+"&session_id=eq."+dbs.id,{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({status:"completed",completed_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
+ status.textContent="Séance terminée — synchronisée.";done.classList.add("hidden");
+};
+document.querySelectorAll(".saveFinalScore").forEach(function(btn){
+ btn.addEventListener("click",function(){
+  setTimeout(async function(){
+   var z=btn.closest(".eval-zone");if(!z)return;var msg=z.querySelector(".finalScoreMsg");if(!msg)return;
+   var m=msg.textContent.match(/([\d.,]+)\s*\/20/);if(!m)return;var score=Number(m[1].replace(",","."));
+   try{
+    var prev=await FigaroCloud.table("evaluation_results","student_id=eq."+prof.id+"&session_id=eq."+dbs.id+"&select=attempt_no&order=attempt_no.desc&limit=1");
+    var attempt=prev&&prev[0]?Number(prev[0].attempt_no)+1:1;
+    await FigaroCloud.table("evaluation_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:prof.id,session_id:dbs.id,score:score,attempt_no:attempt,details:{source:"FigaroMN HTML"}})});
+    msg.textContent+=" · synchronisée";
+   }catch(e){msg.textContent+=" · synchronisation impossible";}
+  },250);
+ });
+});
+})().catch(function(e){var x=document.getElementById("fmnCloudStatus");if(x)x.textContent="Suivi distant indisponible : "+e.message;});
+</script>
+
+<script>
+(function initFigaroExercises(){
+ document.querySelectorAll(".fmn-expath").forEach(function(box){
+  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false,attemptAnswers=[];
+  var content=box.querySelector(".fmn-excontent"),fb=box.querySelector(".fmn-exfeedback"),next=box.querySelector(".fmn-next"),restart=box.querySelector(".fmn-restart"),scoreEl=box.querySelector(".fmn-score"),bar=box.querySelector(".fmn-progress span");
+  function render(){
+   answered=false;fb.textContent="";next.classList.add("hidden");restart.classList.add("hidden");
+   if(i>=qs.length){
+    content.innerHTML='<div class="q"><h4>Exercice terminé</h4><p>Tu as obtenu <strong>'+score+' / '+qs.length+'</strong>.</p><p>'+(score>=4?"Très bonne maîtrise.":"Reprends les notions associées avant de recommencer.")+'</p></div>';
+    scoreEl.textContent=score+" / "+qs.length;bar.style.width="100%";restart.classList.remove("hidden");
+    saveResult();return;
+   }
+   var q=qs[i];bar.style.width=((i)/qs.length*100)+"%";scoreEl.textContent=score+" / "+qs.length;
+   content.innerHTML='<div class="fmn-q"><strong>Exercice '+(i+1)+' / '+qs.length+'</strong><p>'+q.q+'</p><div class="fmn-options">'+q.o.map((o,n)=>'<button type="button" data-n="'+n+'">'+o+'</button>').join("")+'</div></div>';
+   content.querySelectorAll("button").forEach(function(b){b.onclick=function(){if(answered)return;answered=true;var n=Number(b.dataset.n);attemptAnswers[i]=(n===q.a);if(n===q.a){score++;b.classList.add("correct");fb.textContent="Bonne réponse.";}else{b.classList.add("wrong");var good=content.querySelector('button[data-n="'+q.a+'"]');if(good)good.classList.add("correct");fb.textContent="Réponse à revoir. La bonne réponse est indiquée.";}scoreEl.textContent=score+" / "+qs.length;next.classList.remove("hidden");};});
+  }
+  async function saveResult(){
+   try{
+    var sess=FigaroCloud&&FigaroCloud.session?FigaroCloud.session():null;if(!sess)return;
+    var p=await FigaroCloud.profile();if(!p||p.role!=="student"||p.archived_at)return;
+    var rows=await FigaroCloud.table("sessions","level=eq.seconde&period=eq.6&session_no=eq.4&select=id");
+    if(!rows||!rows[0])return;
+    await FigaroCloud.table("interactive_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:p.id,session_id:rows[0].id,score:score,total:qs.length,completed_at:new Date().toISOString()})});if(window.FigaroTracking){await FigaroTracking.saveExerciseAttempt({box:box,questions:qs,answers:attemptAnswers.slice(),score:score,total:qs.length})}
+   }catch(e){}
+  }
+  next.onclick=function(){i++;render();};restart.onclick=function(){i=0;score=0;attemptAnswers=[];render();};render();
+ });
+})();
+</script></body></html>
