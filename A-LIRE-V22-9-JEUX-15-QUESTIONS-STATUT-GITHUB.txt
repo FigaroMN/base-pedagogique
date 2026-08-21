@@ -1,0 +1,57 @@
+FIGAROMN V22.9 – JEUX : STATUT « JEU FAIT » + 15 QUESTIONS / ELEMENTS
+============================================================================
+
+NOUVEAUTES
+----------
+1. INDICATION « JEU FAIT »
+   - Dès qu'un élève termine au moins une tentative, la carte du jeu affiche :
+     ✅ Jeu fait
+   - Le bouton « Jouer » devient ensuite « Rejouer ».
+   - Si le meilleur score atteint au moins 75 %, l'indication 🏆 Réussi reste affichée.
+   - Un nouveau compteur « Jeux faits » apparaît en haut de la page.
+   - Le statut est conservé avec les données de progression déjà utilisées par le site.
+
+2. 15 QUESTIONS / ELEMENTS PAR JEU
+   - Les 40 jeux proposent maintenant 15 éléments interactifs chacun.
+   - Jeux Quiz : 15 questions.
+   - Jeux Séquence : 15 étapes à ordonner.
+   - Jeux Association : 15 associations.
+   - Une étiquette sur chaque carte indique le nombre d'éléments du jeu.
+
+3. CONTENU
+   - Les questions supplémentaires restent centrées sur la maintenance nautique :
+     sécurité, électricité, mesures, équipements, atelier, diagnostic,
+     propulsion, relation client, qualité, environnement et communication.
+   - Aucune valeur constructeur précise n'a été ajoutée sans documentation.
+
+MISES A JOUR PRECEDENTES CONSERVEES
+-----------------------------------
+V22.5 : État des lieux avant Ordre de réparation.
+V22.6 : séances fermées à l'ouverture d'une séquence.
+V22.7 : calculatrice scientifique améliorée sur téléphone.
+V22.8 : impression des exercices réalisés avec les réponses.
+
+FICHIERS A REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-games-v20.js
+- figaromn-games-v20.css
+- figaromn-games-v213.js
+- figaromn-games-v213.css
+- seconde.html
+- premiere.html
+- terminale.html
+- cap.html
+
+Le cache des fichiers de jeux passe en ?v=229.
+
+INSTALLATION
+------------
+1. Décompresser PATCH-V22-9-JEUX-15-QUESTIONS-STATUT-GITHUB.zip.
+2. Ouvrir le dépôt GitHub.
+3. Add file > Upload files.
+4. Envoyer les fichiers décompressés à la RACINE du dépôt.
+5. Accepter le remplacement des fichiers existants.
+6. Commit changes sur la branche main.
+7. Attendre le déploiement GitHub Pages.
+8. Actualiser avec Ctrl+F5 sur ordinateur.
+9. Sur téléphone, fermer/réouvrir la page ou vider le cache si nécessaire.

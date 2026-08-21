@@ -1,0 +1,56 @@
+FIGAROMN V22.8 – IMPRESSION DES EXERCICES REALISES AVEC REPONSES
+=================================================================
+
+NOUVEAUTE
+---------
+Lorsqu'un exercice est terminé, le bouton devient :
+
+🖨️ Imprimer avec mes réponses
+
+Le document imprimé contient :
+- le nom de l'élève ;
+- la séquence et la séance ;
+- la date de réalisation ;
+- le numéro de tentative ;
+- la note /20, le score et le pourcentage ;
+- chaque question ;
+- la réponse donnée par l'élève ;
+- la réponse attendue ;
+- Correct / À revoir ;
+- l'indicateur de compétence associé.
+
+HISTORIQUE
+----------
+Dans « Historique », chaque tentative possède maintenant son propre bouton :
+🖨️ Imprimer cette tentative avec réponses
+
+Ainsi, une ancienne tentative peut aussi être imprimée.
+
+EXERCICE NON REALISE
+--------------------
+Le bouton « Imprimer l'exercice » continue d'imprimer le sujet vierge.
+
+MISES A JOUR PRECEDENTES CONSERVEES
+-----------------------------------
+V22.5 : ordre État des lieux → Ordre de réparation → Devis → Facture → Calculatrice.
+V22.6 : séances fermées à l'ouverture d'une séquence.
+V22.7 : calculatrice scientifique responsive sur téléphone.
+
+FICHIERS A REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-bacpro-auto-v161.js
+- seconde.html
+- premiere.html
+- terminale.html
+
+Le cache JavaScript passe en ?v=228.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V22.8.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Actualiser avec Ctrl+F5.

@@ -126,3 +126,58 @@
  #figaromn-games .fg-match-row{grid-template-columns:1fr}
  #figaromn-games .fg-game-head .fg-btn{width:100%}
 }
+
+
+/* === V22.9 : statut "Jeu fait" + 15 questions/éléments par jeu === */
+#figaromn-games .fg-stats{
+ grid-template-columns:repeat(5,minmax(0,1fr));
+}
+#figaromn-games .fg-card-top{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:10px;
+}
+#figaromn-games .fg-status-done,
+#figaromn-games .fg-status-todo{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:999px;
+ padding:6px 9px;
+ font-size:11px;
+ font-weight:900;
+ white-space:nowrap;
+}
+#figaromn-games .fg-status-done{
+ background:#e5f4eb;
+ color:#246b43;
+ border:1px solid #c7e8d3;
+}
+#figaromn-games .fg-status-todo{
+ background:#eef3f5;
+ color:#657985;
+ border:1px solid #dfe8ec;
+}
+#figaromn-games .fg-card.played{
+ border-color:#a9d7bb;
+ box-shadow:0 6px 22px rgba(46,139,87,.08);
+}
+#figaromn-games .fg-card.played .score{
+ background:#f4fbf7;
+ border-radius:9px;
+ padding:8px 9px;
+ margin-top:10px;
+}
+#figaromn-games .fg-count{
+ background:#fff3d8;
+ color:#8b5b00;
+}
+@media(max-width:1100px){
+ #figaromn-games .fg-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:700px){
+ #figaromn-games .fg-stats{grid-template-columns:repeat(2,1fr)}
+ #figaromn-games .fg-status-done,
+ #figaromn-games .fg-status-todo{font-size:10px;padding:5px 8px}
+}

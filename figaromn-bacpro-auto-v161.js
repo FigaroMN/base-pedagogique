@@ -500,18 +500,30 @@ async function saveAttempt(kind,item,responses,score){
 }
 function printReport(title,item,result,responses){
  var w=window.open("","_blank");if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
- var body='<h1>'+esc(title)+'</h1><p><strong>Élève :</strong> '+esc(state.profile.full_name||state.profile.email||"")+'</p>'+
-  '<p><strong>Résultat :</strong> '+result.score+' / '+result.total+' · '+fr(result.note20)+' /20 · '+fr(result.percent)+' %</p>'+
+ var dateTxt=result.completedAt?new Date(result.completedAt).toLocaleString("fr-FR"):"";
+ var body='<div class="head"><div><h1>'+esc(title)+'</h1>'+
+  '<p><strong>'+esc(CFG.full)+'</strong> · Séquence '+item.sequence+' · Séance '+(item.situation||6)+'</p></div>'+
+  '<div class="score">'+fr(result.note20)+' / 20</div></div>'+
+  '<div class="info"><p><strong>Élève :</strong> '+esc(state.profile.full_name||state.profile.email||"")+'</p>'+
+  (result.attemptNo?'<p><strong>Tentative :</strong> '+esc(result.attemptNo)+'</p>':'')+
+  (dateTxt?'<p><strong>Réalisé le :</strong> '+esc(dateTxt)+'</p>':'')+
+  '<p><strong>Résultat :</strong> '+fr(result.score)+' / '+fr(result.total)+' · '+fr(result.percent)+' %</p></div>'+
   '<h2>Questions et réponses</h2>'+
   item.questions.map(function(q,i){
    var r=responses[i]||{},choice=r.choice;
-   return '<div class="q"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><br>'+
-    'Réponse choisie : '+esc(choice==null?"—":q.a[choice])+'<br>'+
-    'Résultat : '+(r.correct?"✅ Correct":"❌ À revoir")+'<br>'+
-    'Indicateur : '+esc(Object.keys(q.inds||{}).map(function(c){return c+"-I"+(Number(q.inds[c])+1);}).join(" · "))+'</div>';
-  }).join("");
- w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>body{font-family:Arial;padding:24px;color:#18323f}.q{border:1px solid #d9e6ea;border-radius:10px;padding:10px;margin:8px 0}h1,h2{color:#06283d}</style></head><body>'+body+'</body></html>');
- w.document.close();setTimeout(function(){w.print();},250);
+   var chosen=(choice==null||!q.a)?"—":q.a[choice];
+   var expected=(q.c==null||!q.a)?"—":q.a[q.c];
+   var status=r.correct===true;
+   return '<div class="q '+(status?'ok':'ko')+'"><div class="qtitle"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><span>'+(status?'✅ Correct':'❌ À revoir')+'</span></div>'+
+    '<p><strong>Réponse de l’élève :</strong> '+esc(chosen)+'</p>'+
+    '<p><strong>Réponse attendue :</strong> '+esc(expected)+'</p>'+
+    '<p class="indicator"><strong>Indicateur :</strong> '+esc(Object.keys(q.inds||{}).map(function(c){return c+"-I"+(Number(q.inds[c])+1);}).join(" · ")||"—")+'</p></div>';
+  }).join("")+
+  '<p class="foot">Document généré depuis FigaroMN – exercice réalisé et réponses enregistrées.</p>';
+ w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'+
+  '<style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#18323f;margin:0;font-size:12px}.head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;border-bottom:3px solid #0b4f6c;padding-bottom:10px;margin-bottom:12px}h1{font-size:21px;margin:0 0 5px;color:#06283d}h2{font-size:16px;color:#06283d;margin:18px 0 8px}.head p,.info p{margin:3px 0}.score{white-space:nowrap;background:#0b4f6c;color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;font-size:17px}.info{background:#eef5f7;border-radius:9px;padding:9px 11px;margin-bottom:12px}.q{border:1px solid #d9e6ea;border-left:5px solid #93a7b1;border-radius:9px;padding:9px 11px;margin:8px 0;break-inside:avoid}.q.ok{border-left-color:#2e8b57}.q.ko{border-left-color:#c44}.qtitle{display:flex;justify-content:space-between;gap:12px}.qtitle span{white-space:nowrap;font-weight:700}.q p{margin:6px 0}.indicator{color:#536a76}.foot{margin-top:18px;padding-top:8px;border-top:1px solid #ccd9de;color:#687f89;font-size:10px}@media print{button{display:none}}</style>'+
+  '</head><body>'+body+'</body></html>');
+ w.document.close();setTimeout(function(){w.focus();w.print();},300);
 }
 function showHistory(kind,item){
  var rows=kind==="exercise"?attemptRows("exercise",item.sequence,item.situation):evalRows(item.sequence);
@@ -526,9 +538,26 @@ function showHistory(kind,item){
    ind.forEach(function(x){var c=x.competency_code,idx=Number(x.indicator_index)-1;if(!agg[c])agg[c]={};agg[c][idx]={good:Number(x.correct_count)||0,total:Number(x.question_count)||0};});
    return '<details class="history-attempt" '+(i===rows.length-1?"open":"")+'><summary>Tentative '+(i+1)+' · '+new Date(r.completed_at).toLocaleString("fr-FR")+' · '+fr(note20(r.score,r.total))+'/20</summary><div class="history-attempt-body">'+
     '<p>Score : <strong>'+fr(r.score)+' / '+fr(r.total)+'</strong> · Réussite : <strong>'+fr(r.percent)+' %</strong></p>'+
+    '<button type="button" class="btn blue" data-print-attempt="'+esc(r.id)+'">🖨️ Imprimer cette tentative avec réponses</button>'+
     indicatorAcquisitionHTML(agg,Object.keys(agg),'Résultat de cette tentative.')+'</div></details>';
   }).join("")+'</div></div>';
  root.appendChild(overlay);
+ overlay.querySelectorAll("[data-print-attempt]").forEach(function(btn){
+  btn.onclick=function(){
+   var attemptId=btn.dataset.printAttempt;
+   var r=rows.find(function(x){return String(x.id)===String(attemptId);});
+   if(!r)return;
+   var responses=r.details&&Array.isArray(r.details.responses)?r.details.responses:[];
+   printReport("Exercice réalisé – "+item.title,item,{
+    attemptNo:Number(r.attempt_no)||1,
+    score:Number(r.score)||0,
+    total:Number(r.total)||item.questions.length,
+    percent:Number(r.percent)||0,
+    note20:note20(r.score,r.total),
+    completedAt:r.completed_at||""
+   },responses);
+  };
+ });
  function close(){overlay.remove();}
  overlay.querySelector(".history-close").onclick=close;
  overlay.onclick=function(e){if(e.target===overlay)close();};
@@ -573,9 +602,10 @@ function rebuildExercises(){
       (rows.length?
        '<button type="button" class="btn light" disabled>✅ Exercice terminé</button>'+
        '<button type="button" class="btn red" data-redo-ex="'+ex.sequence+'|'+ex.situation+'">🔁 Refaire l’exercice</button>'+
-       '<button type="button" class="btn blue" data-history-ex="'+ex.sequence+'|'+ex.situation+'">📚 Historique ('+rows.length+')</button>':
-       '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice de la séance</button>')+
-      '<button type="button" class="btn light" data-print-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer l’exercice</button>'+
+       '<button type="button" class="btn blue" data-history-ex="'+ex.sequence+'|'+ex.situation+'">📚 Historique ('+rows.length+')</button>'+
+       '<button type="button" class="btn blue" data-print-done-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer avec mes réponses</button>':
+       '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice de la séance</button>'+
+       '<button type="button" class="btn light" data-print-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer l’exercice</button>')+
      '</div></div></details>';
    }).join("")+'</div>'+
   '</details>';
@@ -618,7 +648,24 @@ function bindExerciseButtons(){
  grid.querySelectorAll("[data-redo-ex]").forEach(function(b){b.onclick=function(){var code=prompt("Code enseignant pour refaire l’exercice :");if(code===null)return;if(code.trim().toLowerCase()!==String(DATA.redoExerciseCode||"refaire").toLowerCase()){alert("Code incorrect.");return;}var x=b.dataset.redoEx.split("|");openExercise(findExercise(x[0],x[1]),true);};});
  grid.querySelectorAll("[data-history-ex]").forEach(function(b){b.onclick=function(){var x=b.dataset.historyEx.split("|");showHistory("exercise",findExercise(x[0],x[1]));};});
  grid.querySelectorAll("[data-print-ex]").forEach(function(b){b.onclick=function(){var x=b.dataset.printEx.split("|"),ex=findExercise(x[0],x[1]);printBlankExercise(ex);};});
+ grid.querySelectorAll("[data-print-done-ex]").forEach(function(b){b.onclick=function(){var x=b.dataset.printDoneEx.split("|"),ex=findExercise(x[0],x[1]);printCompletedExercise(ex);};});
 }
+function printCompletedExercise(ex){
+ var rows=attemptRows("exercise",ex.sequence,ex.situation);
+ if(!rows.length){printBlankExercise(ex);return;}
+ var attempt=rows[rows.length-1];
+ var responses=attempt.details&&Array.isArray(attempt.details.responses)?attempt.details.responses:[];
+ var result={
+  attemptNo:Number(attempt.attempt_no)||rows.length,
+  score:Number(attempt.score)||0,
+  total:Number(attempt.total)||ex.questions.length,
+  percent:Number(attempt.percent)||0,
+  note20:note20(attempt.score,attempt.total),
+  completedAt:attempt.completed_at||""
+ };
+ printReport("Exercice réalisé – "+ex.title,ex,result,responses);
+}
+
 function printBlankExercise(ex){
  var w=window.open("","_blank");if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
  var body='<h1>'+esc(ex.title)+'</h1><p><strong>'+esc(CFG.full)+'</strong> · Séquence '+ex.sequence+' · Situation '+ex.situation+'</p><p>'+esc(ex.objective||"")+'</p>'+
