@@ -1,0 +1,85 @@
+FIGAROMN V24.0 – CORRECTION DÉTECTION DU CAHIER DE TEXTE
+==========================================================
+
+PROBLÈME CORRIGÉ
+----------------
+Le cahier de texte pouvait sélectionner une ancienne classe / un ancien niveau
+encore présent dans la base, même lorsqu'aucun élève actif n'était inscrit
+dans ce niveau.
+
+Exemple :
+- 1 élève en Seconde
+- 1 élève en CAP
+- aucun élève en Première
+mais le cahier pouvait proposer « Première ».
+
+NOUVEAU FONCTIONNEMENT
+----------------------
+Le cahier de texte se base maintenant sur les ÉLÈVES ACTIFS.
+
+Si seuls CAP et Seconde ont des élèves :
+- seuls CAP et Seconde sont proposés ;
+- Première et Terminale ne sont pas proposées ;
+- une ancienne entrée Première reste conservée dans la base mais est masquée
+  tant qu'il n'y a plus d'élève actif en Première.
+
+ÉLÈVES « NON RATTACHÉ »
+-----------------------
+La capture montre que les deux élèves sont actuellement « Non rattaché ».
+
+FigaroMN gère maintenant ce cas :
+- Seconde · Sans classe
+- CAP · Sans classe
+
+La détection de séance utilise directement les activités des élèves de ce
+niveau même s'ils n'ont pas encore été placés dans une classe.
+
+DÉTECTION AUTOMATIQUE
+---------------------
+Au démarrage, FigaroMN choisit le groupe actif ayant l'activité élève la plus
+récente.
+
+IMPORTANT :
+une ancienne entrée du cahier de texte ne peut plus faire choisir
+automatiquement un mauvais niveau.
+
+HISTORIQUE
+----------
+L'historique :
+- ne montre par défaut que les niveaux ayant actuellement des élèves actifs ;
+- reste filtrable par niveau ;
+- reste filtrable par classe / groupe ;
+- affiche « Sans classe » pour les élèves non encore rattachés.
+
+SUPABASE
+--------
+Pour enregistrer l'historique des élèves « Sans classe », exécuter UNE FOIS :
+
+MIGRATION-V24-0-CAHIER-TEXTE-NIVEAUX-ACTIFS.sql
+
+dans Supabase > SQL Editor.
+
+Cette migration permet à class_id d'être vide dans le cahier de texte et
+ajoute class_name pour conserver un libellé lisible.
+
+FICHIERS À REMPLACER / UTILISER
+--------------------------------
+GitHub :
+- enseignant.html
+
+Supabase SQL Editor :
+- MIGRATION-V24-0-CAHIER-TEXTE-NIVEAUX-ACTIFS.sql
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V24.0.
+2. GitHub > Add file > Upload files.
+3. Remplacer enseignant.html à la racine.
+4. Commit changes sur main.
+5. Supabase > SQL Editor :
+   exécuter MIGRATION-V24-0-CAHIER-TEXTE-NIVEAUX-ACTIFS.sql
+6. Attendre GitHub Pages.
+7. Fermer puis rouvrir l'espace professeur.
+8. Faire Ctrl+F5.
+
+Toutes les mises à jour précédentes jusqu'à V23.9 sont conservées.

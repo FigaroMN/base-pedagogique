@@ -147,7 +147,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
   <select id="cdtClass"></select>
  </label>
  <label>Niveau
-  <input id="cdtLevel" readonly aria-label="Niveau détecté">
+  <select id="cdtLevel" aria-label="Niveau du cahier de texte"></select>
  </label>
  <label>Séquence
   <select id="cdtSequence"></select>
@@ -197,7 +197,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
  <div class="cdt-history-head">
   <div>
    <h3>📚 Historique du cahier de texte</h3>
-   <p class="muted">Retrouve les séances déjà renseignées par niveau et par classe.</p>
+   <p class="muted">Retrouve les séances déjà renseignées par niveau et par classe. Les niveaux sans élève actif sont masqués automatiquement.</p>
   </div>
   <button class="btn light" id="cdtHistoryRefresh" type="button">↻ Actualiser l’historique</button>
  </div>
@@ -444,60 +444,153 @@ function autoStats(studentId){
 function isRecent(v){return v&&(Date.now()-new Date(v).getTime())<10*60*1000;}
 
 
-/* ===== V23.5 · Cahier de texte ÉcoleDirecte + historique ===== */
+/* ===== V24.0 · Cahier de texte : niveaux actifs + élèves non rattachés ===== */
+
 function cdtData(level){
  return (window.FIGAROMN_CAHIER_DATA&&window.FIGAROMN_CAHIER_DATA[level])||[];
 }
+
 function cdtToday(){
  const d=new Date(),off=d.getTimezoneOffset();
  return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
 }
-function cdtSelectedClass(){
- const el=$("cdtClass");
- return el&&el.value?classMap[el.value]||null:null;
+
+function cdtActiveProfiles(){
+ return (profiles||[]).filter(p=>!p.archived_at&&["seconde","premiere","terminale","cap"].includes(p.level));
 }
+
+function cdtActiveLevels(){
+ const set={};
+ cdtActiveProfiles().forEach(p=>{if(p.level)set[p.level]=true;});
+ return ["seconde","premiere","terminale","cap"].filter(level=>set[level]);
+}
+
+function cdtMembershipsForStudent(studentId){
+ return (memberships||[]).filter(m=>m.student_id===studentId);
+}
+
+function cdtGroups(level){
+ const active=cdtActiveProfiles().filter(p=>!level||p.level===level);
+ const activeIds=new Set(active.map(p=>p.id));
+ const groups=[];
+
+ // Classes ayant réellement au moins un élève actif du bon niveau.
+ (classes||[]).filter(c=>!level||c.level===level).forEach(c=>{
+  const ids=(memberships||[])
+   .filter(m=>m.class_id===c.id&&activeIds.has(m.student_id))
+   .map(m=>m.student_id);
+  if(ids.length){
+   groups.push({
+    key:"class:"+c.id,
+    classId:c.id,
+    className:c.name,
+    level:c.level,
+    studentIds:[...new Set(ids)],
+    synthetic:false
+   });
+  }
+ });
+
+ // Élèves actifs sans rattachement de classe.
+ const unassigned=active.filter(p=>{
+  return !(memberships||[]).some(m=>m.student_id===p.id);
+ });
+
+ if(unassigned.length){
+  const lvl=level||unassigned[0].level;
+  groups.push({
+   key:"unassigned:"+lvl,
+   classId:null,
+   className:"Sans classe",
+   level:lvl,
+   studentIds:unassigned.map(p=>p.id),
+   synthetic:true
+  });
+ }
+
+ return groups;
+}
+
+function cdtAllGroups(){
+ return cdtActiveLevels().flatMap(level=>cdtGroups(level));
+}
+
+function cdtSelectedGroup(){
+ const levelEl=$("cdtLevel"),classEl=$("cdtClass");
+ const level=levelEl?levelEl.value:"";
+ const key=classEl?classEl.value:"";
+ return cdtGroups(level).find(g=>g.key===key)||null;
+}
+
 function cdtSeqObject(){
- const c=cdtSelectedClass(),level=c?c.level:"";
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
  const el=$("cdtSequence");
  return el?cdtData(level).find(x=>Number(x.no)===Number(el.value))||null:null;
 }
+
 function cdtSessionObject(){
  const seq=cdtSeqObject(),el=$("cdtSession");
  return seq&&el?(seq.sessions||[]).find(x=>Number(x.no)===Number(el.value))||null:null;
 }
+
 function cdtLocalHistory(){
  try{
-  const rows=JSON.parse(localStorage.getItem("figaromn_cdt_history_v235")||"[]");
+  const rows=JSON.parse(localStorage.getItem("figaromn_cdt_history_v240")||
+                        localStorage.getItem("figaromn_cdt_history_v235")||
+                        "[]");
   return Array.isArray(rows)?rows:[];
  }catch(e){return [];}
 }
+
 function cdtSaveLocalHistory(rows){
- try{localStorage.setItem("figaromn_cdt_history_v235",JSON.stringify(rows||[]));}catch(e){}
+ try{localStorage.setItem("figaromn_cdt_history_v240",JSON.stringify(rows||[]));}catch(e){}
 }
-function cdtFillClasses(){
+
+function cdtFillLevels(preferredLevel){
+ const el=$("cdtLevel");
+ if(!el)return;
+
+ const levels=cdtActiveLevels();
+ const old=preferredLevel||el.value;
+
+ el.innerHTML=levels.length
+  ? levels.map(level=>`<option value="${level}">${esc(labels[level]||level)}</option>`).join("")
+  : '<option value="">Aucun niveau avec élève actif</option>';
+
+ if(old&&levels.includes(old))el.value=old;
+ else if(levels.length)el.value=levels[0];
+
+ cdtFillClasses();
+}
+
+function cdtFillClasses(preferredKey,seqNo,sessionNo){
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
  const el=$("cdtClass");
  if(!el)return;
- const old=el.value;
- el.innerHTML=classes.length
-  ? classes.map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(labels[c.level]||c.level)}</option>`).join("")
-  : '<option value="">Aucune classe disponible</option>';
 
- if(old&&classMap[old])el.value=old;
- if(!el.value&&classes[0])el.value=classes[0].id;
+ const list=cdtGroups(level);
+ const old=preferredKey||el.value;
 
- cdtFillSequences();
- cdtHistoryFillClasses();
+ el.innerHTML=list.length
+  ? list.map(g=>{
+     const suffix=g.synthetic
+      ? " · "+g.studentIds.length+" élève"+(g.studentIds.length>1?"s":"")+" non rattaché"+(g.studentIds.length>1?"s":"")
+      : " · "+g.studentIds.length+" élève"+(g.studentIds.length>1?"s":"");
+     return `<option value="${esc(g.key)}">${esc(g.className+suffix)}</option>`;
+    }).join("")
+  : '<option value="">Aucun groupe actif pour ce niveau</option>';
+
+ if(old&&list.some(g=>g.key===old))el.value=old;
+ else if(list.length)el.value=list[0].key;
+
+ cdtFillSequences(seqNo,sessionNo);
+ cdtHistoryFillLevels();
 }
+
 function cdtFillSequences(seqNo,sessionNo){
- const c=cdtSelectedClass();
- if(!c){
-  if($("cdtLevel"))$("cdtLevel").value="";
-  if($("cdtSequence"))$("cdtSequence").innerHTML="";
-  if($("cdtSession"))$("cdtSession").innerHTML="";
-  return;
- }
- $("cdtLevel").value=labels[c.level]||c.level;
- const data=cdtData(c.level);
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
+ const data=cdtData(level);
+
  $("cdtSequence").innerHTML=data.length
   ? data.map(s=>`<option value="${s.no}">Séquence ${s.no} · ${esc(s.title)}</option>`).join("")
   : '<option value="">Aucune séquence</option>';
@@ -505,10 +598,13 @@ function cdtFillSequences(seqNo,sessionNo){
  if(seqNo&&data.some(s=>Number(s.no)===Number(seqNo))){
   $("cdtSequence").value=String(seqNo);
  }
+
  cdtFillSessions(sessionNo);
 }
+
 function cdtFillSessions(sessionNo){
  const seq=cdtSeqObject(),list=seq?(seq.sessions||[]):[];
+
  $("cdtSession").innerHTML=list.length
   ? list.map(s=>`<option value="${s.no}">Séance ${s.no} · ${esc(s.title)}</option>`).join("")
   : '<option value="">Aucune séance</option>';
@@ -516,59 +612,73 @@ function cdtFillSessions(sessionNo){
  if(sessionNo&&list.some(s=>Number(s.no)===Number(sessionNo))){
   $("cdtSession").value=String(sessionNo);
  }
+
  cdtGenerate();
 }
+
 function cdtCompetencies(level,codes){
  return (codes||[]).map(code=>{
   const title=competencyTitle(level,code);
   return code+(title?" — "+title:"");
  });
 }
-function cdtGenerate(){
- const c=cdtSelectedClass(),seq=cdtSeqObject(),s=cdtSessionObject();
- if(!c||!seq||!s)return;
 
- const levelLabel=labels[c.level]||c.level;
- const comps=cdtCompetencies(c.level,s.comps);
+function cdtGenerate(){
+ const group=cdtSelectedGroup(),seq=cdtSeqObject(),s=cdtSessionObject();
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
+ if(!group||!level||!seq||!s)return;
+
+ const levelLabel=labels[level]||level;
+ const comps=cdtCompetencies(level,s.comps);
  const duration=($("cdtDuration").value||"").trim();
  const date=$("cdtDate").value||cdtToday();
 
  $("cdtTitle").value="Maintenance nautique — "+levelLabel+" — Séquence "+seq.no+" — Séance "+s.no+" : "+s.title;
 
  let lines=[
+  "Niveau : "+levelLabel,
+  "Classe / groupe : "+group.className,
   "Séquence "+seq.no+" — "+seq.title,
   "Séance "+s.no+" — "+s.title
  ];
+
  if(s.type)lines.push("Type de séance : "+s.type);
  if(duration)lines.push("Durée / créneau : "+duration);
+
  lines.push("");
  if(s.objective)lines.push("Objectif : "+s.objective);
+
  if(comps.length){
   lines.push("");
   lines.push("Compétences mobilisées :");
   comps.forEach(x=>lines.push("• "+x));
  }
+
  lines.push("");
  lines.push("Points de vigilance : sécurité / QHSE, protection de l’environnement et respect de la documentation technique applicable à l’intervention.");
- $("cdtContent").value=lines.join("\n");
 
+ $("cdtContent").value=lines.join("\n");
  $("cdtHomework").value="Revoir la synthèse de la séance "+s.no+" et terminer l’exercice associé dans FigaroMN si nécessaire.";
 
  try{
-  localStorage.setItem("figaromn_cdt_last_v235",JSON.stringify({
-   classId:c.id,sequence:seq.no,session:s.no,date:date,duration:duration
+  localStorage.setItem("figaromn_cdt_last_v240",JSON.stringify({
+   level:level,
+   groupKey:group.key,
+   sequence:seq.no,
+   session:s.no,
+   date:date,
+   duration:duration
   }));
  }catch(e){}
 }
-function cdtLatestForClass(){
- const c=cdtSelectedClass();
- if(!c)return null;
 
- const ids=memberships.filter(x=>x.class_id===c.id).map(x=>x.student_id);
+function cdtStudentEventsForGroup(group,includeLogbook){
+ if(!group)return [];
+ const ids=group.studentIds||[];
  const events=[];
 
- if(c.level==="cap"){
-  capAttempts.filter(x=>ids.includes(x.student_id)&&x.completed_at).forEach(x=>{
+ if(group.level==="cap"){
+  (capAttempts||[]).filter(x=>ids.includes(x.student_id)&&x.completed_at).forEach(x=>{
    events.push({
     sequence:Number(x.sequence_no)||1,
     session:Math.max(1,Math.min(6,Number(x.activity_no)||1)),
@@ -579,71 +689,138 @@ function cdtLatestForClass(){
  }else{
   const sm=sessionMap();
 
-  progress.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  (progress||[]).filter(x=>ids.includes(x.student_id)).forEach(x=>{
    const s=sm[x.session_id],when=x.updated_at||x.completed_at||x.started_at;
-   if(s&&s.level===c.level&&when){
-    events.push({sequence:Number(s.period)||1,session:Number(s.session_no)||1,when:when,source:"progression"});
+   if(s&&s.level===group.level&&when){
+    events.push({
+     sequence:Number(s.period)||1,
+     session:Number(s.session_no)||1,
+     when:when,
+     source:"progression élève"
+    });
    }
   });
 
-  attempts.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  (attempts||[]).filter(x=>ids.includes(x.student_id)).forEach(x=>{
    const s=sm[x.session_id];
-   if(s&&s.level===c.level&&x.completed_at){
-    events.push({sequence:Number(s.period)||1,session:Number(s.session_no)||1,when:x.completed_at,source:"exercice"});
+   if(s&&s.level===group.level&&x.completed_at){
+    events.push({
+     sequence:Number(s.period)||1,
+     session:Number(s.session_no)||1,
+     when:x.completed_at,
+     source:"exercice élève"
+    });
    }
   });
 
-  evaluations.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  (evaluations||[]).filter(x=>ids.includes(x.student_id)).forEach(x=>{
    const s=sm[x.session_id];
-   if(s&&s.level===c.level&&x.submitted_at){
-    events.push({sequence:Number(s.period)||1,session:Number(s.session_no)||1,when:x.submitted_at,source:"évaluation"});
+   if(s&&s.level===group.level&&x.submitted_at){
+    events.push({
+     sequence:Number(s.period)||1,
+     session:Number(s.session_no)||1,
+     when:x.submitted_at,
+     source:"évaluation élève"
+    });
    }
   });
  }
 
- // Si la classe n'a pas encore d'activité élève, on utilise la dernière
- // entrée du cahier de texte comme repère.
- (logbookEntries||[]).filter(x=>x.class_id===c.id).forEach(x=>{
-  events.push({
-   sequence:Number(x.sequence_no)||1,
-   session:Number(x.session_no)||1,
-   when:x.entry_date||x.created_at,
-   source:"cahier de texte"
+ if(includeLogbook){
+  (logbookEntries||[]).filter(x=>{
+   if(x.level!==group.level)return false;
+   if(group.classId)return x.class_id===group.classId;
+   return !x.class_id;
+  }).forEach(x=>{
+   events.push({
+    sequence:Number(x.sequence_no)||1,
+    session:Number(x.session_no)||1,
+    when:x.entry_date||x.created_at,
+    source:"cahier de texte"
+   });
   });
- });
+ }
 
  events.sort((a,b)=>new Date(b.when||0)-new Date(a.when||0));
+ return events;
+}
+
+function cdtLatestForGroup(group,includeLogbook){
+ const events=cdtStudentEventsForGroup(group,includeLogbook);
  return events[0]||null;
 }
-function cdtDetectCurrent(showMessage){
- const c=cdtSelectedClass();
- if(!c){
-  $("cdtDetectInfo").textContent="Aucune classe disponible. Crée ou sélectionne d’abord une classe.";
+
+function cdtBestActiveGroup(){
+ const groups=cdtAllGroups();
+ if(!groups.length)return null;
+
+ let best=null;
+ groups.forEach(group=>{
+  // IMPORTANT : pour choisir automatiquement le niveau,
+  // on se base uniquement sur l'activité des élèves, jamais sur
+  // une ancienne entrée du cahier de texte.
+  const hit=cdtLatestForGroup(group,false);
+  if(hit&&(!best||new Date(hit.when||0)>new Date(best.hit.when||0))){
+   best={group:group,hit:hit};
+  }
+ });
+
+ return best||{group:groups[0],hit:null};
+}
+
+function cdtSelectGroup(group,seqNo,sessionNo){
+ if(!group)return;
+ $("cdtLevel").value=group.level;
+ cdtFillClasses(group.key,seqNo,sessionNo);
+}
+
+function cdtDetectCurrent(showMessage,autoChooseGroup){
+ let group=cdtSelectedGroup();
+
+ if(autoChooseGroup||!group){
+  const best=cdtBestActiveGroup();
+  if(best){
+   group=best.group;
+   cdtSelectGroup(group,best.hit?best.hit.sequence:null,best.hit?best.hit.session:null);
+  }
+ }
+
+ if(!group){
+  $("cdtDetectInfo").textContent="Aucun élève actif en CAP, Seconde, Première ou Terminale.";
+  if(showMessage){
+   $("cdtMsg").textContent="Aucun niveau actif n’est disponible pour le cahier de texte.";
+   $("cdtMsg").className="msg";
+  }
   return;
  }
 
- const hit=cdtLatestForClass();
+ const hit=cdtLatestForGroup(group,true);
+
  if(hit){
-  cdtFillSequences(hit.sequence,hit.session);
+  cdtSelectGroup(group,hit.sequence,hit.session);
   $("cdtDetectInfo").textContent=
-   "Séance détectée pour "+c.name+" : séquence "+hit.sequence+
-   ", séance "+hit.session+" · repère : "+hit.source+
+   "Séance détectée pour "+(labels[group.level]||group.level)+" · "+group.className+
+   " : séquence "+hit.sequence+", séance "+hit.session+
+   " · repère : "+hit.source+
    (hit.when?" · "+ago(hit.when):"")+".";
+
   if(showMessage){
-   $("cdtMsg").textContent="✅ Séance détectée automatiquement. Vérifie puis adapte le contenu si nécessaire.";
+   $("cdtMsg").textContent="✅ Séance détectée à partir du niveau / groupe réellement actif.";
    $("cdtMsg").className="msg ok";
   }
  }else{
-  cdtFillSequences(1,1);
+  cdtSelectGroup(group,1,1);
   $("cdtDetectInfo").textContent=
-   "Aucune activité enregistrée pour "+c.name+
-   ". Séquence 1, séance 1 proposées par défaut ; tu peux modifier la sélection.";
+   "Aucune activité enregistrée pour "+(labels[group.level]||group.level)+" · "+group.className+
+   ". Séquence 1, séance 1 proposées par défaut.";
+
   if(showMessage){
    $("cdtMsg").textContent="ℹ️ Aucun repère récent trouvé : sélection manuelle possible.";
    $("cdtMsg").className="msg";
   }
  }
 }
+
 async function cdtCopy(text,label){
  if(!text)return;
  try{
@@ -659,11 +836,14 @@ async function cdtCopy(text,label){
   $("cdtMsg").className="msg ok";
  }
 }
+
 function cdtCopyAll(){
- const c=cdtSelectedClass();
+ const group=cdtSelectedGroup();
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
  const parts=[
   "CAHIER DE TEXTE — ÉCOLEDIRECTE",
-  c?"Classe : "+c.name:"",
+  level?"Niveau : "+(labels[level]||level):"",
+  group?"Classe / groupe : "+group.className:"",
   $("cdtDate").value?"Date : "+$("cdtDate").value:"",
   "",
   "TITRE",
@@ -677,13 +857,17 @@ function cdtCopyAll(){
  ];
  return cdtCopy(parts.join("\n"),"Cahier de texte complet");
 }
+
 function cdtPayload(){
- const c=cdtSelectedClass(),seq=cdtSeqObject(),s=cdtSessionObject();
- if(!c||!seq||!s)return null;
+ const group=cdtSelectedGroup(),seq=cdtSeqObject(),s=cdtSessionObject();
+ const level=$("cdtLevel")?$("cdtLevel").value:"";
+ if(!group||!level||!seq||!s)return null;
+
  return {
   teacher_id:me.id,
-  class_id:c.id,
-  level:c.level,
+  class_id:group.classId||null,
+  class_name:group.className||"",
+  level:level,
   sequence_no:Number(seq.no),
   session_no:Number(s.no),
   entry_date:$("cdtDate").value||cdtToday(),
@@ -693,13 +877,15 @@ function cdtPayload(){
   homework:($("cdtHomework").value||"").trim()
  };
 }
+
 async function cdtSaveHistory(){
  const payload=cdtPayload();
  if(!payload){
-  $("cdtMsg").textContent="Choisis une classe, une séquence et une séance avant d’enregistrer.";
+  $("cdtMsg").textContent="Choisis un niveau, un groupe, une séquence et une séance avant d’enregistrer.";
   $("cdtMsg").className="msg";
   return;
  }
+
  const btn=$("cdtSaveHistory"),old=btn.textContent;
  btn.disabled=true;btn.textContent="Enregistrement…";
 
@@ -709,6 +895,7 @@ async function cdtSaveHistory(){
    headers:{"Prefer":"return=representation"},
    body:JSON.stringify(payload)
   });
+
   if(Array.isArray(rows)&&rows[0])logbookEntries.unshift(rows[0]);
   else await cdtReloadHistory();
 
@@ -716,55 +903,103 @@ async function cdtSaveHistory(){
   $("cdtMsg").className="msg ok";
   cdtRenderHistory();
  }catch(e){
-  // Secours local si la migration Supabase n'a pas encore été installée.
   const local=cdtLocalHistory();
   const row=Object.assign({
    id:"local-"+Date.now(),
    created_at:new Date().toISOString()
   },payload);
+
   local.unshift(row);
   cdtSaveLocalHistory(local);
   logbookEntries=local;
 
   $("cdtMsg").textContent=
-   "✅ Enregistré sur cet appareil. Pour un historique partagé entre appareils, exécute la migration V23.5 dans Supabase.";
+   "✅ Enregistré sur cet appareil. Pour la sauvegarde Supabase des élèves non rattachés, exécute la migration V24.0.";
   $("cdtMsg").className="msg ok";
   cdtRenderHistory();
  }finally{
   btn.disabled=false;btn.textContent=old;
  }
 }
+
 async function cdtReloadHistory(){
  try{
   logbookEntries=await FigaroCloud.table("logbook_entries",
    "teacher_id=eq."+me.id+
-   "&select=id,teacher_id,class_id,level,sequence_no,session_no,entry_date,duration,title,content,homework,created_at"+
+   "&select=id,teacher_id,class_id,class_name,level,sequence_no,session_no,entry_date,duration,title,content,homework,created_at"+
    "&order=entry_date.desc,created_at.desc"
   );
  }catch(e){
   logbookEntries=cdtLocalHistory();
  }
+ cdtHistoryFillLevels();
  cdtRenderHistory();
 }
+
+function cdtHistoryFillLevels(){
+ const sel=$("cdtHistoryLevel");
+ if(!sel)return;
+
+ const active=cdtActiveLevels();
+ const old=sel.value;
+
+ sel.innerHTML='<option value="">Tous les niveaux actifs</option>'+
+  active.map(level=>`<option value="${level}">${esc(labels[level]||level)}</option>`).join("");
+
+ if(old&&active.includes(old))sel.value=old;
+ else sel.value="";
+
+ cdtHistoryFillClasses();
+}
+
 function cdtHistoryFillClasses(){
  const sel=$("cdtHistoryClass");
  if(!sel)return;
+
  const level=$("cdtHistoryLevel")?$("cdtHistoryLevel").value:"";
  const old=sel.value;
- const list=classes.filter(c=>!level||c.level===level);
- sel.innerHTML='<option value="">Toutes les classes</option>'+
-  list.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
- if(old&&list.some(c=>c.id===old))sel.value=old;
+ let groups=[];
+
+ if(level){
+  groups=cdtGroups(level);
+ }else{
+  groups=cdtAllGroups();
+ }
+
+ sel.innerHTML='<option value="">Toutes les classes / groupes actifs</option>'+
+  groups.map(g=>`<option value="${esc(g.key)}">${esc((labels[g.level]||g.level)+" · "+g.className)}</option>`).join("");
+
+ if(old&&groups.some(g=>g.key===old))sel.value=old;
+ else sel.value="";
 }
+
+function cdtHistoryRowMatchesGroup(row,key){
+ if(!key)return true;
+
+ if(key.startsWith("class:")){
+  return row.class_id===key.slice(6);
+ }
+
+ if(key.startsWith("unassigned:")){
+  const level=key.slice("unassigned:".length);
+  return row.level===level&&!row.class_id;
+ }
+
+ return true;
+}
+
 function cdtRenderHistory(){
  const tbody=$("cdtHistoryRows");
  if(!tbody)return;
 
+ const activeLevels=cdtActiveLevels();
  const level=$("cdtHistoryLevel")?$("cdtHistoryLevel").value:"";
- const classId=$("cdtHistoryClass")?$("cdtHistoryClass").value:"";
+ const groupKey=$("cdtHistoryClass")?$("cdtHistoryClass").value:"";
 
  const rows=(logbookEntries||[])
-  .filter(x=>(!level||x.level===level)&&(!classId||x.class_id===classId))
+  // Les niveaux qui n'ont plus aucun élève actif sont masqués.
+  .filter(x=>activeLevels.includes(x.level))
+  .filter(x=>(!level||x.level===level)&&cdtHistoryRowMatchesGroup(x,groupKey))
   .sort((a,b)=>{
    const da=(a.entry_date||"")+" "+(a.created_at||"");
    const db=(b.entry_date||"")+" "+(b.created_at||"");
@@ -772,14 +1007,15 @@ function cdtRenderHistory(){
   });
 
  if(!rows.length){
-  tbody.innerHTML='<tr><td colspan="6" class="cdt-history-empty">Aucune séance enregistrée pour ce filtre.</td></tr>';
+  tbody.innerHTML='<tr><td colspan="6" class="cdt-history-empty">Aucune séance enregistrée pour les niveaux actuellement actifs.</td></tr>';
   return;
  }
 
  tbody.innerHTML=rows.map(x=>{
-  const c=classMap[x.class_id];
-  const cls=c?c.name:"Classe supprimée";
+  const c=x.class_id?classMap[x.class_id]:null;
+  const cls=x.class_name||(c?c.name:"Sans classe");
   const lvl=labels[x.level]||x.level||"—";
+
   return `<tr>
    <td><strong>${esc(x.entry_date||"—")}</strong>${x.duration?`<div class="small">${esc(x.duration)}</div>`:""}</td>
    <td><span class="pill">${esc(lvl)}</span></td>
@@ -796,30 +1032,48 @@ function cdtRenderHistory(){
  document.querySelectorAll(".cdtLoadEntry").forEach(b=>b.onclick=()=>cdtLoadEntry(b.dataset.id));
  document.querySelectorAll(".cdtDeleteEntry").forEach(b=>b.onclick=()=>cdtDeleteEntry(b.dataset.id,b));
 }
+
 function cdtLoadEntry(id){
  const row=(logbookEntries||[]).find(x=>String(x.id)===String(id));
  if(!row)return;
 
- if(classMap[row.class_id]){
-  $("cdtClass").value=row.class_id;
-  cdtFillSequences(row.sequence_no,row.session_no);
+ if(!cdtActiveLevels().includes(row.level)){
+  $("cdtHistoryMsg").textContent="Cette ancienne entrée appartient à un niveau sans élève actif et reste masquée.";
+  $("cdtHistoryMsg").className="msg";
+  return;
  }
+
+ $("cdtLevel").value=row.level;
+
+ let key="";
+ if(row.class_id){
+  key="class:"+row.class_id;
+ }else{
+  key="unassigned:"+row.level;
+ }
+
+ cdtFillClasses(key,row.sequence_no,row.session_no);
+
  $("cdtDate").value=row.entry_date||cdtToday();
  $("cdtDuration").value=row.duration||"";
  $("cdtTitle").value=row.title||"";
  $("cdtContent").value=row.content||"";
  $("cdtHomework").value=row.homework||"";
 
- $("cdtMsg").textContent="📚 Entrée de l’historique chargée. Tu peux la relire, la modifier ou la copier.";
+ $("cdtMsg").textContent="📚 Entrée de l’historique chargée.";
  $("cdtMsg").className="msg ok";
  document.getElementById("cahierTexteCard").scrollIntoView({behavior:"smooth",block:"start"});
 }
+
 async function cdtDeleteEntry(id,button){
  const row=(logbookEntries||[]).find(x=>String(x.id)===String(id));
  if(!row)return;
- if(!confirm("Supprimer cette entrée du cahier de texte ?\n\n"+(row.title||"")) )return;
+ if(!confirm("Supprimer cette entrée du cahier de texte ?\n\n"+(row.title||"")))return;
 
- const old=button.textContent;button.disabled=true;button.textContent="Suppression…";
+ const old=button.textContent;
+ button.disabled=true;
+ button.textContent="Suppression…";
+
  try{
   if(String(id).startsWith("local-")){
    const local=cdtLocalHistory().filter(x=>String(x.id)!==String(id));
@@ -832,6 +1086,7 @@ async function cdtDeleteEntry(id,button){
    });
    logbookEntries=logbookEntries.filter(x=>String(x.id)!==String(id));
   }
+
   $("cdtHistoryMsg").textContent="✅ Entrée supprimée.";
   $("cdtHistoryMsg").className="msg ok";
   cdtRenderHistory();
@@ -839,9 +1094,13 @@ async function cdtDeleteEntry(id,button){
   $("cdtHistoryMsg").textContent="Suppression impossible : "+e.message;
   $("cdtHistoryMsg").className="msg";
  }finally{
-  if(document.body.contains(button)){button.disabled=false;button.textContent=old;}
+  if(document.body.contains(button)){
+   button.disabled=false;
+   button.textContent=old;
+  }
  }
 }
+
 function cdtInit(){
  if(cdtInitialized)return;
  cdtInitialized=true;
@@ -851,32 +1110,50 @@ function cdtInit(){
  let saved=null;
  try{
   saved=JSON.parse(
+   localStorage.getItem("figaromn_cdt_last_v240")||
    localStorage.getItem("figaromn_cdt_last_v235")||
    localStorage.getItem("figaromn_cdt_last_v231")||
    "null"
   );
  }catch(e){}
 
- cdtFillClasses();
+ cdtFillLevels(saved&&saved.level?saved.level:"");
 
- if(saved&&saved.classId&&classMap[saved.classId]){
-  $("cdtClass").value=saved.classId;
-  $("cdtDate").value=saved.date||cdtToday();
-  $("cdtDuration").value=saved.duration||"";
-  cdtFillSequences(saved.sequence,saved.session);
- }else if(classes[0]){
-  $("cdtClass").value=classes[0].id;
-  cdtDetectCurrent(false);
+ let restored=false;
+ if(saved&&saved.level&&cdtActiveLevels().includes(saved.level)){
+  $("cdtLevel").value=saved.level;
+  cdtFillClasses(saved.groupKey||"",saved.sequence,saved.session);
+
+  if(cdtSelectedGroup()){
+   $("cdtDate").value=saved.date||cdtToday();
+   $("cdtDuration").value=saved.duration||"";
+   restored=true;
+  }
  }
 
- $("cdtClass").onchange=()=>{
-  cdtDetectCurrent(false);
+ // Au démarrage, si la sélection restaurée n'est plus valide,
+ // choisir le niveau/groupe dont l'élève a l'activité la plus récente.
+ if(!restored){
+  cdtDetectCurrent(false,true);
+ }else{
+  cdtDetectCurrent(false,false);
+ }
+
+ $("cdtLevel").onchange=()=>{
+  cdtFillClasses();
+  cdtDetectCurrent(false,false);
  };
+
+ $("cdtClass").onchange=()=>{
+  cdtDetectCurrent(false,false);
+ };
+
  $("cdtSequence").onchange=()=>cdtFillSessions(1);
  $("cdtSession").onchange=cdtGenerate;
  $("cdtDate").onchange=cdtGenerate;
  $("cdtDuration").oninput=cdtGenerate;
- $("cdtDetect").onclick=()=>cdtDetectCurrent(true);
+
+ $("cdtDetect").onclick=()=>cdtDetectCurrent(true,false);
 
  $("cdtCopyTitle").onclick=()=>cdtCopy($("cdtTitle").value,"Titre");
  $("cdtCopyContent").onclick=()=>cdtCopy($("cdtContent").value,"Contenu");
@@ -891,12 +1168,14 @@ function cdtInit(){
  $("cdtHistoryClass").onchange=cdtRenderHistory;
  $("cdtHistoryRefresh").onclick=cdtReloadHistory;
 
- cdtHistoryFillClasses();
+ cdtHistoryFillLevels();
  cdtRenderHistory();
 
- if(classes.length){
-  cdtDetectCurrent(false);
- }
+ const levels=cdtActiveLevels();
+ $("cdtDetectInfo").textContent=
+  levels.length
+   ? "Niveaux actifs détectés : "+levels.map(l=>labels[l]||l).join(" · ")+"."
+   : "Aucun élève actif détecté.";
 }
 
 function renderFilters(){
@@ -984,7 +1263,7 @@ async function loadLive(){
   try{
    logbookEntries=await FigaroCloud.table("logbook_entries",
     "teacher_id=eq."+me.id+
-    "&select=id,teacher_id,class_id,level,sequence_no,session_no,entry_date,duration,title,content,homework,created_at"+
+    "&select=id,teacher_id,class_id,class_name,level,sequence_no,session_no,entry_date,duration,title,content,homework,created_at"+
     "&order=entry_date.desc,created_at.desc"
    );
   }catch(e){
@@ -992,7 +1271,18 @@ async function loadLive(){
   }
   interactive=attempts.length?[]:await safeTable("interactive_results","select=student_id,session_id,score,total,completed_at");
   renderStudents();
-  if(cdtInitialized)cdtRenderHistory();renderSelects();
+  if(cdtInitialized){
+   const currentLevel=$("cdtLevel")?$("cdtLevel").value:"";
+   const currentGroup=$("cdtClass")?$("cdtClass").value:"";
+   cdtFillLevels(currentLevel);
+   if(currentLevel&&cdtActiveLevels().includes(currentLevel)){
+    $("cdtLevel").value=currentLevel;
+    cdtFillClasses(currentGroup);
+   }
+   cdtHistoryFillLevels();
+   cdtRenderHistory();
+  }
+  renderSelects();
   $("lastRefresh").textContent="Dernière actualisation : "+new Date().toLocaleTimeString("fr-FR");
   $("liveBadge").textContent="● Actualisation automatique toutes les 8 s";
   $("liveBadge").className="pill live";
