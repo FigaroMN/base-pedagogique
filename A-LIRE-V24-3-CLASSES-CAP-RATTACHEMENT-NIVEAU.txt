@@ -1,0 +1,31 @@
+FIGAROMN V24.3 — CLASSES CAP + RATTACHEMENT PAR NIVEAU
+
+CORRECTION APPORTÉE
+- Un élève CAP ne voit plus les classes Seconde / Première / Terminale dans le menu de rattachement.
+- Un élève de Seconde ne voit que les classes de Seconde.
+- Un élève de Première ne voit que les classes de Première.
+- Un élève de Terminale ne voit que les classes de Terminale.
+- Si aucune classe du bon niveau n'existe, le menu indique clairement qu'il faut créer la classe.
+- Quand un élève CAP est sélectionné, le champ « Niveau » de création de classe se place automatiquement sur CAP.
+- Le niveau du profil élève n'est plus modifié automatiquement lors du rattachement.
+- La base Supabase refuse aussi un rattachement de niveau incohérent, même avec une ancienne page en cache.
+
+À FAIRE
+1. Supabase > SQL Editor > New query.
+2. Coller et exécuter :
+   MIGRATION-V24-3-RATTACHEMENT-NIVEAU-CAP.sql
+3. Mettre ensuite les fichiers de cette V24.3 sur GitHub.
+4. Dans le navigateur : Ctrl + F5.
+
+CAS DE FIFI · CAP
+- Sélectionner FIFI · CAP.
+- Si aucune classe CAP n'existe, le menu « Classe » indiquera :
+  « Aucune classe CAP — crée une classe CAP ci-dessus ».
+- Donner un nom, par exemple « CAP MN ».
+- Le champ Niveau doit être automatiquement sur CAP.
+- Cliquer « Créer la classe ».
+- Sélectionner ensuite « CAP MN · CAP » puis « Rattacher l’élève à la classe ».
+- Le rattachement erroné à une classe d'un autre niveau appartenant au même enseignant
+  sera retiré lors de ce nouveau rattachement.
+
+AUCUN COMPTE ÉLÈVE N'EST SUPPRIMÉ PAR CETTE MIGRATION.

@@ -1,0 +1,27 @@
+FIGAROMN V24.4 — APPEL MANUEL / ABSENCES / RETARDS
+
+NOUVEAUTÉS
+- Nouvelle section « 4 · Appel manuel · absences et retards » dans l’espace Enseignant.
+- Appel par classe, date et créneau.
+- Trois états : Présent / Absent / Retard.
+- Pour un retard : durée en minutes + note facultative.
+- Bouton « Tous présents » pour accélérer l’appel.
+- Correction possible d’un appel déjà enregistré : recharger, modifier, enregistrer.
+- Historique mensuel dans un calendrier.
+- Le calendrier indique le nombre d’absences, de retards et de présents par jour.
+- Un clic sur une date affiche le détail : élève, classe, créneau, état, minutes de retard et note.
+- Filtre de l’historique par classe.
+
+INSTALLATION
+1. Dans Supabase > SQL Editor > New query :
+   ouvrir puis exécuter MIGRATION-V24-4-APPEL-ABSENCES-RETARDS.sql
+2. Vérifier le message :
+   « FIGAROMN V24.4 : appel manuel, absences, retards et calendrier activés »
+3. Mettre ensuite les fichiers V24.4 sur GitHub.
+4. Ouvrir FigaroMN et faire Ctrl + F5.
+
+SÉCURITÉ
+- La migration V24.4 ne supprime aucun élève et ne modifie aucune note.
+- Un enseignant ne peut enregistrer un appel que pour ses propres classes.
+- Un élève doit être réellement rattaché à la classe.
+- Le niveau de l’élève doit correspondre au niveau de la classe.
