@@ -1,0 +1,42 @@
+FIGAROMN V22.5 – ORDRE DES OUTILS
+==================================
+
+MODIFICATION
+------------
+L'ordre des boutons de l'onglet Outils devient :
+
+1. 🚤 État des lieux
+2. 🛠️ Ordre de réparation
+3. 📋 Devis
+4. 🧾 Facture
+5. 🧮 Calculatrice scientifique
+
+L'outil « État des lieux » est maintenant ouvert par défaut.
+
+FICHIERS MODIFIES
+-----------------
+- figaromn-tools-v19.js
+- figaromn-tools-v213.js
+- seconde.html
+- premiere.html
+- terminale.html
+- cap.html
+
+CACHE
+-----
+Les pages utilisent maintenant ?v=225 pour le JavaScript des outils
+afin de forcer le navigateur et GitHub Pages à charger la nouvelle version.
+
+INSTALLATION GITHUB
+-------------------
+Option recommandée avec le PATCH :
+1. Décompresser PATCH-V22-5-ORDRE-OUTILS-GITHUB.zip.
+2. Ouvrir le dépôt FigaroMN/base-pedagogique.
+3. Add file > Upload files.
+4. Envoyer les fichiers décompressés à la RACINE du dépôt.
+5. Accepter le remplacement des fichiers existants.
+6. Commit changes sur la branche main.
+7. Attendre le déploiement GitHub Pages.
+8. Actualiser la page avec Ctrl+F5.
+
+Aucune modification Supabase.

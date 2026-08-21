@@ -166,10 +166,26 @@ function sciCalc(){
   ["1",""],["2",""],["3",""],["Ans","fn"],[".",""],["+","op"],
   ["0",""],["00",""],["=","eq"]
  ];
+ const mobileKeys=[
+  ["MC","fn"],["MR","fn"],["M+","fn"],["M−","fn"],
+  ["DEG/RAD","fn"],["C","clear"],["⌫",""],["Ans","fn"],
+  ["sin","fn"],["cos","fn"],["tan","fn"],["π","fn"],
+  ["asin","fn"],["acos","fn"],["atan","fn"],["e","fn"],
+  ["ln","fn"],["log","fn"],["√","fn"],["x²","fn"],
+  ["xʸ","fn"],["1/x","fn"],["!","fn"],["%","fn"],
+  ["(",""],[")",""],["EXP","fn"],["÷","op"],
+  ["7",""],["8",""],["9",""],["×","op"],
+  ["4",""],["5",""],["6",""],["−","op"],
+  ["1",""],["2",""],["3",""],["+","op"],
+  ["±","fn"],["0",""],["00",""],[".",""],
+  ["=","eq"]
+ ];
+ const keyHtml=list=>list.map(([v,c])=>`<button type="button" class="${c}" data-key="${esc(v)}" aria-label="${esc(v)}">${esc(v)}</button>`).join("");
  return `<div class="ft-doc ft-calc">${companyBlock()}<div class="ft-doc-head"><div><h3>Calculatrice scientifique</h3><div class="sub">Calculs usuels, trigonométrie et fonctions scientifiques</div></div><span class="ft-badge">SCIENTIFIQUE</span></div>
- <div class="ft-calc-top"><input class="ft-calc-display" data-display value="0" readonly aria-label="Affichage calculatrice"><button type="button" class="ft-mode" data-mode>DEG</button></div>
- <div class="ft-scikeys">${keys.map(([v,c])=>`<button type="button" class="${c}" data-key="${esc(v)}">${esc(v)}</button>`).join("")}</div>
- <div class="ft-history" data-hist>Dernier calcul : —</div>
+ <div class="ft-calc-top"><input class="ft-calc-display" data-display value="0" readonly aria-label="Affichage calculatrice"><button type="button" class="ft-mode" data-mode aria-label="Basculer degrés radians">DEG</button></div>
+ <div class="ft-scikeys ft-scikeys-desktop" aria-label="Clavier scientifique">${keyHtml(keys)}</div>
+ <div class="ft-scikeys ft-scikeys-mobile" aria-label="Clavier scientifique mobile">${keyHtml(mobileKeys)}</div>
+ <div class="ft-history" data-hist aria-live="polite">Dernier calcul : —</div>
  </div>`;
 }
 
@@ -335,14 +351,14 @@ function mount(root){
  root.innerHTML=`<div class="ft-shell"><div class="ft-title"><h2>🧰 Outils professionnels</h2><p>Documents atelier et relation client de Blanchet Nautique, imprimables remplis ou vierges.</p></div>
  <div class="ft-warning"><strong>Support pédagogique :</strong> les mentions légales, fiscales et comptables doivent être validées par l’entreprise avant utilisation réelle.</div>
  <div class="ft-tabs" role="tablist">
-  <button type="button" class="active" data-tool="order">🛠️ Ordre de réparation</button>
-  <button type="button" data-tool="condition">🚤 État des lieux</button>
+  <button type="button" class="active" data-tool="condition">🚤 État des lieux</button>
+  <button type="button" data-tool="order">🛠️ Ordre de réparation</button>
   <button type="button" data-tool="quote">📋 Devis</button>
   <button type="button" data-tool="invoice">🧾 Facture</button>
   <button type="button" data-tool="calc">🧮 Calculatrice scientifique</button>
  </div>
- <section class="ft-panel active" data-panel="order">${orderDoc()}</section>
- <section class="ft-panel" data-panel="condition">${conditionDoc()}</section>
+ <section class="ft-panel active" data-panel="condition">${conditionDoc()}</section>
+ <section class="ft-panel" data-panel="order">${orderDoc()}</section>
  <section class="ft-panel" data-panel="quote">${quoteDoc()}</section>
  <section class="ft-panel" data-panel="invoice">${invoiceDoc()}</section>
  <section class="ft-panel" data-panel="calc">${sciCalc()}</section></div>`;

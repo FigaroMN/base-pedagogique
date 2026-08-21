@@ -138,3 +138,120 @@
  #figaromn-tools .ft-scikeys{grid-template-columns:repeat(3,1fr)}
  #figaromn-tools .ft-actions .ft-btn{width:100%}
 }
+
+
+/* === V22.7 : calculatrice scientifique responsive téléphone === */
+#figaromn-tools .ft-scikeys-mobile{display:none}
+
+@media(max-width:600px){
+ #figaromn-tools,
+ #figaromn-tools .ft-shell,
+ #figaromn-tools .ft-panel,
+ #figaromn-tools .ft-calc{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+ }
+ #figaromn-tools .ft-calc{
+  padding:10px;
+  border-radius:12px;
+  overflow:hidden;
+ }
+ #figaromn-tools .ft-calc .ft-company{
+  padding:10px 12px;
+  margin-bottom:10px;
+  border-radius:12px;
+  gap:8px;
+ }
+ #figaromn-tools .ft-calc .ft-company .mark{font-size:24px}
+ #figaromn-tools .ft-calc .ft-company h3{font-size:18px}
+ #figaromn-tools .ft-calc .ft-company p{font-size:11px}
+ #figaromn-tools .ft-calc .ft-company .meta{display:none}
+
+ #figaromn-tools .ft-calc .ft-doc-head{
+  display:block;
+  padding-bottom:9px;
+  margin-bottom:10px;
+ }
+ #figaromn-tools .ft-calc .ft-doc-head h3{
+  font-size:19px;
+  line-height:1.2;
+ }
+ #figaromn-tools .ft-calc .ft-doc-head .sub{
+  font-size:12px;
+  line-height:1.35;
+  margin-top:3px;
+ }
+ #figaromn-tools .ft-calc .ft-badge{
+  margin-top:7px;
+  font-size:10px;
+  padding:4px 7px;
+ }
+
+ #figaromn-tools .ft-calc-top{
+  grid-template-columns:minmax(0,1fr) 58px;
+  gap:6px;
+  margin-bottom:8px;
+ }
+ #figaromn-tools .ft-calc-display{
+  min-width:0;
+  width:100%;
+  font-size:24px;
+  line-height:1.2;
+  padding:12px 9px;
+  border-radius:10px;
+ }
+ #figaromn-tools .ft-mode{
+  min-width:0;
+  padding:0 5px;
+  font-size:13px;
+  min-height:50px;
+ }
+
+ #figaromn-tools .ft-scikeys-desktop{display:none}
+ #figaromn-tools .ft-scikeys-mobile{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  width:100%;
+ }
+ #figaromn-tools .ft-scikeys-mobile button{
+  min-width:0;
+  min-height:48px;
+  padding:9px 3px;
+  border-radius:9px;
+  font-size:14px;
+  line-height:1.1;
+  white-space:nowrap;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+ }
+ #figaromn-tools .ft-scikeys-mobile button[data-key="DEG/RAD"]{
+  font-size:10.5px;
+  letter-spacing:-.2px;
+ }
+ #figaromn-tools .ft-scikeys-mobile button[data-key="="]{
+  grid-column:1/-1;
+  min-height:52px;
+  font-size:19px;
+ }
+ #figaromn-tools .ft-history{
+  margin-top:8px;
+  min-height:40px;
+  padding:9px;
+  font-size:12px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+ }
+}
+
+@media(max-width:360px){
+ #figaromn-tools .ft-calc{padding:8px}
+ #figaromn-tools .ft-scikeys-mobile{gap:5px}
+ #figaromn-tools .ft-scikeys-mobile button{
+  min-height:46px;
+  font-size:13px;
+  padding:8px 2px;
+ }
+ #figaromn-tools .ft-calc-display{font-size:21px}
+}

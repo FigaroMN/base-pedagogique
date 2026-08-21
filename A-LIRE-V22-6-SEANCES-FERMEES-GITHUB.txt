@@ -1,0 +1,35 @@
+FIGAROMN V22.6 – SÉANCES FERMÉES À L'OUVERTURE D'UNE SÉQUENCE
+================================================================
+
+MISE À JOUR
+-----------
+Dans l'espace Exercices du BAC PRO :
+
+- les séquences restent des accordéons ;
+- lorsqu'une séquence est ouverte, les 6 séances apparaissent FERMÉES ;
+- chaque séance peut ensuite être ouverte en cliquant sur son en-tête ;
+- à chaque nouvelle ouverture de la séquence, toutes ses séances sont de nouveau refermées ;
+- un symbole + / − indique l'état de chaque séance.
+
+Cette version conserve aussi la mise à jour V22.5 :
+État des lieux → Ordre de réparation → Devis → Facture → Calculatrice scientifique.
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-bacpro-auto-v161.js
+- figaromn-sequence-flow-v22.css
+- seconde.html
+- premiere.html
+- terminale.html
+
+Les paramètres de cache ont été mis à jour en ?v=226.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V22.6.
+2. Dans le dépôt GitHub : Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les versions existantes.
+5. Commit changes sur main.
+6. Attendre le déploiement GitHub Pages.
+7. Actualiser la page avec Ctrl+F5.

@@ -560,9 +560,9 @@ function rebuildExercises(){
    '<div class="fmn22-ex-session-list">'+items.map(function(ex){
     var rows=attemptRows("exercise",ex.sequence,ex.situation),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
     var agg=aggregateIndicators("exercise",function(a){var db=dbSession(ex.sequence,ex.situation);return db&&a.session_id===db.id;});
-    return '<section class="fmn22-ex-session-group"><div class="fmn22-ex-session-head">'+
+    return '<details class="fmn22-ex-session-group"><summary class="fmn22-ex-session-head">'+
      '<h4>Séance '+ex.situation+' – '+esc(ex.title)+'</h4>'+
-     '<span class="pill">'+(rows.length?'✅ Exercice terminé':'À réaliser')+'</span></div>'+
+     '<span class="pill">'+(rows.length?'✅ Exercice terminé':'À réaliser')+'</span></summary>'+
      '<div class="fmn22-ex-session-body"><p class="situation-context">'+esc(ex.objective||"")+'</p>'+
      '<span class="pill">'+esc((ex.comps||[]).join(" · "))+'</span> '+
      '<span class="pill">'+(best?'Meilleur score : '+fr(best.score)+'/'+fr(best.total):'Non réalisé')+'</span> '+
@@ -576,7 +576,7 @@ function rebuildExercises(){
        '<button type="button" class="btn blue" data-history-ex="'+ex.sequence+'|'+ex.situation+'">📚 Historique ('+rows.length+')</button>':
        '<button type="button" class="btn green" data-open-ex="'+ex.sequence+'|'+ex.situation+'">Faire l’exercice de la séance</button>')+
       '<button type="button" class="btn light" data-print-ex="'+ex.sequence+'|'+ex.situation+'">🖨️ Imprimer l’exercice</button>'+
-     '</div></div></section>';
+     '</div></div></details>';
    }).join("")+'</div>'+
   '</details>';
  }).join("");
@@ -591,6 +591,13 @@ function rebuildExercises(){
  exerciseGroups.forEach(function(group){
   group.addEventListener("toggle",function(){
    if(!group.open)return;
+
+   // À chaque ouverture d'une séquence, toutes les séances sont fermées.
+   group.querySelectorAll(".fmn22-ex-session-group").forEach(function(session){
+    session.open=false;
+   });
+
+   // Une seule séquence ouverte à la fois.
    exerciseGroups.forEach(function(other){
     if(other!==group)other.open=false;
    });

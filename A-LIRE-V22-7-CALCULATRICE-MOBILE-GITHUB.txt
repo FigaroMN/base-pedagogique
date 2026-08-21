@@ -1,0 +1,44 @@
+FIGAROMN V22.7 – CALCULATRICE SCIENTIFIQUE MOBILE
+==================================================
+
+AMELIORATIONS TELEPHONE
+-----------------------
+- clavier mobile dédié et ordonné sur 4 colonnes ;
+- disposition identique sur les petits écrans pour éviter le réarrangement désordonné ;
+- boutons tactiles plus grands et réguliers ;
+- touche = sur toute la largeur ;
+- affichage du résultat sécurisé sans débordement horizontal ;
+- bouton DEG/RAD compact ;
+- en-tête de la calculatrice allégé sur téléphone ;
+- historique lisible même avec un résultat long ;
+- adaptation supplémentaire pour les écrans de 360 px et moins.
+
+La calculatrice de bureau reste inchangée.
+
+MISES A JOUR PRECEDENTES CONSERVEES
+-----------------------------------
+V22.5 : État des lieux avant Ordre de réparation.
+V22.6 : séances fermées par défaut à l'ouverture d'une séquence.
+
+FICHIERS A REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-tools-v19.js
+- figaromn-tools-v19.css
+- figaromn-tools-v213.js
+- figaromn-tools-v213.css
+- seconde.html
+- premiere.html
+- terminale.html
+- cap.html
+
+Les références de cache passent en ?v=227.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V22.7.
+2. Dans GitHub : Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre le déploiement GitHub Pages.
+7. Sur le téléphone, fermer/réouvrir la page ou vider le cache si nécessaire.
