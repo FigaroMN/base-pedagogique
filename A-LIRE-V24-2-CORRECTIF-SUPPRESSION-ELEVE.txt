@@ -1,0 +1,42 @@
+FIGAROMN V24.2 — CORRECTIF URGENT SUPPRESSION ÉLÈVE
+=====================================================
+
+INCIDENT TRAITÉ
+----------------
+La suppression définitive V23.3/V24.1 ne possède pas de contrôle transactionnel
+du nombre total d'élèves avant/après la suppression.
+
+V24.2 ajoute une protection côté Supabase :
+- l'ancienne RPC delete_student_permanently(uuid) est désactivée ;
+- une nouvelle RPC delete_student_permanently_v242(uuid,text) est utilisée ;
+- l'UUID ET l'e-mail exacts de l'élève sont contrôlés ;
+- le nombre de profils élèves est compté avant et après ;
+- si plus d'un profil disparaît, une exception est levée et TOUTE la
+  transaction est annulée automatiquement.
+
+ORDRE D'INSTALLATION IMPORTANT
+------------------------------
+1. Dans Supabase > SQL Editor, exécuter :
+   MIGRATION-V24-2-SUPPRESSION-ELEVE-SECURISEE.sql
+
+2. Ensuite, remplacer les fichiers du site par ceux de cette V24.2
+   (au minimum enseignant.html).
+
+3. Actualiser le navigateur avec Ctrl+F5.
+
+AVANT DE REUTILISER "SUPPRIMER"
+-------------------------------
+Faire un test avec un compte élève de démonstration.
+
+POUR L'INCIDENT DÉJÀ SURVENU
+----------------------------
+Exécuter :
+DIAGNOSTIC-V24-2-APRES-SUPPRESSION.sql
+
+Ce diagnostic ne modifie rien. Il permet de vérifier si les autres comptes
+existent encore dans auth.users et/ou public.profiles.
+
+Si des comptes ou données ont réellement été supprimés de Supabase,
+la restauration complète dépend des sauvegardes / PITR disponibles dans
+votre projet Supabase. Ne recréez pas manuellement les élèves avant d'avoir
+vérifié l'état de la base et les possibilités de restauration.

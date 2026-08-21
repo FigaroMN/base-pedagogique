@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- FIGAROMN ESPACE ENSEIGNANT V23.7 --><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- FIGAROMN ESPACE ENSEIGNANT V24.2 - suppression élève sécurisée --><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Espace Enseignant FigaroMN</title>
 <style>
 :root{--navy:#06283d;--blue:#0b5d7a;--cyan:#19b8d3;--orange:#ff7a18;--green:#16895a;--red:#c93f49;--gold:#f5b82e;--bg:#eef6f8;--light:#f8fbfc;--text:#18323f;--muted:#607680;--border:#d9e6ea}
@@ -1305,13 +1305,16 @@ async function deleteStudentPermanently(id,button){
  );
  if(!first)return;
 
+ const confirmationText="SUPPRIMER "+email;
  const typed=prompt(
-  "Pour confirmer la suppression définitive de :\n"+
-  who+"\n"+email+"\n\n"+
-  "Tape exactement : SUPPRIMER"
+  "SÉCURITÉ V24.2 — UN SEUL ÉLÈVE\n\n"+
+  "Élève ciblé : "+who+"\n"+
+  "E-mail : "+email+"\n"+
+  "Identifiant : "+id+"\n\n"+
+  "Tape exactement :\n"+confirmationText
  );
- if(typed!=="SUPPRIMER"){
-  $("pageMsg").textContent="Suppression annulée : le mot de confirmation n'a pas été saisi correctement.";
+ if(typed!==confirmationText){
+  $("pageMsg").textContent="Suppression annulée : l'identité de l'élève n'a pas été confirmée exactement.";
   $("pageMsg").className="msg";
   return;
  }
@@ -1320,21 +1323,21 @@ async function deleteStudentPermanently(id,button){
  if(button){button.disabled=true;button.textContent="Suppression…";}
 
  try{
-  await FigaroCloud.api("/rest/v1/rpc/delete_student_permanently",{
+  await FigaroCloud.api("/rest/v1/rpc/delete_student_permanently_v242",{
    method:"POST",
-   headers:{"Prefer":"return=minimal"},
-   body:JSON.stringify({target_student:id})
+   headers:{"Prefer":"return=representation"},
+   body:JSON.stringify({target_student:id,target_email:email})
   });
 
-  $("pageMsg").textContent="✅ "+who+" a été supprimé définitivement de la base FigaroMN.";
+  $("pageMsg").textContent="✅ "+who+" a été supprimé. La sécurité V24.2 a vérifié qu’un seul profil élève a été retiré.";
   $("pageMsg").className="msg ok";
 
   // Recharger immédiatement les données pour retirer l'élève de l'écran.
   await loadLive();
  }catch(e){
   let detail=e&&e.message?e.message:String(e||"Erreur inconnue");
-  if(/delete_student_permanently|404|function/i.test(detail)){
-   detail+=" — Vérifie que la migration V23.3 de suppression élève a bien été exécutée dans Supabase.";
+  if(/delete_student_permanently_v242|404|function/i.test(detail)){
+   detail+=" — Exécute d’abord MIGRATION-V24-2-SUPPRESSION-ELEVE-SECURISEE.sql dans Supabase. L’ancienne suppression V23.3 est volontairement désactivée.";
   }
   $("pageMsg").textContent="Suppression impossible : "+detail;
   $("pageMsg").className="msg";
