@@ -43,6 +43,18 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 .bilan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .bilan-box{border:1px solid var(--border);border-radius:12px;padding:13px;background:#fff}
 .bilan-box h4{margin:0 0 7px;color:var(--navy)}
+/* V23.1 Cahier de texte */
+
+.cdt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cdt-auto{padding:10px 12px;border-left:5px solid var(--cyan);background:#eef9fb;border-radius:10px;margin:10px 0 16px}
+.cdt-fields{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.cdt-copy{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cdt-preview{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--light);margin-top:14px}
+.cdt-preview strong{color:var(--navy)}
+.cdt-safe{padding:11px 13px;border-left:5px solid var(--gold);background:#fff9e8;border-radius:10px;margin-top:12px;font-size:.84rem}
+.cdt-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8f7ef;color:#0d6d45;font-weight:900;font-size:.78rem}
+@media(max-width:700px){.cdt-fields{grid-template-columns:1fr}.cdt-copy .btn{width:100%}}
+
 @media(max-width:950px){.student-kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.student-kpis,.bilan-grid{grid-template-columns:1fr}.indicator-item{grid-template-columns:1fr}}
 @media print{
@@ -98,7 +110,78 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <br><button class="btn good" id="assignBtn" type="button">Rattacher l’élève à la classe</button><div id="assignMsg" class="msg"></div>
 </section>
 
-<section class="card"><h2>4 · Observation enseignant</h2>
+
+<section class="card" id="cahierTexteCard">
+<div class="cdt-head">
+ <div>
+  <h2>4 · Cahier de texte ÉcoleDirecte</h2>
+  <p class="muted">FigaroMN prépare automatiquement le contenu à partir de la classe et de la séance en cours. Tu peux corriger la sélection avant de copier le texte dans ÉcoleDirecte.</p>
+ </div>
+ <span class="cdt-badge">⚡ Génération automatique</span>
+</div>
+
+<div class="cdt-auto">
+ <strong>Détection de la séance :</strong>
+ <span id="cdtDetectInfo">Choisis une classe. FigaroMN proposera la séance correspondant à la dernière activité enregistrée.</span>
+</div>
+
+<div class="grid4">
+ <label>Classe
+  <select id="cdtClass"></select>
+ </label>
+ <label>Niveau
+  <input id="cdtLevel" readonly aria-label="Niveau détecté">
+ </label>
+ <label>Séquence
+  <select id="cdtSequence"></select>
+ </label>
+ <label>Séance
+  <select id="cdtSession"></select>
+ </label>
+</div>
+
+<div class="grid3" style="margin-top:12px">
+ <label>Date
+  <input id="cdtDate" type="date">
+ </label>
+ <label>Durée / créneau
+  <input id="cdtDuration" placeholder="Ex. 2 h ou 13 h 30 – 15 h 30">
+ </label>
+ <div style="display:flex;align-items:end">
+  <button class="btn good" id="cdtDetect" type="button" style="width:100%">🎯 Détecter la séance en cours</button>
+ </div>
+</div>
+
+<div class="cdt-preview">
+ <label>Titre à mettre dans ÉcoleDirecte
+  <input id="cdtTitle">
+ </label>
+
+ <div class="cdt-fields" style="margin-top:12px">
+  <label>Contenu de la séance
+   <textarea id="cdtContent" rows="10"></textarea>
+  </label>
+  <label>Travail à faire / suite
+   <textarea id="cdtHomework" rows="10"></textarea>
+  </label>
+ </div>
+
+ <div class="cdt-copy">
+  <button class="btn light" id="cdtCopyTitle" type="button">📋 Copier le titre</button>
+  <button class="btn light" id="cdtCopyContent" type="button">📋 Copier le contenu</button>
+  <button class="btn light" id="cdtCopyHomework" type="button">📋 Copier le travail</button>
+  <button class="btn good" id="cdtCopyAll" type="button">📋 Copier tout pour ÉcoleDirecte</button>
+ </div>
+ <div id="cdtMsg" class="msg" aria-live="polite"></div>
+</div>
+
+<div class="cdt-safe">
+ <strong>🔒 Fonctionnement :</strong> aucune donnée ni identifiant ÉcoleDirecte n’est envoyé par FigaroMN.
+ Le cahier de texte est généré localement puis copié dans le presse-papiers. L’envoi direct dans ÉcoleDirecte nécessiterait une intégration officielle distincte.
+</div>
+</section>
+
+<section class="card"><h2>5 · Observation enseignant</h2>
 <p class="muted">Le calcul automatique vient des exercices. Cette zone permet de compléter le suivi avec une observation réelle en TP, atelier, oral ou restitution.</p>
 <div class="grid3">
 <label>Élève<select id="obsStudent"></select></label>
@@ -115,7 +198,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <div class="dialog"><div class="dialog-head"><div><h2 id="studentModalTitle">Suivi élève</h2><div id="studentModalMeta"></div></div><button class="btn light" id="closeModal" type="button">Fermer</button></div><div class="dialog-body" id="studentModalBody"></div></div>
 </div>
 
-<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-cycle-data.js"></script><script src="figaromn-cap-tracking-data.js"></script>
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-cycle-data.js"></script><script src="figaromn-cap-tracking-data.js"></script><script src="figaromn-cahier-texte-v231.js?v=231"></script>
 <script>
 (async function(){
 "use strict";
@@ -123,7 +206,7 @@ const me=await FigaroCloud.requireRole("teacher"); if(!me)return;
 const $=id=>document.getElementById(id);
 const labels={cap:"CAP",seconde:"Seconde",premiere:"Première",terminale:"Terminale"};
 let selectedLevel="",classes=[],classMap={},profiles=[],memberships=[],sessions=[],progress=[],evaluations=[],attempts=[],autoStatus=[],observations=[],interactive=[],indicatorResults=[],indicatorCatalog=[],capAttempts=[];
-let refreshTimer=null, busy=false;
+let refreshTimer=null, busy=false, cdtInitialized=false;
 
 $("logout").onclick=async()=>{await FigaroCloud.signOut();location.href="index.html";};
 
@@ -298,6 +381,207 @@ function autoStats(studentId){
 }
 function isRecent(v){return v&&(Date.now()-new Date(v).getTime())<10*60*1000;}
 
+
+/* ===== V23.1 · Cahier de texte ÉcoleDirecte ===== */
+function cdtData(level){
+ return (window.FIGAROMN_CAHIER_DATA&&window.FIGAROMN_CAHIER_DATA[level])||[];
+}
+function cdtToday(){
+ const d=new Date(),off=d.getTimezoneOffset();
+ return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
+}
+function cdtSelectedClass(){
+ return classMap[$("cdtClass").value]||null;
+}
+function cdtSeqObject(){
+ const c=cdtSelectedClass(),level=c?c.level:"";
+ return cdtData(level).find(x=>Number(x.no)===Number($("cdtSequence").value))||null;
+}
+function cdtSessionObject(){
+ const seq=cdtSeqObject();
+ return seq?(seq.sessions||[]).find(x=>Number(x.no)===Number($("cdtSession").value))||null:null;
+}
+function cdtFillClasses(){
+ const old=$("cdtClass").value;
+ $("cdtClass").innerHTML=classes.map(c=>`<option value="${c.id}">${esc(c.name)} · ${esc(labels[c.level]||c.level)}</option>`).join("");
+ if(old&&classMap[old])$("cdtClass").value=old;
+ if(!$("cdtClass").value&&classes[0])$("cdtClass").value=classes[0].id;
+ cdtFillSequences();
+}
+function cdtFillSequences(seqNo,sessionNo){
+ const c=cdtSelectedClass();
+ if(!c){
+  $("cdtLevel").value="";
+  $("cdtSequence").innerHTML="";
+  $("cdtSession").innerHTML="";
+  return;
+ }
+ $("cdtLevel").value=labels[c.level]||c.level;
+ const data=cdtData(c.level);
+ $("cdtSequence").innerHTML=data.map(s=>`<option value="${s.no}">Séquence ${s.no} · ${esc(s.title)}</option>`).join("");
+ if(seqNo&&data.some(s=>Number(s.no)===Number(seqNo)))$("cdtSequence").value=String(seqNo);
+ cdtFillSessions(sessionNo);
+}
+function cdtFillSessions(sessionNo){
+ const seq=cdtSeqObject(),list=seq?(seq.sessions||[]):[];
+ $("cdtSession").innerHTML=list.map(s=>`<option value="${s.no}">Séance ${s.no} · ${esc(s.title)}</option>`).join("");
+ if(sessionNo&&list.some(s=>Number(s.no)===Number(sessionNo)))$("cdtSession").value=String(sessionNo);
+ cdtGenerate();
+}
+function cdtCompetencies(level,codes){
+ return (codes||[]).map(code=>{
+  const title=competencyTitle(level,code);
+  return code+(title?" — "+title:"");
+ });
+}
+function cdtGenerate(){
+ const c=cdtSelectedClass(),seq=cdtSeqObject(),s=cdtSessionObject();
+ if(!c||!seq||!s)return;
+
+ const levelLabel=labels[c.level]||c.level;
+ const comps=cdtCompetencies(c.level,s.comps);
+ const duration=$("cdtDuration").value.trim();
+ const date=$("cdtDate").value;
+
+ $("cdtTitle").value="Maintenance nautique — "+levelLabel+" — Séquence "+seq.no+" — Séance "+s.no+" : "+s.title;
+
+ let lines=[
+  "Séquence "+seq.no+" — "+seq.title,
+  "Séance "+s.no+" — "+s.title
+ ];
+ if(s.type)lines.push("Type de séance : "+s.type);
+ if(duration)lines.push("Durée / créneau : "+duration);
+ lines.push("");
+ if(s.objective)lines.push("Objectif : "+s.objective);
+ if(comps.length){
+  lines.push("");
+  lines.push("Compétences mobilisées :");
+  comps.forEach(x=>lines.push("• "+x));
+ }
+ lines.push("");
+ lines.push("Points de vigilance : sécurité / QHSE, protection de l’environnement et respect de la documentation technique applicable à l’intervention.");
+ $("cdtContent").value=lines.join("\n");
+
+ $("cdtHomework").value="Revoir la synthèse de la séance "+s.no+" et terminer l’exercice associé dans FigaroMN si nécessaire.";
+
+ try{
+  localStorage.setItem("figaromn_cdt_last_v231",JSON.stringify({
+   classId:c.id,sequence:seq.no,session:s.no,date:date,duration:duration
+  }));
+ }catch(e){}
+}
+function cdtLatestForClass(){
+ const c=cdtSelectedClass();
+ if(!c)return null;
+ const ids=memberships.filter(x=>x.class_id===c.id).map(x=>x.student_id);
+ if(!ids.length)return null;
+
+ if(c.level==="cap"){
+  const rows=capAttempts.filter(x=>ids.includes(x.student_id)&&x.completed_at)
+   .sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at));
+  if(!rows.length)return null;
+  return {
+   sequence:Number(rows[0].sequence_no)||1,
+   session:Math.max(1,Math.min(6,Number(rows[0].activity_no)||1)),
+   when:rows[0].completed_at
+  };
+ }
+
+ const sm=sessionMap(),events=[];
+ progress.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  const s=sm[x.session_id],when=x.updated_at||x.completed_at||x.started_at;
+  if(s&&s.level===c.level&&when)events.push({s:s,when:when});
+ });
+ attempts.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  const s=sm[x.session_id];
+  if(s&&s.level===c.level&&x.completed_at)events.push({s:s,when:x.completed_at});
+ });
+ evaluations.filter(x=>ids.includes(x.student_id)).forEach(x=>{
+  const s=sm[x.session_id];
+  if(s&&s.level===c.level&&x.submitted_at)events.push({s:s,when:x.submitted_at});
+ });
+ events.sort((a,b)=>new Date(b.when)-new Date(a.when));
+ if(!events.length)return null;
+ return {
+  sequence:Number(events[0].s.period)||1,
+  session:Number(events[0].s.session_no)||1,
+  when:events[0].when
+ };
+}
+function cdtDetectCurrent(showMessage){
+ const c=cdtSelectedClass();
+ if(!c)return;
+ const hit=cdtLatestForClass();
+ if(hit){
+  cdtFillSequences(hit.sequence,hit.session);
+  $("cdtDetectInfo").textContent="Proposition automatique pour "+c.name+" : séquence "+hit.sequence+", séance "+hit.session+" · dernière activité "+ago(hit.when)+".";
+  if(showMessage)$("cdtMsg").textContent="Séance proposée automatiquement à partir du suivi de la classe. Tu peux la modifier avant de copier.";
+ }else{
+  cdtFillSequences(1,1);
+  $("cdtDetectInfo").textContent="Aucune activité de classe détectée pour "+c.name+". Séquence 1, séance 1 proposées par défaut ; sélection manuelle possible.";
+  if(showMessage)$("cdtMsg").textContent="Aucune activité récente détectée : vérifie la séquence et la séance.";
+ }
+}
+async function cdtCopy(text,label){
+ if(!text)return;
+ try{
+  await navigator.clipboard.writeText(text);
+  $("cdtMsg").textContent="✅ "+label+" copié dans le presse-papiers.";
+ }catch(e){
+  const t=document.createElement("textarea");
+  t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
+  document.execCommand("copy");t.remove();
+  $("cdtMsg").textContent="✅ "+label+" copié dans le presse-papiers.";
+ }
+}
+function cdtCopyAll(){
+ const c=cdtSelectedClass(),seq=cdtSeqObject(),s=cdtSessionObject();
+ const parts=[
+  "CAHIER DE TEXTE — ÉCOLEDIRECTE",
+  c?"Classe : "+c.name:"",
+  $("cdtDate").value?"Date : "+$("cdtDate").value:"",
+  "",
+  "TITRE",
+  $("cdtTitle").value.trim(),
+  "",
+  "CONTENU DE LA SÉANCE",
+  $("cdtContent").value.trim(),
+  "",
+  "TRAVAIL À FAIRE",
+  $("cdtHomework").value.trim()
+ ].filter((x,i,a)=>x!==null&&x!==undefined);
+ return cdtCopy(parts.join("\n"),"Cahier de texte complet");
+}
+function cdtInit(){
+ if(cdtInitialized)return;
+ cdtInitialized=true;
+ if(!$("cdtDate").value)$("cdtDate").value=cdtToday();
+
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem("figaromn_cdt_last_v231")||"null");}catch(e){}
+ cdtFillClasses();
+ if(saved&&saved.classId&&classMap[saved.classId]){
+  $("cdtClass").value=saved.classId;
+  $("cdtDate").value=saved.date||cdtToday();
+  $("cdtDuration").value=saved.duration||"";
+  cdtFillSequences(saved.sequence,saved.session);
+  $("cdtDetectInfo").textContent="Dernière sélection restaurée. Clique sur « Détecter la séance en cours » pour utiliser la dernière activité de la classe.";
+ }else{
+  cdtDetectCurrent(false);
+ }
+
+ $("cdtClass").onchange=()=>cdtDetectCurrent(false);
+ $("cdtSequence").onchange=()=>cdtFillSessions(1);
+ $("cdtSession").onchange=cdtGenerate;
+ $("cdtDate").onchange=cdtGenerate;
+ $("cdtDuration").oninput=cdtGenerate;
+ $("cdtDetect").onclick=()=>cdtDetectCurrent(true);
+ $("cdtCopyTitle").onclick=()=>cdtCopy($("cdtTitle").value,"Titre");
+ $("cdtCopyContent").onclick=()=>cdtCopy($("cdtContent").value,"Contenu");
+ $("cdtCopyHomework").onclick=()=>cdtCopy($("cdtHomework").value,"Travail à faire");
+ $("cdtCopyAll").onclick=cdtCopyAll;
+}
+
 function renderFilters(){
  const list=classes.filter(c=>!selectedLevel||c.level===selectedLevel);
  $("filterClass").innerHTML="<option value=''>Toutes les classes</option>"+list.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
@@ -347,11 +631,13 @@ function renderStudents(){
    <td><div class="actions">
     <button class="btn light viewStudent" data-id="${p.id}" type="button">Voir le suivi</button>
     <button class="btn orange resetPassword" data-id="${p.id}" type="button">🔑 Réinitialiser</button>
+    <button class="btn bad deleteStudent" data-id="${p.id}" type="button">🗑️ Supprimer</button>
    </div></td>
   </tr>`;
  }).join("")||"<tr><td colspan='9'>Aucun élève pour ce filtre.</td></tr>";
  document.querySelectorAll(".viewStudent").forEach(b=>b.onclick=()=>openStudent(b.dataset.id));
  document.querySelectorAll(".resetPassword").forEach(b=>b.onclick=()=>sendPasswordReset(b.dataset.id,b));
+ document.querySelectorAll(".deleteStudent").forEach(b=>b.onclick=()=>deleteStudentPermanently(b.dataset.id,b));
 }
 function renderSelects(){
  const active=profiles.filter(p=>!p.archived_at);
@@ -363,6 +649,7 @@ async function loadStatic(){
  classMap={};classes.forEach(c=>classMap[c.id]=c);
  sessions=await safeTable("sessions","select=id,level,period,session_no,title&order=level.asc,period.asc,session_no.asc");
  renderFilters();
+ if(cdtInitialized)cdtFillClasses();
 }
 async function loadLive(){
  if(busy)return;busy=true;$("liveBadge").textContent="● Actualisation…";
@@ -385,7 +672,65 @@ async function loadLive(){
  }catch(e){$("pageMsg").textContent="Erreur de suivi : "+e.message;$("liveBadge").textContent="● Actualisation en erreur";$("liveBadge").className="pill badpill";}
  finally{busy=false;}
 }
-async function sendPasswordReset(id,button){
+async 
+async function deleteStudentPermanently(id,button){
+ const p=profiles.find(x=>x.id===id);
+ if(!p)return;
+
+ const who=p.full_name||p.email||"cet élève";
+ const email=p.email||"adresse non renseignée";
+
+ const first=confirm(
+  "SUPPRESSION DÉFINITIVE\n\n"+
+  "Tu vas supprimer "+who+" de FigaroMN.\n\n"+
+  "Cette action supprimera le compte élève et ses données pédagogiques liées : progression, exercices, évaluations, compétences et rattachements de classe.\n\n"+
+  "Cette action est irréversible.\n\n"+
+  "Continuer ?"
+ );
+ if(!first)return;
+
+ const typed=prompt(
+  "Pour confirmer la suppression définitive de :\n"+
+  who+"\n"+email+"\n\n"+
+  "Tape exactement : SUPPRIMER"
+ );
+ if(typed!=="SUPPRIMER"){
+  $("pageMsg").textContent="Suppression annulée : le mot de confirmation n'a pas été saisi correctement.";
+  $("pageMsg").className="msg";
+  return;
+ }
+
+ const oldText=button?button.textContent:"";
+ if(button){button.disabled=true;button.textContent="Suppression…";}
+
+ try{
+  await FigaroCloud.api("/rest/v1/rpc/delete_student_permanently",{
+   method:"POST",
+   headers:{"Prefer":"return=minimal"},
+   body:JSON.stringify({target_student:id})
+  });
+
+  $("pageMsg").textContent="✅ "+who+" a été supprimé définitivement de la base FigaroMN.";
+  $("pageMsg").className="msg ok";
+
+  // Recharger immédiatement les données pour retirer l'élève de l'écran.
+  await loadLive();
+ }catch(e){
+  let detail=e&&e.message?e.message:String(e||"Erreur inconnue");
+  if(/delete_student_permanently|404|function/i.test(detail)){
+   detail+=" — Vérifie que la migration V23.3 de suppression élève a bien été exécutée dans Supabase.";
+  }
+  $("pageMsg").textContent="Suppression impossible : "+detail;
+  $("pageMsg").className="msg";
+ }finally{
+  if(button&&document.body.contains(button)){
+   button.disabled=false;
+   button.textContent=oldText;
+  }
+ }
+}
+
+function sendPasswordReset(id,button){
  const p=profiles.find(x=>x.id===id);
  if(!p)return;
  if(!p.email){
@@ -705,7 +1050,7 @@ $("saveObs").onclick=async()=>{
  }catch(e){$("obsMsg").textContent="Erreur : "+e.message;}
 };
 
-await loadStatic();await loadLive();
+await loadStatic();await loadLive();cdtInit();
 refreshTimer=setInterval(()=>{if(document.visibilityState==="visible")loadLive();},8000);
 window.addEventListener("beforeunload",()=>clearInterval(refreshTimer));
 })().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});

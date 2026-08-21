@@ -1080,3 +1080,25 @@
   display:none!important;
  }
 }
+
+
+/* V23.2 - synthèse des compétences en fin d'exercice */
+.exercise-skill-summary-bottom{
+ margin-top:18px;
+ padding-top:16px;
+ border-top:2px solid #d6e4e9;
+}
+.exercise-skill-summary-bottom>h3{
+ margin:0 0 12px;
+ color:#16354a;
+ font-size:1.05rem;
+}
+@media(max-width:600px){
+ .exercise-skill-summary-bottom{
+  margin-top:14px;
+  padding-top:12px;
+ }
+ .exercise-skill-summary-bottom>h3{
+  font-size:1rem;
+ }
+}

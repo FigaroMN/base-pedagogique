@@ -580,14 +580,10 @@ function openCourse(seqNo,sessionNo){
 
  const exBtn=$("fmn22-do-exercise");
  if(exBtn)exBtn.onclick=()=>{
-  if(currentExerciseDone){
-   if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
-    window.FigaroBacAuto.openExercisesForSequence(seq.no);
-   }else openExercisesSelected();
-   return;
-  }
-  if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExerciseForSession==="function"){
-   window.FigaroBacAuto.openExerciseForSession(seq.no,current);
+  // V23.0 : depuis une séance, on arrive d'abord sur la liste
+  // des 6 exercices de la séquence. Les séances restent fermées.
+  if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
+   window.FigaroBacAuto.openExercisesForSequence(seq.no);
   }else{
    openExercisesSelected();
   }

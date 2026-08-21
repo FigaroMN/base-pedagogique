@@ -1,0 +1,60 @@
+FIGAROMN V23.1 – CAHIER DE TEXTE ÉCOLEDIRECTE
+================================================
+
+NOUVEAUTÉ DANS L'ESPACE PROFESSEUR
+-----------------------------------
+Une nouvelle rubrique « 4 · Cahier de texte ÉcoleDirecte » est ajoutée.
+
+FONCTIONNEMENT
+--------------
+1. Choisir une classe.
+2. FigaroMN propose automatiquement la séance correspondant à la
+   dernière activité enregistrée pour cette classe.
+3. La séquence et la séance restent modifiables manuellement.
+4. Le contenu est généré à partir des séances déjà présentes dans FigaroMN :
+   - niveau et classe ;
+   - séquence ;
+   - séance ;
+   - type de séance quand il est disponible ;
+   - objectif ;
+   - compétences mobilisées ;
+   - rappel sécurité / QHSE / environnement ;
+   - travail à faire proposé.
+5. Des boutons permettent de copier :
+   - le titre ;
+   - le contenu ;
+   - le travail à faire ;
+   - tout le cahier de texte en une fois.
+
+IMPORTANT : ÉCOLEDIRECTE
+------------------------
+Cette version ne transmet aucun identifiant ni aucune donnée directement
+à ÉcoleDirecte. Elle prépare automatiquement le texte et le copie dans
+le presse-papiers pour un collage dans ÉcoleDirecte.
+
+Un remplissage direct du site ÉcoleDirecte nécessiterait une intégration
+officielle distincte (API / autorisation) et ne doit pas utiliser de mot
+de passe stocké dans le code.
+
+NIVEAUX PRIS EN CHARGE
+----------------------
+- CAP Maintenance nautique : 7 séquences × 6 séances
+- Seconde BAC PRO : 7 séquences × 6 séances
+- Première BAC PRO : 7 séquences × 6 séances
+- Terminale BAC PRO : 7 séquences × 6 séances
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- enseignant.html
+- figaromn-cahier-texte-v231.js
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.1.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer enseignant.html.
+5. Ajouter figaromn-cahier-texte-v231.js.
+6. Commit changes sur main.
+7. Attendre GitHub Pages.
+8. Actualiser l'espace professeur avec Ctrl+F5.

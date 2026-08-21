@@ -1,0 +1,67 @@
+FIGAROMN V23.3 – BOUTON « SUPPRIMER » ÉLÈVE
+=============================================
+
+NOUVEAUTÉ
+---------
+Dans l'espace professeur > Élèves par niveau / classe, chaque élève dispose
+maintenant de trois actions :
+
+- Voir le suivi
+- 🔑 Réinitialiser
+- 🗑️ Supprimer
+
+SÉCURITÉ DE LA SUPPRESSION
+--------------------------
+La suppression est DÉFINITIVE.
+
+Deux confirmations sont demandées :
+1. une fenêtre d'avertissement ;
+2. la saisie exacte du mot : SUPPRIMER
+
+La suppression retire :
+- le compte élève FigaroMN ;
+- le profil ;
+- les rattachements de classe ;
+- la progression ;
+- les exercices / tentatives ;
+- les évaluations ;
+- les résultats d'indicateurs ;
+- les suivis de compétences liés à l'élève.
+
+Après suppression, la liste des élèves est actualisée automatiquement.
+
+IMPORTANT – SUPABASE
+--------------------
+Le bouton utilise une fonction sécurisée côté Supabase :
+public.delete_student_permanently(uuid)
+
+Avant d'utiliser le bouton pour la première fois, exécuter UNE FOIS :
+MIGRATION-V23-3-SUPPRESSION-ELEVE.sql
+
+dans :
+Supabase > SQL Editor
+
+La fonction vérifie que l'utilisateur connecté est bien enseignant et qu'il
+est autorisé à agir sur l'élève.
+
+FICHIERS À ENVOYER SUR GITHUB
+-----------------------------
+- enseignant.html
+
+Le fichier SQL n'a pas besoin d'être publié pour que le site fonctionne,
+mais il est inclus dans le patch comme sauvegarde / procédure d'installation.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.3.
+2. Dans GitHub : Add file > Upload files.
+3. Remplacer enseignant.html à la RACINE.
+4. Commit changes sur main.
+5. Dans Supabase > SQL Editor, exécuter :
+   MIGRATION-V23-3-SUPPRESSION-ELEVE.sql
+6. Attendre GitHub Pages.
+7. Actualiser l'espace professeur avec Ctrl+F5.
+
+MISES À JOUR PRÉCÉDENTES CONSERVÉES
+-----------------------------------
+Toutes les mises à jour cumulatives jusqu'à V23.2 sont conservées.

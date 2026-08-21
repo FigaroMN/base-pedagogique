@@ -688,7 +688,10 @@ function openExercise(ex,forceRedo){
   '<div class="competences"><strong>Compétences travaillées :</strong><br>'+esc((ex.comps||[]).map(function(c){return c+" – "+(ALL.competencies[c]||"");}).join(" · "))+'</div>'+
   successIndicatorsPanelHTML(ex.comps)+
   '<div class="skill-calc-box"><strong>📈 Acquisition 100 % automatique</strong><p>Chaque réponse alimente automatiquement l’indicateur officiel auquel la question est rattachée. Le niveau de compétence est recalculé sans saisie manuelle.</p></div>'+
-  '<div class="score">Score : <strong id="bac-ex-score">0 / '+ex.questions.length+'</strong></div><div id="bac-ex-live"></div>'+qhtml+'<div id="bac-ex-end" class="result hidden"></div></div>';
+  '<div class="score">Score : <strong id="bac-ex-score">0 / '+ex.questions.length+'</strong></div>'+
+  qhtml+
+  '<div id="bac-ex-end" class="result hidden"></div>'+
+  '<div class="exercise-skill-summary-bottom"><h3>📊 Synthèse des compétences</h3><div id="bac-ex-live"></div></div></div>';
  $("bac-back-ex").onclick=function(){
   if(window.FIGAROMN_RETURN_SESSION && window.FigaroMNLevelFlow && typeof window.FigaroMNLevelFlow.openCourse==="function"){
     var r=window.FIGAROMN_RETURN_SESSION;
@@ -722,7 +725,6 @@ function openExercise(ex,forceRedo){
      var result=await saveAttempt("exercise",ex,responses,score);
      var agg=currentAttemptIndicatorAggregate(ex.questions,responses);
      end.innerHTML='<h3>Exercice terminé</h3><p>Résultat : <strong>'+score+' / '+ex.questions.length+'</strong> · Note calculée : <span class="note20">'+fr(result.note20)+' / 20</span></p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+
-      '<h3>📊 Pourcentage par indicateur puis niveau de compétence</h3>'+indicatorAcquisitionHTML(agg,ex.comps,'Résultat automatique de cette tentative.')+
       '<div class="toolbar"><button type="button" class="btn light" disabled>✅ Tentative synchronisée</button><button type="button" class="btn blue" id="bac-pdf-ex">🖨️ Enregistrer en PDF</button><button type="button" class="btn blue" id="bac-history-now">📚 Historique complet</button></div>';
      $("bac-pdf-ex").onclick=function(){printReport("Exercice – "+ex.title,ex,result,responses);};
      $("bac-history-now").onclick=function(){showHistory("exercise",ex);};

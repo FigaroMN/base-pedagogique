@@ -1,0 +1,50 @@
+FIGAROMN V23.0 – BOUTON « FAIRE L'EXERCICE » VERS LA LISTE
+================================================================
+
+NOUVEAU COMPORTEMENT
+---------------------
+Depuis une séance de cours, lorsque l'élève clique sur :
+
+📝 Faire l'exercice de la séance
+
+il n'entre plus directement dans le questionnaire.
+
+Il arrive maintenant sur la LISTE DES EXERCICES de la séquence concernée.
+
+AFFICHAGE
+---------
+- la séquence concernée est affichée ;
+- les 6 séances / exercices sont visibles ;
+- toutes les séances sont FERMÉES ;
+- l'élève choisit ensuite la séance qu'il souhaite ouvrir ;
+- il clique ensuite sur « Faire l'exercice de la séance ».
+
+Le même comportement est appliqué si l'exercice avait déjà été réalisé :
+« Voir / refaire depuis l'espace Exercices » conduit aussi à la liste.
+
+MISES A JOUR PRECEDENTES CONSERVEES
+-----------------------------------
+V22.5 : ordre des outils.
+V22.6 : séances fermées dans la liste des exercices.
+V22.7 : calculatrice mobile.
+V22.8 : impression des réponses.
+V22.9 : jeux faits + 15 questions / éléments.
+
+FICHIERS A REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-level-cap-layout-v161.js
+- seconde.html
+- premiere.html
+- terminale.html
+
+Le cache du script passe en ?v=230.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.0.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Actualiser avec Ctrl+F5.

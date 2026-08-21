@@ -1,0 +1,54 @@
+FIGAROMN V23.2 – SYNTHÈSE DES COMPÉTENCES À LA FIN DES EXERCICES
+=================================================================
+
+NOUVEAU COMPORTEMENT
+---------------------
+Dans les exercices BAC PRO, la synthèse des indicateurs et des compétences
+n'apparaît plus avant les questions.
+
+Ordre d'affichage :
+1. Situation professionnelle
+2. Compétences travaillées
+3. Score
+4. Questions de l'exercice
+5. Résultat de fin d'exercice
+6. 📊 Synthèse des compétences
+
+La synthèse reste dynamique : elle continue de se mettre à jour après chaque
+réponse, mais elle est toujours située en bas de la page.
+
+FIN D'EXERCICE
+--------------
+La synthèse n'est plus affichée deux fois :
+- le bloc « Exercice terminé » contient le résultat, la note et les boutons ;
+- la synthèse indicateurs / compétences reste uniquement tout en bas.
+
+MISES À JOUR PRÉCÉDENTES CONSERVÉES
+-----------------------------------
+V22.5 : ordre des outils.
+V22.6 : séances fermées.
+V22.7 : calculatrice mobile.
+V22.8 : impression avec réponses.
+V22.9 : jeux faits + 15 questions.
+V23.0 : bouton cours vers la liste des exercices.
+V23.1 : cahier de texte ÉcoleDirecte.
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-bacpro-auto-v161.js
+- figaromn-level-cap-layout-v161.css
+- seconde.html
+- premiere.html
+- terminale.html
+
+Le cache passe en ?v=232.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.2.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Actualiser avec Ctrl+F5.
