@@ -109,7 +109,7 @@
  <div class="fmn-progress"><span></span></div>
  <div class="fmn-excontent"></div>
  <div class="fmn-exfeedback"></div>
- <div class="fmn-exactions no-print"><button type="button" class="btn fmn-next hidden">Exercice suivant</button><button type="button" class="btn light fmn-restart hidden">Recommencer</button></div>
+ <div class="fmn-exactions no-print"><button type="button" class="btn fmn-next hidden">Exercice suivant</button><button type="button" class="btn light fmn-restart hidden">🔒 Refaire (enseignant)</button></div>
 </div>
 </div>
 <div class="item" id="p3s2-comp" style="margin-top:14px">
@@ -261,7 +261,7 @@ document.querySelectorAll(".saveFinalScore").forEach(function(b){
 </script>
 
 
-<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-tracking.js"></script>
+<script src="supabase-config.js"></script><script src="figaromn-cloud.js"></script><script src="figaromn-tracking.js?v=241"></script>
 <script>
 (async function(){
 var LEVEL="seconde", PERIOD=3, SESSION_NO=2;
@@ -302,13 +302,22 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
 <script>
 (function initFigaroExercises(){
  document.querySelectorAll(".fmn-expath").forEach(function(box){
-  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false,attemptAnswers=[];
-  var content=box.querySelector(".fmn-excontent"),fb=box.querySelector(".fmn-exfeedback"),next=box.querySelector(".fmn-next"),restart=box.querySelector(".fmn-restart"),scoreEl=box.querySelector(".fmn-score"),bar=box.querySelector(".fmn-progress span");
+  var qs=JSON.parse(box.dataset.questions||"[]"),i=0,score=0,answered=false,attemptAnswers=[],locked=false,ready=false;
+  var content=box.querySelector(".fmn-excontent"),fb=box.querySelector(".fmn-exfeedback"),next=box.querySelector(".fmn-next"),restart=box.querySelector(".fmn-restart"),scoreEl=box.querySelector(".fmn-score"),bar=box.querySelector(".fmn-progress span"),boxIndex=Array.prototype.indexOf.call(document.querySelectorAll(".fmn-expath"),box),doneKey="figaromn.exercise.done:"+location.pathname+":"+boxIndex;
   function render(){
    answered=false;fb.textContent="";next.classList.add("hidden");restart.classList.add("hidden");
+   if(!ready){
+    content.innerHTML='<div class="q"><h4>Vérification de l’exercice…</h4><p>Contrôle de la tentative précédente.</p></div>';
+    scoreEl.textContent="—";bar.style.width="0%";return;
+   }
+   if(locked){
+    content.innerHTML='<div class="q"><h4>🔒 Exercice déjà terminé</h4><p>Pour refaire cet exercice, demande l’autorisation de l’enseignant.</p></div>';
+    scoreEl.textContent="Terminé";bar.style.width="100%";restart.classList.remove("hidden");return;
+   }
    if(i>=qs.length){
     content.innerHTML='<div class="q"><h4>Exercice terminé</h4><p>Tu as obtenu <strong>'+score+' / '+qs.length+'</strong>.</p><p>'+(score>=4?"Très bonne maîtrise.":"Reprends les notions associées avant de recommencer.")+'</p></div>';
     scoreEl.textContent=score+" / "+qs.length;bar.style.width="100%";restart.classList.remove("hidden");
+    try{localStorage.setItem(doneKey,"1");}catch(e){}
     saveResult();return;
    }
    var q=qs[i];bar.style.width=((i)/qs.length*100)+"%";scoreEl.textContent=score+" / "+qs.length;
@@ -324,7 +333,33 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
     await FigaroCloud.table("interactive_results","",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({student_id:p.id,session_id:rows[0].id,score:score,total:qs.length,completed_at:new Date().toISOString()})});if(window.FigaroTracking){await FigaroTracking.saveExerciseAttempt({box:box,questions:qs,answers:attemptAnswers.slice(),score:score,total:qs.length})}
    }catch(e){}
   }
-  next.onclick=function(){i++;render();};restart.onclick=function(){i=0;score=0;attemptAnswers=[];render();};render();
+  next.onclick=function(){i++;render();};
+  restart.onclick=function(){
+   var code=prompt("Intervention enseignant requise. Saisissez le mot d’autorisation :");
+   if(code===null)return;
+   if(code.trim().toUpperCase()!=="REFAIRE"){alert("Mot incorrect. L’exercice reste verrouillé.");return;}
+   try{localStorage.removeItem(doneKey);}catch(e){}
+   locked=false;i=0;score=0;attemptAnswers=[];render();
+  };
+  async function initializeGuard(){
+   var localDone=false;
+   try{localDone=localStorage.getItem(doneKey)==="1";}catch(e){}
+   var state=null;
+   try{
+    if(window.FigaroTracking&&typeof FigaroTracking.exerciseGuardState==="function"){
+     state=await FigaroTracking.exerciseGuardState();
+    }
+   }catch(e){}
+   if(state&&state.isStudent){
+    locked=!!(state.hasAttempt||localDone);
+   }else if(state&&state.isStudent===false){
+    locked=false;
+   }else{
+    locked=localDone;
+   }
+   ready=true;render();
+  }
+  render();initializeGuard();
  });
 })();
 </script></body></html>
