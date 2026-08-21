@@ -95,3 +95,35 @@
 @media print{
  .fmn22-sequence-progress,.fmn22-session-actions,.fmn22-lock-note{display:none!important}
 }
+
+
+/* V23.9 - bouton précédent en bas du parcours */
+.fmn-bottom-prev{
+ margin-top:22px;
+ padding-top:16px;
+ border-top:1px solid #d5e2e7;
+ display:flex;
+ justify-content:flex-start;
+}
+.fmn-bottom-prev .btn{
+ min-width:220px;
+}
+.fmn-bottom-prev.center{
+ justify-content:center;
+}
+.fmn-bottom-prev.center .btn{
+ width:min(420px,100%);
+}
+@media(max-width:620px){
+ .fmn-bottom-prev{
+  margin-top:16px;
+  padding-top:12px;
+ }
+ .fmn-bottom-prev .btn{
+  width:100%;
+  min-width:0;
+ }
+}
+@media print{
+ .fmn-bottom-prev{display:none!important}
+}

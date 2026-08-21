@@ -1,0 +1,67 @@
+FIGAROMN V23.9 – BOUTON « PRÉCÉDENT » EN BAS DU PARCOURS
+=============================================================
+
+NOUVEAUTÉ
+---------
+Un bouton « ← Précédent » est maintenant présent EN BAS des principaux
+écrans du parcours pédagogique.
+
+NIVEAUX CONCERNÉS
+-----------------
+- CAP Maintenance nautique
+- Seconde BAC PRO Maintenance Nautique
+- Première BAC PRO Maintenance Nautique
+- Terminale BAC PRO Maintenance Nautique
+
+ÉCRANS CONCERNÉS
+----------------
+1. Mes cours
+   → Précédent revient à l'accueil / progression.
+
+2. Séance de cours
+   → si l'élève est en séance 2 à 6 : revient à la séance précédente ;
+   → si l'élève est en séance 1 : revient à « Mes séquences ».
+
+3. Mes exercices
+   → Précédent revient à « Mes cours ».
+
+4. Détail d'un exercice
+   → si l'exercice a été ouvert depuis une séance, revient à cette séance ;
+   → sinon revient à la liste « Mes exercices ».
+
+5. Mes évaluations
+   → Précédent revient à « Mes exercices ».
+
+6. Détail d'une évaluation
+   → Précédent revient à « Mes évaluations ».
+
+ERGONOMIE
+---------
+- le bouton est placé tout en bas après le contenu ;
+- il est large et facilement accessible sur téléphone ;
+- il n'apparaît pas à l'impression / PDF ;
+- il complète les boutons de navigation déjà présents en haut ou au milieu.
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-level-cap-layout-v161.js
+- figaromn-bacpro-auto-v161.js
+- figaromn-sequence-flow-v22.css
+- seconde.html
+- premiere.html
+- terminale.html
+- cap.html
+
+Le cache passe en ?v=239.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.9.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre le déploiement GitHub Pages.
+7. Actualiser avec Ctrl+F5.
+
+Toutes les mises à jour cumulatives jusqu'à V23.8 sont conservées.

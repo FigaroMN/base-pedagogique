@@ -533,6 +533,12 @@ function openCourse(seqNo,sessionNo){
     ↔️ <strong>Navigation libre :</strong> tu peux consulter les 6 séances dans l’ordre que tu souhaites.
     La validation et les exercices servent au suivi de ta progression, mais ne bloquent plus les boutons précédent / suivant.
    </div>
+
+   <div class="fmn-bottom-prev">
+    <button type="button" class="btn light" id="fmn22-bottom-prev">
+     ${current>1?"← Précédent · Séance "+(current-1):"← Précédent · Mes séquences"}
+    </button>
+   </div>
    `:""}
 
    ${current===6?`
@@ -580,8 +586,17 @@ function openCourse(seqNo,sessionNo){
 
  const exBtn=$("fmn22-do-exercise");
  if(exBtn)exBtn.onclick=()=>{
-  // V23.0 : depuis une séance, on arrive d'abord sur la liste
-  // des 6 exercices de la séquence. Les séances restent fermées.
+  // V23.8 : depuis le bouton « Faire l’exercice de la séance »,
+  // ouvrir directement l’exercice correspondant à la séance en cours.
+  if(!currentExerciseDone &&
+     window.FigaroBacAuto &&
+     typeof window.FigaroBacAuto.openExerciseForSession==="function"){
+   window.FigaroBacAuto.openExerciseForSession(seq.no,current);
+   return;
+  }
+
+  // Si l’exercice est déjà terminé, conserver l’accès à l’espace Exercices
+  // pour consulter l’historique ou le refaire avec le code enseignant.
   if(window.FigaroBacAuto&&typeof window.FigaroBacAuto.openExercisesForSequence==="function"){
    window.FigaroBacAuto.openExercisesForSequence(seq.no);
   }else{
@@ -598,6 +613,16 @@ function openCourse(seqNo,sessionNo){
 
  const prev=$("fmn22-prev-session");
  if(prev)prev.onclick=()=>openCourse(seq.no,current-1);
+
+ const bottomPrev=$("fmn22-bottom-prev");
+ if(bottomPrev)bottomPrev.onclick=()=>{
+  if(current>1){
+   openCourse(seq.no,current-1);
+  }else{
+   renderCourses();
+   view("courses");
+  }
+ };
 
  const next=$("fmn22-next-session");
  if(next)next.onclick=()=>openCourse(seq.no,current+1);
@@ -1013,6 +1038,20 @@ document.querySelectorAll("#fmn-level-master .nav button").forEach(b=>b.onclick=
  if(target==="tools"){view("tools");return;}
  if(target==="games"){view("games");return;}
 });
+const bottomPrevCourses=$("fmn-bottom-prev-courses");
+if(bottomPrevCourses)bottomPrevCourses.onclick=()=>view("home");
+
+const bottomPrevExercises=$("fmn-bottom-prev-exercises");
+if(bottomPrevExercises)bottomPrevExercises.onclick=()=>{
+ renderCourses();
+ view("courses");
+};
+
+const bottomPrevEvaluations=$("fmn-bottom-prev-evaluations");
+if(bottomPrevEvaluations)bottomPrevEvaluations.onclick=()=>{
+ openExercisesSelected();
+};
+
 $("fmn-logout").onclick=async()=>{
  try{await FigaroCloud.signOut();}catch(e){}
  location.href="index.html";

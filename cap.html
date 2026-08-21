@@ -34,7 +34,7 @@ html,body{margin:0;background:#eef6f8}
 
 <link rel="stylesheet" href="figaromn-tools-v213.css?v=227">
 <link rel="stylesheet" href="figaromn-games-v213.css?v=234">
-<link rel="stylesheet" href="figaromn-sequence-flow-v22.css?v=22">
+<link rel="stylesheet" href="figaromn-sequence-flow-v22.css?v=239">
 </head>
 <body>
 <header id="fmn-capbar">
@@ -962,6 +962,7 @@ html,body{margin:0;background:#eef6f8}
    <h2 class="title">📘 Mes cours</h2>
    <p class="sub">7 séquences de Terminale CAP MN. Le contenu du cours est fixe. Seule la zone « Ma synthèse personnelle » peut être modifiée et sauvegardée. Le cours peut être imprimé à tout moment, même si la synthèse est vide.</p>
    <div id="capmn26-course-grid" class="menu-grid"></div>
+   <div class="fmn-bottom-prev"><button type="button" class="btn light" id="cap-bottom-prev-courses">← Précédent</button></div>
   </section>
 
   <section id="capmn26-course-detail" class="hidden"></section>
@@ -971,6 +972,7 @@ html,body{margin:0;background:#eef6f8}
    <p class="sub">Exercices formatifs répartis dans les 6 séances de chaque séquence, avec correction immédiate et historique complet des tentatives.</p>
    <div id="capmn26-exercise-grid" class="exercise-course-list"></div>
    <div id="capmn26-ex-skill-summary" class="skill-dashboard" aria-label="Synthèse du niveau d’acquisition des compétences pour les exercices et toutes les tentatives"></div>
+   <div class="fmn-bottom-prev"><button type="button" class="btn light" id="cap-bottom-prev-exercises">← Précédent</button></div>
   </section>
 
   <section id="capmn26-exercise-detail" class="hidden"></section>
@@ -981,6 +983,7 @@ html,body{margin:0;background:#eef6f8}
    <div id="capmn26-eval-grid" class="menu-grid"></div>
    <div id="capmn26-eval-skill-summary" class="skill-dashboard" aria-label="Synthèse du niveau d’acquisition des compétences pour toutes les évaluations et toutes les tentatives"></div>
    <div class="teacher-note">Le code d’accès est un verrou pédagogique côté navigateur ; il ne constitue pas un dispositif de sécurité informatique. Les niveaux de maîtrise affichés sont des repères pédagogiques pour le suivi et la saisie dans Cerise Pro ; ils doivent être croisés avec les observations en situation professionnelle.</div>
+   <div class="fmn-bottom-prev"><button type="button" class="btn light" id="cap-bottom-prev-evaluations">← Précédent</button></div>
   </section>
 
   <section id="capmn26-eval-detail" class="hidden"></section>
@@ -1479,6 +1482,9 @@ function openCourse(index,sessionNo){
     '<button type="button" class="btn light wide" id="capmn22-print">🖨️ Imprimer / PDF la séance</button>'+
    '</div>'+
    '<div class="fmn22-lock-note">↔️ <strong>Navigation libre :</strong> les 6 séances peuvent être consultées sans verrouillage. La validation sert uniquement au suivi de progression.</div>'+
+   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn22-bottom-prev">'+
+    (current>1?'← Précédent · Séance '+(current-1):'← Précédent · Mes séquences')+
+   '</button></div>'+
    (current===6?'<div class="summary"><strong>À retenir :</strong> '+esc(c.summary||"")+'</div>':'')+
   '</section>';
 
@@ -1520,6 +1526,17 @@ function openCourse(index,sessionNo){
 
  var prev=detail.querySelector("#capmn22-prev");
  if(prev)prev.onclick=function(){openCourse(index,current-1);};
+
+ var bottomPrev=detail.querySelector("#capmn22-bottom-prev");
+ if(bottomPrev)bottomPrev.onclick=function(){
+  if(current>1){
+   openCourse(index,current-1);
+  }else{
+   rebuildCourseGrid();
+   rebuildProgressGrid();
+   show("courses");
+  }
+ };
 
  var next=detail.querySelector("#capmn22-next");
  if(next)next.onclick=function(){openCourse(index,current+1);};
@@ -3213,9 +3230,10 @@ function openExercise(index,forceRedo){
    '<div id="capmn26-ex-live-skills" class="live-skills" aria-live="polite"></div>'+
    qhtml+
    '<div id="capmn26-ex-end" class="result hidden"></div>'+
+   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn26-bottom-prev-ex">← Précédent</button></div>'+
   '</div>';
 
- detail.querySelector("#capmn26-back-ex").addEventListener("click",function(){
+ function capReturnFromExercise(){
   refreshSkillSummaries();
   rebuildExerciseGrid();
   if(window.FIGAROMN_CAP_FLOW_RETURN && window.FigaroCAPFlow){
@@ -3225,7 +3243,11 @@ function openExercise(index,forceRedo){
    return;
   }
   show("exercises");
- });
+ }
+
+ detail.querySelector("#capmn26-back-ex").addEventListener("click",capReturnFromExercise);
+ var capBottomPrevEx=detail.querySelector("#capmn26-bottom-prev-ex");
+ if(capBottomPrevEx)capBottomPrevEx.addEventListener("click",capReturnFromExercise);
 
  function updateLiveSkills(){
   var live=detail.querySelector("#capmn26-ex-live-skills");
@@ -3529,13 +3551,18 @@ function openEvaluation(index,forceRedo){
    '<div id="capmn26-eval-question"></div>'+
    '<div class="toolbar"><button type="button" class="btn blue hidden" id="capmn26-eval-next">Question suivante →</button></div>'+
    '<div id="capmn26-eval-result" class="result hidden"></div>'+
+   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn26-bottom-prev-eval">← Précédent</button></div>'+
   '</div>';
 
- detail.querySelector("#capmn26-back-eval").addEventListener("click",function(){
+ function capReturnFromEvaluation(){
   refreshSkillSummaries();
   rebuildEvalGrid();
   show("evaluations");
- });
+ }
+
+ detail.querySelector("#capmn26-back-eval").addEventListener("click",capReturnFromEvaluation);
+ var capBottomPrevEval=detail.querySelector("#capmn26-bottom-prev-eval");
+ if(capBottomPrevEval)capBottomPrevEval.addEventListener("click",capReturnFromEvaluation);
 
  var qbox=detail.querySelector("#capmn26-eval-question");
  var next=detail.querySelector("#capmn26-eval-next");
@@ -3705,6 +3732,24 @@ function openEvaluation(index,forceRedo){
  renderQ();
  show("evalDetail");
 }
+
+var capBottomPrevCourses=root.querySelector("#cap-bottom-prev-courses");
+if(capBottomPrevCourses)capBottomPrevCourses.onclick=function(){
+ rebuildProgressGrid();
+ show("home");
+};
+
+var capBottomPrevExercises=root.querySelector("#cap-bottom-prev-exercises");
+if(capBottomPrevExercises)capBottomPrevExercises.onclick=function(){
+ rebuildCourseGrid();
+ show("courses");
+};
+
+var capBottomPrevEvaluations=root.querySelector("#cap-bottom-prev-evaluations");
+if(capBottomPrevEvaluations)capBottomPrevEvaluations.onclick=function(){
+ rebuildExerciseGrid();
+ show("exercises");
+};
 
 refreshSkillSummaries();
 show("home");

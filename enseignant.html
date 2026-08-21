@@ -1,4 +1,5 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<!-- FIGAROMN ESPACE ENSEIGNANT V23.7 --><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Espace Enseignant FigaroMN</title>
 <style>
 :root{--navy:#06283d;--blue:#0b5d7a;--cyan:#19b8d3;--orange:#ff7a18;--green:#16895a;--red:#c93f49;--gold:#f5b82e;--bg:#eef6f8;--light:#f8fbfc;--text:#18323f;--muted:#607680;--border:#d9e6ea}
@@ -290,9 +291,9 @@ function seqTitle(level,n){
  }
  try{return window.FIGAROMN_CYCLE_DATA.years[level].periods[n-1][1];}catch(e){return "Séquence "+n;}
 }
-function seqCount(level){return level==="cap"?7:6;}
-function expectedExercises(level){return level==="cap"?35:36;}
-function expectedEvaluations(level){return level==="cap"?7:6;}
+function seqCount(level){return 7;}
+function expectedExercises(level){return level==="cap"?35:42;}
+function expectedEvaluations(level){return 7;}
 function levelFromPct(pct){
  pct=Number(pct);
  if(pct<50)return {label:"Non acquis",level:1,cls:"level-na"};
@@ -998,7 +999,6 @@ async function loadLive(){
  }catch(e){$("pageMsg").textContent="Erreur de suivi : "+e.message;$("liveBadge").textContent="● Actualisation en erreur";$("liveBadge").className="pill badpill";}
  finally{busy=false;}
 }
-async 
 async function deleteStudentPermanently(id,button){
  const p=profiles.find(x=>x.id===id);
  if(!p)return;
@@ -1174,7 +1174,7 @@ function studentMetrics(id,p){
  }else{
   const ids=sessions.filter(s=>s.level===p.level).map(s=>s.id);
   completed=progress.filter(x=>x.student_id===id&&ids.includes(x.session_id)&&x.status==="completed").length;
-  progressTotal=ids.length||36;
+  progressTotal=ids.length||42;
  }
  return {
   exRows,evRows,skills,exUnique,evAvg,evBest,complete,acquired,mastered,
@@ -1376,7 +1376,13 @@ $("saveObs").onclick=async()=>{
  }catch(e){$("obsMsg").textContent="Erreur : "+e.message;}
 };
 
-await loadStatic();await loadLive();cdtInit();
+await loadStatic();
+await loadLive();
+cdtInit();
+if($("pageMsg")&&!$("pageMsg").textContent.trim()){
+ $("pageMsg").textContent="✅ Espace professeur opérationnel · données et outils chargés.";
+ $("pageMsg").className="msg ok";
+}
 refreshTimer=setInterval(()=>{if(document.visibilityState==="visible")loadLive();},8000);
 window.addEventListener("beforeunload",()=>clearInterval(refreshTimer));
 })().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});

@@ -1,0 +1,76 @@
+FIGAROMN V23.7 — CONTRÔLE AUTOMATIQUE
+==============================================
+
+✅ Syntaxe JavaScript valide avec Node.js
+✅ Aucun mot-clé async isolé / parasite
+✅ Fonction de suppression élève bien déclarée async
+✅ Réinitialisation du mot de passe bien déclarée async
+✅ Élément interface présent : logout
+✅ Élément interface présent : levelTabs
+✅ Élément interface présent : filterClass
+✅ Élément interface présent : searchStudent
+✅ Élément interface présent : filterActivity
+✅ Élément interface présent : refreshNow
+✅ Élément interface présent : studentRows
+✅ Élément interface présent : pageMsg
+✅ Élément interface présent : newClassName
+✅ Élément interface présent : newClassLevel
+✅ Élément interface présent : newClassYear
+✅ Élément interface présent : createClass
+✅ Élément interface présent : studentSelect
+✅ Élément interface présent : classSelect
+✅ Élément interface présent : assignBtn
+✅ Élément interface présent : cdtClass
+✅ Élément interface présent : cdtLevel
+✅ Élément interface présent : cdtSequence
+✅ Élément interface présent : cdtSession
+✅ Élément interface présent : cdtDate
+✅ Élément interface présent : cdtDuration
+✅ Élément interface présent : cdtDetect
+✅ Élément interface présent : cdtTitle
+✅ Élément interface présent : cdtContent
+✅ Élément interface présent : cdtHomework
+✅ Élément interface présent : cdtCopyAll
+✅ Élément interface présent : cdtSaveHistory
+✅ Élément interface présent : cdtHistoryLevel
+✅ Élément interface présent : cdtHistoryClass
+✅ Élément interface présent : cdtHistoryRows
+✅ Élément interface présent : cdtHistoryRefresh
+✅ Élément interface présent : obsStudent
+✅ Élément interface présent : obsComp
+✅ Élément interface présent : obsLevel
+✅ Élément interface présent : obsEvidence
+✅ Élément interface présent : obsComment
+✅ Élément interface présent : saveObs
+✅ Bouton Voir le suivi câblé
+✅ Bouton Réinitialiser câblé
+✅ Bouton Supprimer câblé
+✅ Suppression avec confirmation SUPPRIMER
+✅ Création de classe câblée
+✅ Rattachement élève / classe câblé
+✅ Filtres niveau / classe / recherche présents
+✅ Chargement des profils
+✅ Chargement de la progression
+✅ Chargement des évaluations
+✅ Chargement des exercices
+✅ Chargement des compétences automatiques
+✅ Chargement des indicateurs
+✅ Chargement CAP
+✅ BAC PRO : 7 séquences prises en compte
+✅ BAC PRO : 42 exercices attendus
+✅ BAC PRO : 7 évaluations attendues
+✅ BAC PRO : progression de secours sur 42 séances
+✅ Détection automatique de séance présente
+✅ Détection à partir de la progression / exercices / évaluations
+✅ Enregistrement historique présent
+✅ Historique filtrable niveau / classe
+✅ Secours local du cahier de texte présent
+✅ Observation compétence enregistrable
+✅ Chargement initial statique
+✅ Chargement initial dynamique
+✅ Initialisation cahier de texte
+✅ Actualisation automatique toutes les 8 s
+✅ Bouton Actualiser maintenant actif
+✅ Aucun ID HTML statique en double
+
+Résultat : 71 contrôles réussis.

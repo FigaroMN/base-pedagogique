@@ -691,16 +691,23 @@ function openExercise(ex,forceRedo){
   '<div class="score">Score : <strong id="bac-ex-score">0 / '+ex.questions.length+'</strong></div>'+
   qhtml+
   '<div id="bac-ex-end" class="result hidden"></div>'+
-  '<div class="exercise-skill-summary-bottom"><h3>📊 Synthèse des compétences</h3><div id="bac-ex-live"></div></div></div>';
- $("bac-back-ex").onclick=function(){
+  '<div class="exercise-skill-summary-bottom"><h3>📊 Synthèse des compétences</h3><div id="bac-ex-live"></div></div>'+
+  '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="bac-bottom-prev-ex">← Précédent</button></div></div>';
+ function bacReturnFromExercise(){
   if(window.FIGAROMN_RETURN_SESSION && window.FigaroMNLevelFlow && typeof window.FigaroMNLevelFlow.openCourse==="function"){
-    var r=window.FIGAROMN_RETURN_SESSION;
-    window.FIGAROMN_RETURN_SESSION=null;
-    window.FigaroMNLevelFlow.openCourse(r.sequence,r.session);
-    return;
+   var r=window.FIGAROMN_RETURN_SESSION;
+   window.FIGAROMN_RETURN_SESSION=null;
+   window.FigaroMNLevelFlow.openCourse(r.sequence,r.session);
+   return;
   }
-  window.FIGAROMN_CURRENT_SEQUENCE=ex.sequence;activeSequence=ex.sequence;rebuildExercises();show("exercises");
- };
+  window.FIGAROMN_CURRENT_SEQUENCE=ex.sequence;
+  activeSequence=ex.sequence;
+  rebuildExercises();
+  show("exercises");
+ }
+ $("bac-back-ex").onclick=bacReturnFromExercise;
+ var bacBottomPrevEx=$("bac-bottom-prev-ex");
+ if(bacBottomPrevEx)bacBottomPrevEx.onclick=bacReturnFromExercise;
  function updateLive(){
   liveAgg=currentAttemptIndicatorAggregate(ex.questions,responses);
   $("bac-ex-live").innerHTML=indicatorAcquisitionHTML(liveAgg,ex.comps,answered===ex.questions.length?'Résultat final de la tentative.':'Résultat provisoire : les indicateurs évoluent après chaque réponse.');
@@ -814,8 +821,17 @@ function openEvaluation(ev,forceRedo){
   successIndicatorsPanelHTML(ev.comps)+
   '<div class="skill-calc-box"><strong>📈 Calcul 100 % automatique</strong><p>Chaque réponse produit deux résultats en parallèle : 1) elle alimente l’indicateur associé pour calculer le pourcentage puis le niveau de compétence ; 2) elle entre dans le calcul de la note de l’évaluation sur 20.</p><p><strong>Note /20 = réponses correctes ÷ nombre total de questions × 20.</strong></p></div>'+
   '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 /20</span></div>'+
-  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-live"></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div></div>';
- $("bac-back-eval").onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");};
+  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-live"></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+
+  '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="bac-bottom-prev-eval">← Précédent</button></div></div>';
+ function bacReturnFromEvaluation(){
+  window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;
+  activeSequence=ev.sequence;
+  rebuildEvaluations();
+  show("evaluations");
+ }
+ $("bac-back-eval").onclick=bacReturnFromEvaluation;
+ var bacBottomPrevEval=$("bac-bottom-prev-eval");
+ if(bacBottomPrevEval)bacBottomPrevEval.onclick=bacReturnFromEvaluation;
  var qbox=$("bac-eval-question"),next=$("bac-eval-next");
  function update(){
   $("bac-eval-score").textContent="Score : "+score+" / "+ev.questions.length+" · Note : "+fr(note20(score,ev.questions.length))+" /20";
@@ -913,6 +929,14 @@ async function openExerciseForSession(seq,no){
   if(!ex)throw new Error("Exercice de la séance introuvable.");
   window.FIGAROMN_RETURN_SESSION={sequence:activeSequence,session:Number(no)};
   openExercise(ex,false);
+
+  // S'assurer que l'élève arrive bien au début du détail de l'exercice.
+  setTimeout(function(){
+   var detail=$("fmn-view-exercise-detail");
+   if(detail&&!detail.classList.contains("hidden")){
+    detail.scrollIntoView({behavior:"smooth",block:"start"});
+   }
+  },80);
  }catch(e){
   var grid=$("fmn-exercise-grid");
   show("exercises");

@@ -1,0 +1,94 @@
+FIGAROMN V23.7 – RÉPARATION COMPLÈTE DE L'ESPACE PROFESSEUR
+================================================================
+
+CAUSE DU BLOCAGE IDENTIFIÉE
+---------------------------
+L'erreur affichée :
+« Erreur : async is not defined »
+
+était provoquée par une ligne JavaScript parasite :
+
+async
+async function ...
+
+Le premier « async » était interprété comme une variable inexistante.
+Le navigateur arrêtait alors l'exécution du module professeur avant
+l'initialisation des boutons et des données.
+
+CORRECTION
+----------
+La ligne parasite a été supprimée et la syntaxe JavaScript complète a été
+contrôlée avec Node.js.
+
+REVUE POINT PAR POINT
+---------------------
+Contrôlés dans cette version :
+
+1. Connexion professeur / déconnexion
+2. Filtres Tous niveaux / Seconde / Première / Terminale / CAP
+3. Filtre par classe
+4. Recherche d'un élève
+5. Filtre d'activité
+6. Actualisation manuelle
+7. Chargement de la liste des élèves
+8. Voir le suivi
+9. Réinitialiser le mot de passe
+10. Supprimer un élève avec confirmation
+11. Création d'une classe
+12. Rattachement d'un élève à une classe
+13. Chargement progression / exercices / évaluations
+14. Chargement indicateurs / compétences automatiques
+15. Suivi CAP
+16. Observation enseignant
+17. Cahier de texte ÉcoleDirecte
+18. Détection automatique de la séance
+19. Historique du cahier de texte
+20. Filtre historique par niveau et classe
+21. Actualisation automatique toutes les 8 secondes
+22. Contrôle des identifiants HTML
+23. Contrôle de syntaxe JavaScript
+
+CORRECTION SUPPLÉMENTAIRE
+-------------------------
+L'espace professeur utilisait encore d'anciens compteurs BAC PRO :
+- 6 séquences
+- 36 exercices
+- 6 évaluations
+
+Il est maintenant aligné avec la base actuelle :
+- 7 séquences
+- 42 séances / exercices
+- 7 évaluations
+
+MESSAGE DE CONTRÔLE
+-------------------
+Quand le module est chargé correctement, la zone Élèves affiche :
+« ✅ Espace professeur opérationnel · données et outils chargés. »
+
+SUPABASE
+--------
+Les migrations déjà créées restent nécessaires pour certaines fonctions :
+
+- MIGRATION-V23-3-SUPPRESSION-ELEVE.sql
+  pour la suppression définitive d'un élève.
+
+- MIGRATION-V23-5-HISTORIQUE-CAHIER-TEXTE.sql
+  pour l'historique du cahier de texte partagé entre appareils.
+
+Si elles ont déjà été exécutées dans Supabase, NE PAS les rejouer.
+
+INSTALLATION GITHUB
+-------------------
+1. Décompresser le PATCH V23.7.
+2. GitHub > Add file > Upload files.
+3. Remplacer enseignant.html à la RACINE.
+4. Ajouter les fichiers de sauvegarde inclus si souhaité.
+5. Commit changes sur main.
+6. Attendre le déploiement GitHub Pages.
+7. Fermer complètement l'ancienne page professeur.
+8. Rouvrir la page puis faire Ctrl+F5.
+
+Si le navigateur est un téléphone :
+- fermer l'onglet ;
+- rouvrir le site ;
+- si nécessaire, vider les données de site / cache du navigateur.

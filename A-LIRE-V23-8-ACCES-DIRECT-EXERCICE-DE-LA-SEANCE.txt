@@ -1,0 +1,70 @@
+FIGAROMN V23.8 – ACCÈS DIRECT À L'EXERCICE DE LA SÉANCE
+===========================================================
+
+NOUVEAU COMPORTEMENT
+---------------------
+Depuis une séance de cours, lorsque l'élève clique sur :
+
+📝 Faire l'exercice de la séance
+
+FigaroMN n'affiche plus d'abord la liste des 6 exercices.
+
+Il ouvre directement l'exercice correspondant exactement à la séance
+qui est affichée.
+
+EXEMPLE
+-------
+Séquence 3 – Feux de navigation
+Séance 1 – Fonction et architecture des feux
+
+Le bouton :
+📝 Faire l'exercice de la séance
+
+ouvre directement l'écran :
+« Fonction et architecture des feux »
+
+avec :
+- la situation professionnelle ;
+- les compétences travaillées ;
+- les indicateurs de réussite ;
+- le score ;
+- les questions de l'exercice.
+
+RETOUR
+------
+Le bouton « Retour » de l'exercice ramène vers la séance de cours
+depuis laquelle l'élève est arrivé.
+
+EXERCICE DÉJÀ TERMINÉ
+---------------------
+Si l'exercice a déjà été réalisé, le bouton conserve l'accès à l'espace
+Exercices afin de consulter l'historique ou de le refaire avec le code
+enseignant.
+
+NIVEAUX CONCERNÉS
+-----------------
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-level-cap-layout-v161.js
+- figaromn-bacpro-auto-v161.js
+- seconde.html
+- premiere.html
+- terminale.html
+
+Le cache passe en ?v=238.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.8.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre le déploiement GitHub Pages.
+7. Actualiser avec Ctrl+F5.
+
+Toutes les mises à jour précédentes jusqu'à V23.7 sont conservées.
