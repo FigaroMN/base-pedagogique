@@ -1,0 +1,56 @@
+FIGAROMN V23.4 – JEUX : BONNES RÉPONSES MIEUX RÉPARTIES
+=========================================================
+
+MISE À JOUR
+-----------
+Dans les mini-jeux de type Quiz, la position de la bonne réponse est désormais
+mieux répartie d’une question à l’autre.
+
+AVANT
+-----
+La bonne réponse pouvait apparaître trop souvent au même endroit
+(haut, milieu ou bas), ce qui donnait une impression d’alignement.
+
+MAINTENANT
+----------
+- les propositions sont réorganisées à chaque question ;
+- la bonne réponse change davantage de position ;
+- la répartition est plus alternée / en quinconce ;
+- les mauvaises réponses sont aussi mélangées.
+
+OBJECTIF
+--------
+Éviter les habitudes visuelles et rendre le jeu plus juste :
+l’élève doit lire les propositions, sans pouvoir anticiper la position
+de la bonne réponse.
+
+CHAMP D’APPLICATION
+-------------------
+- jeux BAC PRO
+- jeux CAP
+- tous les jeux de type Quiz
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-games-v20.js
+- figaromn-games-v213.js
+- seconde.html
+- premiere.html
+- terminale.html
+- cap.html
+
+Le cache des fichiers de jeux passe en ?v=234.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.4.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Actualiser avec Ctrl+F5.
+
+MISES À JOUR PRÉCÉDENTES CONSERVÉES
+-----------------------------------
+Toutes les mises à jour cumulatives jusqu’à V23.3 sont conservées.

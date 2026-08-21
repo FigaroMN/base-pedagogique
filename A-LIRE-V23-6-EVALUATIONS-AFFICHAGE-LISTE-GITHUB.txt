@@ -1,0 +1,50 @@
+FIGAROMN V23.6 – ÉVALUATIONS AFFICHÉES EN LISTE
+=================================================
+
+NOUVEL AFFICHAGE
+----------------
+Dans l'onglet « Mes évaluations » du BAC PRO, les évaluations ne sont plus
+présentées sur deux colonnes.
+
+Elles sont maintenant affichées :
+- une évaluation par ligne ;
+- dans l'ordre des séquences ;
+- sur toute la largeur disponible ;
+- avec les compétences et indicateurs plus lisibles ;
+- avec les boutons d'action placés à droite sur grand écran ;
+- avec les boutons replacés sous l'évaluation sur téléphone / tablette.
+
+OBJECTIF
+--------
+Améliorer la lecture des évaluations et éviter l'affichage trop étroit des
+compétences et des indicateurs.
+
+NIVEAUX CONCERNÉS
+-----------------
+- Seconde BAC PRO
+- Première BAC PRO
+- Terminale BAC PRO
+
+FICHIERS À REMPLACER SUR GITHUB
+-------------------------------
+- figaromn-bacpro-auto-v161.js
+- figaromn-level-cap-layout-v161.css
+- seconde.html
+- premiere.html
+- terminale.html
+
+Le cache passe en ?v=236.
+
+INSTALLATION
+------------
+1. Décompresser le PATCH V23.6.
+2. GitHub > Add file > Upload files.
+3. Envoyer les fichiers à la RACINE du dépôt.
+4. Remplacer les fichiers existants.
+5. Commit changes sur main.
+6. Attendre GitHub Pages.
+7. Actualiser avec Ctrl+F5.
+
+MISES À JOUR PRÉCÉDENTES
+------------------------
+Toutes les mises à jour cumulatives jusqu'à V23.5 sont conservées.

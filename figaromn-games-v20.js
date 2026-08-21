@@ -72,20 +72,77 @@ function mount(root){
  function bindBack(){const b=$(detail,"[data-back]");if(b)b.onclick=back}
  function renderQuiz(g){
   state={index:0,score:0,answered:false};
-  detail.innerHTML=`<div class="fg-game">${header(g)}<div class="fg-progress"><span style="width:0%"></span></div><div class="fg-playzone"></div></div>`;bindBack();
+
+  function quizSeed(value){
+    value=String(value||"");
+    let h=0;
+    for(let i=0;i<value.length;i++)h=(h*31+value.charCodeAt(i))>>>0;
+    return h;
+  }
+  function arrangedOptions(q,questionIndex){
+    const source=(q.options||[]).slice();
+    const n=source.length;
+    const correctText=source[q.answer];
+    const wrong=shuffle(source.filter((_,i)=>i!==q.answer));
+    const target=(quizSeed(g.id)+questionIndex)%Math.max(1,n);
+    const arranged=new Array(n);
+    arranged[target]={text:correctText,correct:true};
+    let wi=0;
+    for(let i=0;i<n;i++){
+      if(!arranged[i])arranged[i]={text:wrong[wi++],correct:false};
+    }
+    return arranged;
+  }
+
+  detail.innerHTML=`<div class="fg-game">${header(g)}<div class="fg-progress"><span></span></div><div class="fg-playzone"></div></div>`;
+  bindBack();
   const zone=$(detail,".fg-playzone"),bar=$(detail,".fg-progress span");
+
   function showQ(){
-   const q=g.questions[state.index];state.answered=false;bar.style.width=(state.index/g.questions.length*100)+"%";
-   zone.innerHTML=`<div class="fg-question"><h4>Question ${state.index+1}/${g.questions.length} — ${esc(q.q)}</h4><div class="fg-options">${q.options.map((o,i)=>`<button type="button" class="fg-option" data-opt="${i}">${esc(o)}</button>`).join("")}</div><div class="fg-feedback" hidden></div></div><div class="fg-actions"><button type="button" class="fg-btn blue" data-next disabled>${state.index===g.questions.length-1?"Voir mon score":"Question suivante →"}</button></div>`;
-   const fb=$(zone,".fg-feedback"),next=$(zone,"[data-next]");
-   $$(zone,"[data-opt]").forEach(btn=>btn.onclick=()=>{
-    if(state.answered)return;state.answered=true;const i=Number(btn.dataset.opt),ok=i===q.answer;if(ok)state.score++;
-    $$(zone,"[data-opt]").forEach((b,j)=>{b.disabled=true;if(j===q.answer)b.classList.add("correct");else if(j===i&&!ok)b.classList.add("wrong")});
-    fb.hidden=false;fb.innerHTML=`<strong>${ok?"✅ Bonne réponse":"❌ À revoir"}</strong><br>${esc(q.feedback)}`;next.disabled=false;
-   });
-   next.onclick=()=>{state.index++;if(state.index>=g.questions.length){bar.style.width="100%";finish(g,state.score,g.questions.length)}else showQ()};
-  } showQ();
- }
+    const q=g.questions[state.index];
+    const options=arrangedOptions(q,state.index);
+    state.answered=false;
+    bar.style.width=(state.index/g.questions.length*100)+"%";
+
+    zone.innerHTML=`<div class="fg-question">
+      <h4>Question ${state.index+1} / ${g.questions.length}</h4>
+      <div class="fg-qtext">${esc(q.q)}</div>
+      <div class="fg-options">
+        ${options.map((opt,i)=>`<button type="button" class="fg-option" data-opt="${i}">${esc(opt.text)}</button>`).join("")}
+      </div>
+      <div class="fg-feedback" hidden></div>
+      <button type="button" class="btn good" data-next disabled>${state.index===g.questions.length-1?"Voir mon score":"Question suivante →"}</button>
+    </div>`;
+
+    const fb=$(zone,".fg-feedback"),next=$(zone,"[data-next]");
+    $$(zone,"[data-opt]").forEach(btn=>btn.onclick=()=>{
+      if(state.answered)return;
+      state.answered=true;
+      const i=Number(btn.dataset.opt),ok=!!(options[i]&&options[i].correct);
+      if(ok)state.score++;
+
+      $$(zone,"[data-opt]").forEach((b,j)=>{
+        b.disabled=true;
+        if(options[j]&&options[j].correct)b.classList.add("correct");
+        else if(j===i&&!ok)b.classList.add("wrong");
+      });
+
+      fb.hidden=false;
+      fb.innerHTML=`<strong>${ok?"✅ Bonne réponse":"❌ À revoir"}</strong><br>${esc(q.feedback)}`;
+      next.disabled=false;
+    });
+
+    next.onclick=()=>{
+      state.index++;
+      if(state.index>=g.questions.length){
+        bar.style.width="100%";
+        finish(g,state.score,g.questions.length);
+      }else showQ();
+    };
+  }
+  showQ();
+}
+
  function renderSequence(g){
   let items=shuffle(g.items.map((text,i)=>({text,correct:i})));
   detail.innerHTML=`<div class="fg-game">${header(g)}<div class="fg-question"><h4>Remets les étapes dans le bon ordre</h4><div class="fg-sequence-list"></div></div><div class="fg-actions"><button type="button" class="fg-btn blue" data-check>✅ Vérifier l'ordre</button></div></div>`;bindBack();

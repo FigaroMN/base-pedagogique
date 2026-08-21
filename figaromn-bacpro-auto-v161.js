@@ -749,7 +749,7 @@ function rebuildEvaluations(){
   ? DATA.evaluations.slice().sort(function(a,b){return Number(a.sequence)-Number(b.sequence);})
   : DATA.evaluations.filter(function(x){return Number(x.sequence)===activeSequence;});
 
- grid.className="menu-grid";
+ grid.className="evaluation-list";
  if(!evals.length){grid.innerHTML="<p>Aucune évaluation disponible.</p>";return;}
 
  grid.innerHTML=evals.map(function(ev){

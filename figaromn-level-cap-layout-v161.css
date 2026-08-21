@@ -1102,3 +1102,86 @@
   font-size:1rem;
  }
 }
+
+
+/* V23.6 - évaluations affichées en liste */
+#fmn-level-master .evaluation-list{
+ display:grid;
+ grid-template-columns:1fr;
+ gap:14px;
+ width:100%;
+}
+
+#fmn-level-master .evaluation-list .menu-card{
+ width:100%;
+ min-height:0;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(230px,290px);
+ gap:18px;
+ align-items:start;
+ padding:18px;
+}
+
+#fmn-level-master .evaluation-list .menu-card>div:first-child{
+ min-width:0;
+}
+
+#fmn-level-master .evaluation-list .menu-card .top-icon{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ width:42px;
+ height:42px;
+ margin-bottom:4px;
+ border-radius:12px;
+ background:#eef7f2;
+ font-size:24px;
+}
+
+#fmn-level-master .evaluation-list .menu-card h3{
+ margin-top:8px;
+ font-size:18px;
+ line-height:1.35;
+}
+
+#fmn-level-master .evaluation-list .menu-card p{
+ max-width:900px;
+}
+
+#fmn-level-master .evaluation-list .menu-card .actions{
+ margin-top:0;
+ display:grid;
+ gap:8px;
+ position:sticky;
+ top:82px;
+}
+
+#fmn-level-master .evaluation-list .menu-card .eval-lock{
+ margin-top:0;
+ grid-template-columns:1fr;
+ gap:8px;
+}
+
+#fmn-level-master .evaluation-list .menu-card .eval-lock .btn{
+ width:100%;
+}
+
+#fmn-level-master .evaluation-list .menu-card .skill-dashboard,
+#fmn-level-master .evaluation-list .menu-card .indicator-dashboard{
+ margin-top:12px;
+}
+
+@media(max-width:850px){
+ #fmn-level-master .evaluation-list .menu-card{
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:15px;
+ }
+ #fmn-level-master .evaluation-list .menu-card .actions{
+  position:static;
+  margin-top:4px;
+ }
+ #fmn-level-master .evaluation-list .menu-card .eval-lock{
+  grid-template-columns:1fr;
+ }
+}
