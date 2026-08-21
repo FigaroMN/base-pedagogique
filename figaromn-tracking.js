@@ -134,5 +134,28 @@ async function saveExerciseAttempt(payload){
   body.textContent="Suivi détaillé indisponible : "+e.message+". Exécute MIGRATION-SUIVI-AUTO-INDICATEURS.sql dans Supabase.";
  }
 }
-window.FigaroTracking={saveExerciseAttempt:saveExerciseAttempt,context:context};
+
+async function exerciseGuardState(){
+ var ctx=context();
+ if(!ctx)return {isStudent:null,hasAttempt:false};
+ try{
+  var sess=FigaroCloud.session&&FigaroCloud.session();
+  if(!sess||!sess.access_token)return {isStudent:null,hasAttempt:false};
+  var p=await FigaroCloud.profile();
+  if(!p||p.role!=="student"||p.archived_at)return {isStudent:false,hasAttempt:false};
+  var rows=await FigaroCloud.table("sessions",
+    "level=eq."+ctx.level+"&period=eq."+ctx.sequence+"&session_no=eq."+ctx.sessionNo+"&select=id");
+  if(!rows||!rows[0])return {isStudent:true,hasAttempt:false};
+  var prev=await FigaroCloud.table("activity_attempts",
+    "student_id=eq."+p.id+"&session_id=eq."+rows[0].id+"&activity_type=eq.exercise&select=id&limit=1");
+  return {isStudent:true,hasAttempt:!!(prev&&prev[0])};
+ }catch(e){
+  return {isStudent:true,hasAttempt:false,error:true};
+ }
+}
+window.FigaroTracking={
+ saveExerciseAttempt:saveExerciseAttempt,
+ context:context,
+ exerciseGuardState:exerciseGuardState
+};
 })();

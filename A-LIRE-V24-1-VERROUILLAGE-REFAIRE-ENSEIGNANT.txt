@@ -1,0 +1,31 @@
+FIGAROMN — V24.1 — VERROUILLAGE DES NOUVELLES TENTATIVES D'EXERCICES
+=======================================================================
+
+Demande appliquée
+-----------------
+Un élève ne doit plus pouvoir refaire seul un exercice déjà terminé.
+Pour autoriser un nouvel essai, l'enseignant saisit le mot d'autorisation :
+
+REFAIRE
+
+Modifications
+-------------
+- Conservation du verrou déjà présent dans les espaces Exercices CAP/Bac Pro.
+- Ajout du même verrou aux parcours de 5 exercices intégrés dans 108 pages de séances.
+- Le bouton « Recommencer » devient « 🔒 Refaire (enseignant) ».
+- Un exercice terminé est mémorisé localement afin qu'un simple rechargement de page ne permette pas de recommencer.
+- Si la connexion Supabase est disponible, une tentative précédente enregistrée dans activity_attempts est également détectée.
+- Le mot REFAIRE n'est pas affiché dans l'interface élève.
+- Une nouvelle tentative n'est lancée qu'après saisie correcte du mot d'autorisation par l'enseignant.
+- Le script figaromn-tracking.js est appelé avec ?v=241 sur les pages concernées pour éviter un ancien cache navigateur.
+
+Fichiers principaux modifiés
+----------------------------
+- figaromn-tracking.js
+- 108 pages *-periode-*-seance-*.html contenant un parcours .fmn-expath
+
+Contrôles effectués
+-------------------
+- 108/108 parcours modifiés.
+- 0 ancien gestionnaire « Recommencer » non protégé restant sur ces parcours.
+- Vérification JavaScript avec node --check : aucune erreur.
