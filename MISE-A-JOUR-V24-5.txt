@@ -1,0 +1,12 @@
+FIGAROMN V24.5 — CORRECTIF APPEL
+
+Ajout dans Enseignant > Historique des absences et retards :
+- bouton « Supprimer » uniquement pour les lignes Absent et Retard ;
+- confirmation avant action ;
+- la suppression de l'absence/du retard remet l'élève « Présent » pour ce créneau ;
+- le retard (minutes) et la note associés sont remis à zéro ;
+- aucun compte élève, aucune classe et aucun autre appel ne sont supprimés.
+
+SQL :
+Aucune nouvelle migration n'est nécessaire si MIGRATION-V24-4-APPEL-ABSENCES-RETARDS.sql
+a déjà été exécutée, car V24.4 autorise déjà la mise à jour sécurisée des appels de l'enseignant.
