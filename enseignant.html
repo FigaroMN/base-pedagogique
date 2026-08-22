@@ -322,7 +322,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </div>
 </section>
 
-<section class="card teacher-tool" data-teacher-module="cahier" id="cahierTexteCard" data-cdt-version="24.17">
+<section class="card teacher-tool" data-teacher-module="cahier" id="cahierTexteCard" data-cdt-version="24.21">
 <div class="cdt-head">
  <div>
   <h2>Cahier de texte ÉcoleDirecte</h2>
@@ -2022,11 +2022,22 @@ function renderSelects(){
  renderAssignmentClasses();
 }
 async function loadStatic(){
+ // V24.21 : mémoriser la position actuelle du cahier de texte avant
+ // toute actualisation des classes. Sans cela, le rafraîchissement
+ // pouvait remettre la liste sur Séquence 1 / Séance 1.
+ const cdtLevelBefore=cdtInitialized&&$("cdtLevel")?$("cdtLevel").value:"";
+ const cdtGroupBefore=cdtInitialized&&$("cdtClass")?$("cdtClass").value:"";
+ const cdtSeqBefore=cdtInitialized&&$("cdtSequence")?$("cdtSequence").value:"";
+ const cdtSessionBefore=cdtInitialized&&$("cdtSession")?$("cdtSession").value:"";
+
  classes=await safeTable("classes","teacher_id=eq."+me.id+"&select=id,name,level,school_year&order=level.asc,name.asc");
  classMap={};classes.forEach(c=>classMap[c.id]=c);
  sessions=await safeTable("sessions","select=id,level,period,session_no,title&order=level.asc,period.asc,session_no.asc");
  renderFilters();
- if(cdtInitialized)cdtFillClasses();
+ if(cdtInitialized){
+  if(cdtLevelBefore&&cdtActiveLevels().includes(cdtLevelBefore))$("cdtLevel").value=cdtLevelBefore;
+  cdtFillClasses(cdtGroupBefore,cdtSeqBefore,cdtSessionBefore);
+ }
 }
 async function loadLive(){
  if(busy)return;busy=true;$("liveBadge").textContent="● Actualisation…";
@@ -2053,12 +2064,19 @@ async function loadLive(){
   interactive=attempts.length?[]:await safeTable("interactive_results","select=student_id,session_id,score,total,completed_at");
   renderStudents();
   if(cdtInitialized){
+   // V24.21 : l'actualisation automatique toutes les 8 secondes doit
+   // rafraîchir les données SANS changer la séquence ni la séance choisies.
+   // Auparavant cdtFillClasses(currentGroup) recréait les listes et
+   // revenait systématiquement à Séquence 1 / Séance 1.
    const currentLevel=$("cdtLevel")?$("cdtLevel").value:"";
    const currentGroup=$("cdtClass")?$("cdtClass").value:"";
+   const currentSequence=$("cdtSequence")?$("cdtSequence").value:"";
+   const currentSession=$("cdtSession")?$("cdtSession").value:"";
+
    cdtFillLevels(currentLevel);
    if(currentLevel&&cdtActiveLevels().includes(currentLevel)){
     $("cdtLevel").value=currentLevel;
-    cdtFillClasses(currentGroup);
+    cdtFillClasses(currentGroup,currentSequence,currentSession);
    }
    cdtHistoryFillLevels();
    cdtRenderHistory();
@@ -2491,4 +2509,4 @@ if($("pageMsg")&&!$("pageMsg").textContent.trim()){
 refreshTimer=setInterval(()=>{if(document.visibilityState==="visible")loadLive();},8000);
 window.addEventListener("beforeunload",()=>clearInterval(refreshTimer));
 })().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});
-</script><script src="figaromn-cerise-data-v249.js?v=2414"></script><script src="figaromn-cerise-v249.js?v=2414"></script><script src="figaromn-enseignant-ui-v2415.js?v=2415"></script></body></html>
+</script><script src="figaromn-cerise-data-v249.js?v=2414"></script><script src="figaromn-cerise-v249.js?v=2414"></script><script src="figaromn-cerise-delete-v2420.js?v=2420"></script><script src="figaromn-enseignant-ui-v2415.js?v=2415"></script></body></html>

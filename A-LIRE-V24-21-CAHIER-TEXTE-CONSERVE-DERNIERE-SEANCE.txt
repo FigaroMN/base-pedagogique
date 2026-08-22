@@ -1,0 +1,17 @@
+FIGAROMN V24.21 — CORRECTIF CAHIER DE TEXTE
+
+Problème corrigé :
+L'actualisation automatique de l'espace enseignant (toutes les 8 secondes)
+reconstruisait les listes du cahier de texte et remettait Séquence 1 / Séance 1.
+
+Correction :
+- le niveau sélectionné est conservé ;
+- la classe sélectionnée est conservée ;
+- la séquence sélectionnée est conservée ;
+- la séance sélectionnée est conservée ;
+- le rafraîchissement des données élèves ne modifie plus le cahier de texte ;
+- le bouton « Détecter la séance en cours » reste volontaire et ne s'exécute
+  que lorsque l'enseignant clique dessus.
+
+Aucun SQL Supabase supplémentaire n'est nécessaire.
+Cette version est cumulative et remplace V24.20.

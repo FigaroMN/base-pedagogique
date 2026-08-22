@@ -70,7 +70,7 @@ async function table(name,query){
 async function load(){
  if(loading)return;
  loading=true;
- emptyShell("Chargement de ton calendrier et de l’historique…");
+ emptyShell("Chargement de ton cahier de texte…");
  try{
    if(!window.FigaroCloud)throw new Error("Connexion FigaroMN indisponible.");
    const profile=await FigaroCloud.profile();
@@ -109,12 +109,14 @@ async function load(){
    loaded=true;
    render();
  }catch(err){
+   const message=err&&err.message?err.message:String(err);
+   const expired=/jwt\s*expired|token\s*expired|session expir/i.test(message);
    viewEl.innerHTML=`<div class="fmn-logbook-wrap">
     <div class="fmn-logbook-hero">
      <div><h2>📅 Mon cahier de texte</h2><p>Retrouve les séances renseignées par ton enseignant.</p></div>
      <span class="fmn-logbook-chip">${esc(labels[level]||level)}</span>
     </div>
-    <div class="fmn-logbook-status error"><strong>Impossible de charger le cahier de texte.</strong><br>${esc(err&&err.message?err.message:String(err))}<br><br>Si l’enseignant vient d’activer cette fonction, la migration SQL V24.16 doit être exécutée dans Supabase.</div>
+    <div class="fmn-logbook-status error"><strong>Impossible de charger le cahier de texte.</strong><br>${esc(message)}${expired?`<br><br><strong>Ta session a expiré.</strong> Déconnecte-toi puis reconnecte-toi une fois. Les prochaines expirations seront renouvelées automatiquement.`:`<br><br>Si cette fonction vient d’être activée pour la première fois, vérifie que la migration SQL V24.16 a bien été exécutée dans Supabase.`}</div>
    </div>`;
  }finally{
    loading=false;
@@ -127,7 +129,7 @@ function renderNoClass(profile){
    <div><h2>📅 Mon cahier de texte</h2><p>Retrouve les séances renseignées par ton enseignant, même si tu étais absent.</p></div>
    <span class="fmn-logbook-chip">${esc(labels[level]||level)}</span>
   </div>
-  <div class="fmn-logbook-alert"><strong>ℹ️ Aucune classe n’est encore rattachée à ton compte.</strong><br>Ton calendrier apparaîtra ici dès que ton enseignant t’aura rattaché à une classe.</div>
+  <div class="fmn-logbook-alert"><strong>ℹ️ Aucune classe n’est encore rattachée à ton compte.</strong><br>Ton cahier de texte apparaîtra ici dès que ton enseignant t’aura rattaché à une classe.</div>
  </div>`;
 }
 

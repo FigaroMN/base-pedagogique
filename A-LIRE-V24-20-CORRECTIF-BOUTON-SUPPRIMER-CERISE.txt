@@ -1,0 +1,22 @@
+FIGAROMN V24.20 — CORRECTIF BOUTON SUPPRIMER CERISE PRO
+
+Correction :
+- Le bouton « 🗑 Supprimer » est maintenant injecté directement dans chaque ligne du tableau
+  « Tableau de suivi / sauvegarde CERISE Pro », sans dépendre de l'attribut interne du bouton Retélécharger.
+- Le correctif fonctionne même si le tableau est généré après le chargement de la page.
+- Confirmation avant suppression.
+- Suppression Supabase si la sauvegarde est présente côté serveur.
+- Suppression de la copie locale du navigateur.
+- Le fichier .SCPRO déjà téléchargé sur l'ordinateur n'est pas supprimé.
+
+AUCUN NOUVEAU SQL N'EST NECESSAIRE.
+Cette version est cumulative par rapport à V24.19 / V24.18.
+
+Installation :
+1. Décompresser ce ZIP.
+2. Remplacer les fichiers à la racine du dépôt GitHub.
+3. Attendre la coche verte GitHub Pages.
+4. Faire Ctrl + F5.
+5. Ouvrir Enseignant > CERISE Pro et vérifier la colonne Action.
+
+Le dossier cerise et les packs .SCPRO n'ont pas besoin d'être retransférés.

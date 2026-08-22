@@ -1,0 +1,23 @@
+FIGAROMN V24.19 — SUPPRESSION DES SAUVEGARDES CERISE PRO
+
+Cette mise à jour est cumulative par rapport à la V24.18.
+
+Nouveauté :
+- Dans Enseignant > CERISE Pro > Tableau de suivi / sauvegarde CERISE Pro,
+  chaque ligne possède maintenant deux actions :
+  1) Retélécharger
+  2) Supprimer
+- Une confirmation est demandée avant la suppression.
+- La sauvegarde est supprimée de Supabase ET de la sauvegarde locale du navigateur.
+- Le fichier .SCPRO déjà téléchargé sur l'ordinateur n'est pas supprimé.
+
+AUCUN NOUVEAU SQL N'EST NECESSAIRE.
+La migration V24.9 CERISE Pro autorise déjà la suppression des lignes de l'enseignant connecté.
+
+Installation :
+1. Décompresser ce ZIP.
+2. Envoyer/remplacer les fichiers à la racine du dépôt GitHub.
+3. Attendre la coche verte GitHub Pages.
+4. Faire Ctrl + F5.
+
+Le dossier cerise et les packs .SCPRO n'ont pas besoin d'être retransférés.

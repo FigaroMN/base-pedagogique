@@ -21,19 +21,58 @@ function clearSession(){
   try { localStorage.removeItem(SESSION_KEY); } catch(e){}
 }
 
+async function refreshSession(){
+  var current = loadSession();
+  if(!current || !current.refresh_token){
+    throw new Error("Session expirée. Reconnecte-toi à FigaroMN.");
+  }
+
+  var response = await fetch(CFG.url + "/auth/v1/token?grant_type=refresh_token",{
+    method:"POST",
+    headers:{
+      "apikey":CFG.key,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({refresh_token:current.refresh_token})
+  });
+  var raw = await response.text();
+  var data = null;
+  try { data = raw ? JSON.parse(raw) : null; } catch(e){ data = raw; }
+
+  if(!response.ok || !data || !data.access_token){
+    clearSession();
+    var msg = (data && (data.message || data.msg || data.error_description || data.error))
+      || "Session expirée. Reconnecte-toi à FigaroMN.";
+    var err = new Error(msg);
+    err.status = response.status;
+    err.data = data;
+    throw err;
+  }
+
+  // Supabase peut renvoyer un nouveau refresh_token. On conserve les champs
+  // précédents si certains ne sont pas renvoyés afin de ne pas perdre le profil local.
+  var merged = Object.assign({}, current, data);
+  saveSession(merged);
+  return merged;
+}
+
 async function api(path, options){
   options = options || {};
+  var retried = !!options.__figaromnRetried;
+  var fetchOptions = Object.assign({}, options);
+  delete fetchOptions.__figaromnRetried;
+
   var session = loadSession();
   var headers = Object.assign({
     "apikey": CFG.key,
     "Content-Type": "application/json"
-  }, options.headers || {});
+  }, fetchOptions.headers || {});
 
   if(session && session.access_token){
     headers.Authorization = "Bearer " + session.access_token;
   }
 
-  var response = await fetch(CFG.url + path, Object.assign({}, options, {headers: headers}));
+  var response = await fetch(CFG.url + path, Object.assign({}, fetchOptions, {headers: headers}));
   var raw = await response.text();
   var data = null;
   try { data = raw ? JSON.parse(raw) : null; } catch(e){ data = raw; }
@@ -41,6 +80,17 @@ async function api(path, options){
   if(!response.ok){
     var msg = (data && (data.message || data.msg || data.error_description || data.error))
       || ("Erreur HTTP " + response.status);
+
+    // Les sessions Supabase ont une durée de vie limitée. Au lieu de laisser
+    // l'élève avec "JWT expired", FigaroMN renouvelle le jeton une seule fois
+    // puis rejoue automatiquement la requête initiale.
+    var jwtExpired = response.status === 401 || /jwt\s*expired|token\s*expired/i.test(String(msg || ""));
+    if(!retried && jwtExpired && session && session.refresh_token){
+      await refreshSession();
+      var retryOptions = Object.assign({}, options, {__figaromnRetried:true});
+      return api(path, retryOptions);
+    }
+
     var err = new Error(msg);
     err.status = response.status;
     err.data = data;
@@ -176,6 +226,6 @@ window.FigaroCloud = {
   requestPasswordReset:requestPasswordReset,
   updatePasswordWithRecovery:updatePasswordWithRecovery,
   profile:profile, requireRole:requireRole,
-  session:loadSession, esc:esc
+  session:loadSession, refreshSession:refreshSession, esc:esc
 };
 })();

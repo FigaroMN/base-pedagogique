@@ -1,0 +1,7 @@
+FIGAROMN V24.18 — Cahier de texte élève / renouvellement de session
+
+- Le bouton « Calendrier » devient « Cahier de texte » sur CAP, Seconde, Première et Terminale.
+- Correction de l’erreur « JWT expired » : FigaroMN renouvelle automatiquement la session Supabase avec le refresh token puis rejoue la requête.
+- Le cahier de texte continue d’afficher le calendrier mensuel et l’historique des séances.
+- Aucun nouveau SQL n’est nécessaire si la migration V24.16 a déjà été exécutée.
+- Si un élève est déjà bloqué sur une ancienne session expirée au moment de l’installation, une déconnexion/reconnexion unique peut être nécessaire.
