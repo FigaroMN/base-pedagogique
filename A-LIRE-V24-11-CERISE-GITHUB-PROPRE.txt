@@ -1,0 +1,30 @@
+FIGAROMN V24.11 - CERISE PRO - STRUCTURE GITHUB PROPRE
+
+AUCUN NOUVEAU SQL N'EST NECESSAIRE.
+
+Structure attendue dans GitHub :
+
+cerise/
+  CAP1/
+    S01-01.scpro ... S07-06.scpro
+  CAP2/
+    S01-01.scpro ... S07-06.scpro
+  2B/
+    S01-01.scpro ... S07-06.scpro
+  1B/
+    S01-01.scpro ... S07-06.scpro
+  TB/
+    S01-01.scpro ... S07-06.scpro
+  packs/
+    01-CAP1.zip
+    02-CAP2.zip
+    03-SECONDE.zip
+    04-PREMIERE.zip
+    05-TERMINALE.zip
+    06-TOUS.zip
+
+IMPORTANT :
+- Les fichiers .gitkeep peuvent rester, ils ne gênent pas.
+- Pour chaque dossier GitHub, téléverser seulement les fichiers du pack correspondant.
+- Ne pas renommer les fichiers S01-01.scpro, etc.
+- Après mise à jour : Ctrl + F5.

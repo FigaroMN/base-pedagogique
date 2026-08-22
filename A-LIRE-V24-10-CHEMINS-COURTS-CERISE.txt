@@ -1,0 +1,19 @@
+FIGAROMN V24.10 - CORRECTIF WINDOWS CHEMIN D'ACCES TROP LONG
+
+Correction :
+- tous les fichiers .SCPRO utilisent désormais des noms courts ;
+- les dossiers CERISE ont été raccourcis ;
+- les packs ZIP utilisent des chemins internes courts ;
+- les téléchargements depuis l'espace enseignant utilisent des noms courts ;
+- le contenu des fichiers .SCPRO n'a pas été modifié.
+
+Exemples :
+CAP1-S01-01.scpro
+CAP2-S01-01.scpro
+2B-S03-04.scpro
+1B-S05-02.scpro
+TB-S07-06.scpro
+
+Le titre complet du scénario reste contenu dans le fichier .SCPRO et apparaît dans CERISE Pro.
+
+Aucune migration SQL supplémentaire n'est nécessaire par rapport à V24.9.

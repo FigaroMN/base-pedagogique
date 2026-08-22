@@ -1,0 +1,33 @@
+FIGAROMN V24.9 — CERISE PRO : LISTE COMPLETE + EXPORT .SCPRO + SAUVEGARDE
+
+NOUVEAU DANS L'ESPACE ENSEIGNANT
+- Section 7 « CERISE Pro · scénarios de toutes les classes ».
+- 4 niveaux : CAP, Seconde, Première, Terminale.
+- 7 séquences par niveau.
+- 6 séances par séquence.
+- 168 séances listées et rangées Niveau > Séquence > Séance.
+- Un bouton « Exporter .SCPRO » sur chaque séance.
+- Packs ZIP par niveau et pack complet.
+- Tableau de suivi / sauvegarde des exports.
+- Retéléchargement d'un scénario déjà exporté.
+- Export CSV du tableau de suivi.
+- Sauvegarde Supabase si la migration V24.9 est installée ; sinon sauvegarde locale.
+
+CAP
+- Pour le CAP, le professeur choisit « 1re année » ou « 2e année » avant l'export CERISE.
+- Le choix est mémorisé dans le navigateur.
+
+INSTALLATION
+1. Supabase > SQL Editor : exécuter MIGRATION-V24-9-SAUVEGARDE-CERISE.sql
+2. Remplacer les fichiers du site par ceux de cette version.
+3. Vérifier que le dossier /cerise est bien publié avec le site.
+4. Faire Ctrl+F5.
+5. Ouvrir Enseignant > section 7 CERISE Pro.
+
+REMARQUE DE FIABILITE
+Les scénarios sont construits à partir des données réellement présentes dans FigaroMN :
+niveau, séquence, séance, contexte, objectif, compétences Cx, savoirs, activité, sécurité,
+ressources et production attendue. Les identifiants internes propriétaires de compétences
+CERISE Pro qui ne peuvent pas être vérifiés à partir du modèle fourni ne sont pas inventés.
+Les compétences sont donc également écrites explicitement dans les champs textuels du scénario.
+CERISE Pro reste l'étape finale de validation avant enregistrement.
