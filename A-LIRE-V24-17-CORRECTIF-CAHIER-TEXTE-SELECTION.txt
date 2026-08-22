@@ -1,0 +1,18 @@
+FIGAROMN — V24.17
+Correctif cahier de texte : la sélection ne revient plus automatiquement sur une ancienne séance.
+
+MODIFICATIONS
+- Aucune détection automatique à l'ouverture du cahier de texte.
+- Le niveau, la classe, la séquence et la séance choisis manuellement restent prioritaires.
+- Changer de niveau ou de classe ne relance plus automatiquement la détection.
+- Le bouton « Détecter la séance en cours » est désormais la seule action qui lance la détection.
+- La détection ignore l'historique du cahier de texte : elle se base uniquement sur l'activité réelle des élèves (progression, exercices, évaluations).
+- Si aucune activité récente n'est trouvée, la sélection manuelle est conservée au lieu de revenir à Séquence 1 / Séance 1.
+- La date repart automatiquement sur la date du jour à l'ouverture.
+
+Cette version est cumulative et conserve les fonctions V24.16 : calendrier/historique du cahier de texte côté élève, CERISE Pro, menus déroulants, etc.
+
+SQL
+- Aucun nouveau SQL pour V24.17.
+- Si la migration V24.16 a déjà été exécutée, ne la rejouez pas.
+- Si vous n'avez jamais installé V24.16, exécutez une seule fois MIGRATION-V24-16-CALENDRIER-CAHIER-TEXTE-ELEVE.sql.

@@ -322,7 +322,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </div>
 </section>
 
-<section class="card teacher-tool" data-teacher-module="cahier" id="cahierTexteCard">
+<section class="card teacher-tool" data-teacher-module="cahier" id="cahierTexteCard" data-cdt-version="24.17">
 <div class="cdt-head">
  <div>
   <h2>Cahier de texte ÉcoleDirecte</h2>
@@ -1499,7 +1499,10 @@ function cdtDetectCurrent(showMessage,autoChooseGroup){
   return;
  }
 
- const hit=cdtLatestForGroup(group,true);
+ // La détection automatique doit se baser sur l'activité réelle des élèves
+ // (progression, exercices, évaluations), jamais sur une ancienne entrée
+ // du cahier de texte qui pourrait forcer le retour sur une vieille séance.
+ const hit=cdtLatestForGroup(group,false);
 
  if(hit){
   cdtSelectGroup(group,hit.sequence,hit.session);
@@ -1514,13 +1517,15 @@ function cdtDetectCurrent(showMessage,autoChooseGroup){
    $("cdtMsg").className="msg ok";
   }
  }else{
-  cdtSelectGroup(group,1,1);
+  // Aucun repère : on conserve strictement la sélection manuelle actuelle.
+  // On ne revient plus automatiquement sur Séquence 1 / Séance 1.
+  cdtGenerate();
   $("cdtDetectInfo").textContent=
-   "Aucune activité enregistrée pour "+(labels[group.level]||group.level)+" · "+group.className+
-   ". Séquence 1, séance 1 proposées par défaut.";
+   "Aucune activité récente détectée pour "+(labels[group.level]||group.level)+" · "+group.className+
+   ". La sélection manuelle est conservée.";
 
   if(showMessage){
-   $("cdtMsg").textContent="ℹ️ Aucun repère récent trouvé : sélection manuelle possible.";
+   $("cdtMsg").textContent="ℹ️ Aucun repère récent trouvé : votre sélection manuelle est conservée.";
    $("cdtMsg").className="msg";
   }
  }
@@ -1830,27 +1835,38 @@ function cdtInit(){
   cdtFillClasses(saved.groupKey||"",saved.sequence,saved.session);
 
   if(cdtSelectedGroup()){
-   $("cdtDate").value=saved.date||cdtToday();
+   // La date du cahier de texte doit toujours repartir sur aujourd'hui.
+   // On conserve seulement le niveau, la classe, la séquence et la séance
+   // choisis manuellement lors de la dernière utilisation.
+   $("cdtDate").value=cdtToday();
    $("cdtDuration").value=saved.duration||"";
+   cdtGenerate();
    restored=true;
   }
  }
 
- // Au démarrage, si la sélection restaurée n'est plus valide,
- // choisir le niveau/groupe dont l'élève a l'activité la plus récente.
+ // IMPORTANT V24.17 : aucune détection automatique à l'ouverture.
+ // Une ancienne entrée de l'historique ne peut donc plus ramener le cahier
+ // de texte sur Terminale / Séquence 1 / Séance 1.
+ // Si l'ancienne sélection n'est plus valide, on garde simplement la
+ // première sélection disponible sans analyser l'historique.
  if(!restored){
-  cdtDetectCurrent(false,true);
- }else{
-  cdtDetectCurrent(false,false);
+  $("cdtDate").value=cdtToday();
+  cdtGenerate();
  }
 
  $("cdtLevel").onchange=()=>{
+  // Changement manuel : ne jamais lancer la détection automatiquement.
   cdtFillClasses();
-  cdtDetectCurrent(false,false);
+  $("cdtDate").value=cdtToday();
+  cdtGenerate();
+  $("cdtDetectInfo").textContent="Sélection manuelle conservée. Utilisez « Détecter la séance en cours » uniquement si vous souhaitez une détection automatique.";
  };
 
  $("cdtClass").onchange=()=>{
-  cdtDetectCurrent(false,false);
+  // Changement manuel de classe : conserver la séquence et la séance affichées.
+  cdtGenerate();
+  $("cdtDetectInfo").textContent="Classe sélectionnée manuellement. Utilisez « Détecter la séance en cours » uniquement si nécessaire.";
  };
 
  $("cdtSequence").onchange=()=>cdtFillSessions(1);
