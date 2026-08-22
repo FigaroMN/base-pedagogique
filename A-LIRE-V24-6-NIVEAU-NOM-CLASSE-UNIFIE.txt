@@ -1,0 +1,20 @@
+FIGAROMN V24.6 — NIVEAU = NOM DE CLASSE
+
+Modification de la partie Enseignant > Gestion des classes.
+
+Les appellations sont maintenant uniformisées :
+- Seconde  -> 2nde BAC PRO MN
+- Première -> 1re BAC PRO MN
+- Terminale -> Tle BAC PRO MN
+- CAP -> CAP MN
+
+Le champ « Nom de la classe » est rempli automatiquement à partir du niveau
+et n'est plus modifiable manuellement.
+
+Le niveau technique enregistré dans Supabase reste inchangé
+(seconde / premiere / terminale / cap), afin de conserver la compatibilité
+avec les élèves, les séances, le suivi, l'appel et l'historique.
+
+AUCUNE migration SQL supplémentaire n'est nécessaire pour cette V24.6.
+
+Après mise en ligne sur GitHub : Ctrl + F5.

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- FIGAROMN ESPACE ENSEIGNANT V24.4 - appel manuel absences et retards --><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- FIGAROMN ESPACE ENSEIGNANT V24.7 - classes unifiées + suppression absence/retard visible --><html lang="fr"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Espace Enseignant FigaroMN</title>
 <style>
 :root{--navy:#06283d;--blue:#0b5d7a;--cyan:#19b8d3;--orange:#ff7a18;--green:#16895a;--red:#c93f49;--gold:#f5b82e;--bg:#eef6f8;--light:#f8fbfc;--text:#18323f;--muted:#607680;--border:#d9e6ea}
@@ -116,7 +116,12 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 .attendance-chip.late{background:#fff4e7;color:#9a5708}
 .attendance-chip.present{background:#e8f6ee;color:#116a3d}
 .attendance-history-detail{margin-top:16px}
+.attendance-history-detail table{min-width:1120px}
+.attendance-action-col{min-width:220px;position:sticky;right:0;background:#e7f0f3;z-index:3;box-shadow:-4px 0 8px rgba(20,45,60,.06)}
+.attendance-action-cell{min-width:220px;position:sticky;right:0;background:#fff;z-index:2;box-shadow:-4px 0 8px rgba(20,45,60,.06)}
+.attendanceDeleteRecord{white-space:nowrap;font-size:.86rem;padding:8px 11px;display:inline-flex!important;align-items:center;justify-content:center;gap:6px;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 .attendance-empty{padding:18px;border:1px dashed var(--border);border-radius:12px;background:#fbfdfe;color:var(--muted)}
+.attendance-delete-help{margin:12px 0;padding:10px 12px;border:1px solid #f0c2c6;border-radius:10px;background:#fff7f8;color:#7f1d2d;font-size:.9rem}
 @media(max-width:760px){
  .attendance-summary{grid-template-columns:1fr}
  .attendance-calendar{gap:4px}
@@ -130,7 +135,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </style></head><body>
 <header class="top"><div class="shell nav"><a class="brand" href="enseignant.html">🔐 FIGARO MN · Espace Professeur</a><div class="actions"><a class="btn light" href="cap.html?mode=enseignant">⚓ CAP pédagogique</a><a class="btn light" href="cycle-bac-pro.html">🚤 Cycle BAC PRO</a><button class="btn bad" id="logout" type="button">Déconnexion</button></div></div></header>
 <main class="shell">
-<section class="hero"><span class="pill">Connexion professeur unique</span><h1>CAP + BAC PRO · Suivi des élèves</h1>
+<section class="hero"><span class="pill">Connexion professeur unique</span> <span class="pill">Version V24.8</span><h1>CAP + BAC PRO · Suivi des élèves</h1>
 <p class="muted">Une seule connexion donne accès à tous les niveaux. Filtrer par CAP, Seconde, Première ou Terminale, puis suivre les classes, exercices, évaluations, indicateurs et compétences. <span id="liveBadge" class="pill live">● Actualisation automatique toutes les 8 s</span></p></section>
 
 <section class="card"><h2>1 · Tous mes niveaux et mes classes</h2>
@@ -159,8 +164,8 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
 <section class="card"><h2>3 · Gestion des classes</h2>
 <div class="grid3">
-<label>Nom de la classe<input id="newClassName" placeholder="Ex. 2MN"></label>
-<label>Niveau<select id="newClassLevel"><option value="seconde">Seconde</option><option value="premiere">Première</option><option value="terminale">Terminale</option><option value="cap">CAP</option></select></label>
+<label>Nom de la classe<input id="newClassName" value="2nde BAC PRO MN" readonly aria-readonly="true"></label>
+<label>Niveau / classe<select id="newClassLevel"><option value="seconde">2nde BAC PRO MN</option><option value="premiere">1re BAC PRO MN</option><option value="terminale">Tle BAC PRO MN</option><option value="cap">CAP MN</option></select></label>
 <label>Année scolaire<input id="newClassYear" placeholder="2026-2027"></label>
 </div><br><button class="btn good" id="createClass" type="button">Créer la classe</button><div id="classMsg" class="msg"></div>
 <hr style="border:0;border-top:1px solid var(--border);margin:22px 0">
@@ -177,7 +182,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
   <h2>4 · Appel manuel · absences et retards</h2>
   <p class="muted">Fais l’appel manuellement par classe et par créneau. Tu peux enregistrer un élève présent, absent ou en retard, préciser la durée du retard et ajouter une note.</p>
  </div>
- <span class="attendance-badge">📋 Appel enseignant</span>
+ <span class="attendance-badge">📋 Appel enseignant · V24.7</span>
 </div>
 
 <div class="grid3">
@@ -249,11 +254,12 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
  <div class="attendance-calendar" id="attendanceCalendar" aria-label="Calendrier des absences et retards"></div>
  <div class="attendance-history-detail">
+  <div class="attendance-delete-help"><strong>Correction d’appel :</strong> pour une ligne <strong>Absent</strong> ou <strong>Retard</strong>, utilise le bouton rouge <strong>🗑 Supprimer</strong> dans la colonne <strong>Action</strong>. Seul cet enregistrement d’absence ou de retard est supprimé ; le compte élève et les autres appels restent inchangés.</div>
   <h3 id="attendanceHistoryTitle">Détail du jour</h3>
   <div class="tablewrap">
    <table>
-    <thead><tr><th>Élève</th><th>Classe</th><th>Créneau</th><th>État</th><th>Retard</th><th>Note</th></tr></thead>
-    <tbody id="attendanceHistoryRows"><tr><td colspan="6">Clique sur une date du calendrier.</td></tr></tbody>
+    <thead><tr><th>Élève</th><th>Classe</th><th>Créneau</th><th>État</th><th>Retard</th><th>Note</th><th class="attendance-action-col">Action</th></tr></thead>
+    <tbody id="attendanceHistoryRows"><tr><td colspan="7">Clique sur une date du calendrier.</td></tr></tbody>
    </table>
   </div>
  </div>
@@ -400,6 +406,25 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 const me=await FigaroCloud.requireRole("teacher"); if(!me)return;
 const $=id=>document.getElementById(id);
 const labels={cap:"CAP",seconde:"Seconde",premiere:"Première",terminale:"Terminale"};
+const classNamesByLevel={
+ cap:"CAP MN",
+ seconde:"2nde BAC PRO MN",
+ premiere:"1re BAC PRO MN",
+ terminale:"Tle BAC PRO MN"
+};
+function canonicalClassName(level){
+ return classNamesByLevel[level]||"";
+}
+function syncNewClassIdentity(level){
+ const levelEl=$("newClassLevel");
+ const nameEl=$("newClassName");
+ if(!levelEl||!nameEl)return;
+ const chosen=level||levelEl.value||"seconde";
+ if(levelEl.value!==chosen&&Array.from(levelEl.options).some(o=>o.value===chosen)){
+  levelEl.value=chosen;
+ }
+ nameEl.value=canonicalClassName(chosen);
+};
 let selectedLevel="",classes=[],classMap={},profiles=[],memberships=[],sessions=[],progress=[],evaluations=[],attempts=[],autoStatus=[],observations=[],interactive=[],indicatorResults=[],indicatorCatalog=[],capAttempts=[],logbookEntries=[];
 let attendanceInitialized=false,attendanceDraft={},attendanceLoadedRows=[],attendanceHistoryData=[],attendanceSelectedHistoryDate="";
 let refreshTimer=null, busy=false, cdtInitialized=false;
@@ -853,18 +878,129 @@ function attendanceRenderHistoryDay(date){
   .sort((a,b)=>String(a.class_name||"").localeCompare(String(b.class_name||""),"fr")||String(a.student_name||"").localeCompare(String(b.student_name||""),"fr"));
  title.textContent="Détail du "+new Date(date+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
  if(!rows.length){
-  tbody.innerHTML='<tr><td colspan="6">Aucun appel enregistré à cette date pour le filtre choisi.</td></tr>';
+  tbody.innerHTML='<tr><td colspan="7">Aucun appel enregistré à cette date pour le filtre choisi.</td></tr>';
   return;
  }
- tbody.innerHTML=rows.map(r=>`<tr>
+ tbody.innerHTML=rows.map(r=>{
+  const canDelete=r.status==="absent"||r.status==="late";
+  const actionLabel=r.status==="absent"?"Supprimer l’absence":"Supprimer le retard";
+  return `<tr>
   <td><strong>${esc(r.student_name||"Élève")}</strong><div class="small">${esc(labels[r.student_level]||r.student_level||"")}</div></td>
   <td>${esc(r.class_name||(classMap[r.class_id]&&classMap[r.class_id].name)||"—")}</td>
   <td>${esc(r.period_label||"Journée")}</td>
   <td><span class="pill">${esc(attendanceStatusLabel(r.status))}</span></td>
   <td>${r.status==="late"?(Number(r.late_minutes)||0)+" min":"—"}</td>
   <td>${esc(r.note||"")}</td>
- </tr>`).join("");
+  <td class="attendance-action-cell">${canDelete
+    ?`<button type="button" class="btn bad attendanceDeleteRecord" data-record-id="${esc(r.id)}" aria-label="${esc(actionLabel)} de ${esc(r.student_name||"cet élève")}">🗑 ${esc(actionLabel)}</button>`
+    :"—"}</td>
+ </tr>`;
+ }).join("");
+ tbody.querySelectorAll(".attendanceDeleteRecord").forEach(btn=>{
+  btn.addEventListener("click",()=>attendanceDeleteRecord(btn.dataset.recordId,btn));
+ });
 }
+
+async function attendanceDeleteRecord(recordId,button){
+ const row=(attendanceHistoryData||[]).find(r=>String(r.id)===String(recordId));
+ if(!row){
+  $("attendanceHistoryMsg").textContent="Suppression impossible : enregistrement introuvable. Actualise le calendrier puis réessaie.";
+  $("attendanceHistoryMsg").className="msg";
+  return;
+ }
+ if(!["absent","late"].includes(row.status)){
+  $("attendanceHistoryMsg").textContent="Seules les absences et les retards peuvent être supprimés.";
+  $("attendanceHistoryMsg").className="msg";
+  return;
+ }
+
+ const previousStatus=row.status;
+ const type=previousStatus==="absent"?"l’absence":"le retard";
+ const typeCap=previousStatus==="absent"?"Absence":"Retard";
+ const who=row.student_name||"cet élève";
+ const when=new Date(row.attendance_date+"T12:00:00").toLocaleDateString("fr-FR");
+ const minutes=previousStatus==="late"&&Number(row.late_minutes)>0?" ("+Number(row.late_minutes)+" min)":"";
+
+ if(!confirm(
+  "SUPPRIMER "+typeCap.toUpperCase()+"\n\n"+
+  "Élève : "+who+minutes+"\n"+
+  "Date : "+when+"\n"+
+  "Créneau : "+(row.period_label||"Journée")+"\n\n"+
+  "Seul cet enregistrement sera supprimé.\n"+
+  "Le compte élève et les autres appels ne seront pas modifiés."
+ ))return;
+
+ const old=button?button.textContent:"";
+ if(button){
+  button.disabled=true;
+  button.textContent="Suppression…";
+ }
+
+ try{
+  let deletedByRpc=false;
+
+  // V24.8 : suppression serveur sécurisée. Si la migration V24.8 n'a pas
+  // encore été exécutée, on utilise en secours le droit DELETE déjà créé
+  // par la migration V24.4.
+  try{
+   await FigaroCloud.api("/rest/v1/rpc/delete_attendance_record_v248",{
+    method:"POST",
+    headers:{"Prefer":"return=representation"},
+    body:JSON.stringify({target_record:row.id})
+   });
+   deletedByRpc=true;
+  }catch(rpcError){
+   const detail=rpcError&&rpcError.message?rpcError.message:String(rpcError||"");
+   const migrationMissing=/delete_attendance_record_v248|PGRST202|404|Could not find the function|schema cache/i.test(detail);
+   if(!migrationMissing)throw rpcError;
+  }
+
+  if(!deletedByRpc){
+   await FigaroCloud.table(
+    "attendance_records",
+    "id=eq."+encodeURIComponent(row.id)+
+      "&teacher_id=eq."+encodeURIComponent(me.id)+
+      "&status=eq."+encodeURIComponent(previousStatus),
+    {
+     method:"DELETE",
+     headers:{"Prefer":"return=minimal"}
+    }
+   );
+  }
+
+  // Retirer immédiatement la ligne de l'historique affiché.
+  attendanceHistoryData=(attendanceHistoryData||[]).filter(r=>String(r.id)!==String(row.id));
+
+  attendanceRenderCalendar();
+  attendanceRenderHistoryDay(row.attendance_date);
+
+  $("attendanceHistoryMsg").textContent="✅ "+typeCap+" supprimé pour "+who+".";
+  $("attendanceHistoryMsg").className="msg ok";
+
+  // Si l'appel actuellement affiché correspond au même créneau, le recharger.
+  // En l'absence d'enregistrement, l'élève redevient proposé « Présent » dans
+  // l'écran d'appel, sans recréer automatiquement de ligne historique.
+  const currentClass=$("attendanceClass")?$("attendanceClass").value:"";
+  const currentDate=$("attendanceDate")?$("attendanceDate").value:"";
+  const currentPeriod=($("attendancePeriod")?$("attendancePeriod").value:"").trim()||"Journée";
+  if(currentClass===row.class_id&&currentDate===row.attendance_date&&currentPeriod===(row.period_label||"Journée")){
+   await attendanceLoadCall(false);
+  }
+ }catch(e){
+  let detail=e&&e.message?e.message:String(e||"Erreur inconnue");
+  if(/permission denied|row-level security|42501/i.test(detail)){
+   detail+=" — Exécute MIGRATION-V24-8-SUPPRESSION-ABSENCE-RETARD.sql dans Supabase > SQL Editor.";
+  }
+  $("attendanceHistoryMsg").textContent="Suppression impossible : "+detail;
+  $("attendanceHistoryMsg").className="msg";
+ }finally{
+  if(button&&document.body.contains(button)){
+   button.disabled=false;
+   button.textContent=old;
+  }
+ }
+}
+
 function attendanceInit(){
  if(attendanceInitialized)return;
  attendanceInitialized=true;
@@ -1652,8 +1788,7 @@ function renderAssignmentClasses(preferredId){
  const levelLabel=labels[level]||level||"non renseigné";
 
  if($("newClassLevel")&&level){
-  $("newClassLevel").value=level;
-  $("newClassName").placeholder=level==="cap"?"Ex. CAP MN":"Ex. 2MN";
+  syncNewClassIdentity(level);
  }
 
  if(!level){
@@ -2152,14 +2287,22 @@ $("levelTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedLeve
 $("searchStudent").oninput=renderStudents;
 $("refreshNow").onclick=loadLive;
 $("studentSelect").onchange=()=>{$("assignMsg").textContent="";renderAssignmentClasses();};
+$("newClassLevel").onchange=()=>syncNewClassIdentity($("newClassLevel").value);
+syncNewClassIdentity($("newClassLevel").value);
 
 $("createClass").onclick=async()=>{
  $("classMsg").textContent="Création…";
  try{
-  const name=$("newClassName").value.trim(),level=$("newClassLevel").value,school=$("newClassYear").value.trim();
-  if(!name)throw new Error("Nom de classe requis.");
+  const level=$("newClassLevel").value,school=$("newClassYear").value.trim();
+  const name=canonicalClassName(level);
+  syncNewClassIdentity(level);
+  if(!name)throw new Error("Niveau de classe invalide.");
+  const same=classes.find(c=>c.level===level&&String(c.school_year||"")===String(school||""));
+  if(same){
+   throw new Error("Une classe "+canonicalClassName(level)+" existe déjà pour "+(school||"cette année scolaire")+".");
+  }
   await FigaroCloud.table("classes","",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({name:name,level:level,school_year:school||null,teacher_id:me.id})});
-  $("classMsg").textContent="Classe créée.";await loadStatic();await loadLive();
+  $("classMsg").textContent="✅ "+name+" créée.";await loadStatic();await loadLive();
  }catch(e){$("classMsg").textContent="Erreur : "+e.message+" · Vérifie la migration de suivi si la création de classe est refusée.";}
 };
 $("assignBtn").onclick=async()=>{

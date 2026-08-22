@@ -1,0 +1,19 @@
+FIGAROMN V24.8 — BOUTON SUPPRIMER ABSENCE / RETARD ACTIF
+
+Base : dernière version V24.7 fournie par l'utilisateur.
+
+MODIFICATION
+- Dans Enseignant > Appel > Historique, la colonne Action est toujours visible.
+- Pour une ligne Absent : bouton rouge "🗑 Supprimer l’absence".
+- Pour une ligne Retard : bouton rouge "🗑 Supprimer le retard".
+- Aucune suppression proposée sur une ligne Présent.
+- La suppression retire réellement UNE seule ligne d'historique.
+- Le compte élève, la classe et les autres appels ne sont pas supprimés.
+- Sécurité Supabase par UUID + teacher_id + statut.
+- La colonne Action est fixe à droite lors du défilement horizontal.
+
+INSTALLATION
+1. Supabase > SQL Editor :
+   exécuter MIGRATION-V24-8-SUPPRESSION-ABSENCE-RETARD.sql
+2. Remplacer les fichiers du site par ceux de cette V24.8.
+3. Faire Ctrl + F5 dans le navigateur.
