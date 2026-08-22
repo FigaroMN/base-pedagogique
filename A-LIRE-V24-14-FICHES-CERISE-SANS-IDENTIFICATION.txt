@@ -1,0 +1,28 @@
+FIGAROMN V24.14 — FICHES CERISE PRO SANS ÉCRAN D’IDENTIFICATION
+
+Cette mise à jour inclut la V24.13 (espace Enseignant plus intuitif) + le correctif demandé avant installation.
+
+MODIFICATIONS
+1. Enseignant > CERISE Pro > Ouvrir :
+   - CAP : ouvre maintenant une vraie fiche pédagogique de la séance, sans passer par l’identification élève.
+   - Seconde / Première / Terminale : ouvre directement la fiche de séance.
+2. Les liens Ouvrir restent dans le même onglet pour rendre la navigation plus naturelle.
+3. Depuis une fiche ouverte depuis CERISE Pro, le bouton Retour renvoie directement à :
+   Enseignant > CERISE Pro.
+4. 42 fiches CAP dédiées ont été ajoutées (7 séquences x 6 séances).
+5. Les 126 fiches BAC PRO reconnaissent ?from=cerise et garantissent le retour vers CERISE Pro.
+6. Les blocs et compétences restent visibles dans la bibliothèque CERISE Pro.
+7. Aucun SQL Supabase n’est nécessaire.
+8. Le dossier cerise/ et les packs .SCPRO déjà présents sur GitHub ne sont pas à retransférer.
+
+INSTALLATION
+- Ne pas installer V24.13 séparément si elle n’est pas encore installée.
+- Envoyer le contenu de ce ZIP à la racine du dépôt GitHub en remplaçant les fichiers existants.
+- Ne pas supprimer le dossier cerise/ déjà présent.
+- Attendre la coche verte GitHub Pages.
+- Faire Ctrl+F5 dans le navigateur.
+
+TEST CONSEILLÉ
+Enseignant > CERISE Pro > CAP > Séquence 2 > Séance 1 > Ouvrir.
+La fiche « Identifier la demande » doit s’afficher directement.
+Puis cliquer « Retour à CERISE Pro » : retour direct à la bibliothèque CERISE Pro.

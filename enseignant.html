@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- FIGAROMN ESPACE ENSEIGNANT V24.7 - classes unifiées + suppression absence/retard visible --><html lang="fr"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- FIGAROMN ESPACE ENSEIGNANT V24.13 - tableau de bord intuitif par modules --><html lang="fr"><head><meta charset="utf-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Espace Enseignant FigaroMN</title>
 <style>
 :root{--navy:#06283d;--blue:#0b5d7a;--cyan:#19b8d3;--orange:#ff7a18;--green:#16895a;--red:#c93f49;--gold:#f5b82e;--bg:#eef6f8;--light:#f8fbfc;--text:#18323f;--muted:#607680;--border:#d9e6ea}
@@ -132,14 +132,68 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
 @media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid3,.grid4,.seq-grid,.skill-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.grid2,.grid3,.grid4,.kpis,.level-tabs,.seq-grid,.skill-grid{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column;padding:10px 0}.shell{width:min(100% - 18px,1220px)}}
-</style><link rel="stylesheet" href="figaromn-cerise-v249.css?v=2411">
-</head><body>
-<header class="top"><div class="shell nav"><a class="brand" href="enseignant.html">🔐 FIGARO MN · Espace Professeur</a><div class="actions"><a class="btn light" href="cap.html?mode=enseignant">⚓ CAP pédagogique</a><a class="btn light" href="cycle-bac-pro.html">🚤 Cycle BAC PRO</a><button class="btn bad" id="logout" type="button">Déconnexion</button></div></div></header>
+</style><link rel="stylesheet" href="figaromn-cerise-v249.css?v=2413"><link rel="stylesheet" href="figaromn-enseignant-ui-v2413.css?v=2414"></head><body>
+<header class="top"><div class="shell nav">
+<a class="brand" href="enseignant.html">🔐 FIGARO MN · Espace Enseignant</a>
+<div class="actions">
+<a class="btn light" href="enseignant.html">⌂ Tableau de bord</a>
+<a class="btn light" href="cap.html?mode=enseignant">⚓ Parcours CAP</a>
+<a class="btn light" href="cycle-bac-pro.html">🚤 Parcours BAC PRO</a>
+<button class="btn bad" id="logout" type="button">Déconnexion</button>
+</div></div></header>
 <main class="shell">
-<section class="hero"><span class="pill">Connexion professeur unique</span> <span class="pill">Version V24.8</span><h1>CAP + BAC PRO · Suivi des élèves</h1>
-<p class="muted">Une seule connexion donne accès à tous les niveaux. Filtrer par CAP, Seconde, Première ou Terminale, puis suivre les classes, exercices, évaluations, indicateurs et compétences. <span id="liveBadge" class="pill live">● Actualisation automatique toutes les 8 s</span></p></section>
+<section class="hero teacher-home" id="teacherHome">
+<span class="pill">Espace enseignant</span> <span class="pill">Version V24.13</span>
+<h1>Tableau de bord enseignant</h1>
+<p class="teacher-home-lead">Choisissez ce que vous voulez faire. Les outils sont maintenant séparés par grandes fonctions pour éviter de tout mélanger.</p>
+<p><span id="liveBadge" class="pill live">● Actualisation automatique toutes les 8 s</span></p>
 
-<section class="card"><h2>1 · Tous mes niveaux et mes classes</h2>
+<div class="teacher-module-grid" aria-label="Outils de l'espace enseignant">
+ <button type="button" class="teacher-module-card students" data-open-module="students">
+  <span class="teacher-module-icon">👥</span>
+  <span class="teacher-module-text"><strong>Suivi des élèves</strong><small>Élèves, progression, exercices, évaluations, compétences et observations.</small></span>
+  <span class="teacher-module-arrow">→</span>
+ </button>
+ <button type="button" class="teacher-module-card classes" data-open-module="classes">
+  <span class="teacher-module-icon">🏫</span>
+  <span class="teacher-module-text"><strong>Classes & appel</strong><small>Créer les classes, rattacher les élèves, faire l'appel, gérer absences et retards.</small></span>
+  <span class="teacher-module-arrow">→</span>
+ </button>
+ <button type="button" class="teacher-module-card cahier" data-open-module="cahier">
+  <span class="teacher-module-icon">📘</span>
+  <span class="teacher-module-text"><strong>Cahier de texte</strong><small>Détecter la séance, préparer le contenu ÉcoleDirecte et retrouver l'historique.</small></span>
+  <span class="teacher-module-arrow">→</span>
+ </button>
+ <button type="button" class="teacher-module-card cerise" data-open-module="cerise">
+  <span class="teacher-module-icon">🍒</span>
+  <span class="teacher-module-text"><strong>CERISE Pro</strong><small>Scénarios par niveau, séquence et séance, blocs de compétences et export .SCPRO.</small></span>
+  <span class="teacher-module-arrow">→</span>
+ </button>
+ <button type="button" class="teacher-module-card parcours" data-open-module="parcours">
+  <span class="teacher-module-icon">⚓</span>
+  <span class="teacher-module-text"><strong>Parcours pédagogiques</strong><small>Accéder rapidement aux cours, séquences et séances CAP ou BAC PRO.</small></span>
+  <span class="teacher-module-arrow">→</span>
+ </button>
+</div>
+</section>
+
+<section class="teacher-module-header" id="teacherModuleHeader" hidden>
+ <div class="teacher-module-header-top">
+  <button class="btn light" type="button" id="teacherBackDashboard">← Tableau de bord enseignant</button>
+  <div class="teacher-current-module">
+   <span id="teacherCurrentIcon">👥</span>
+   <div><span class="small">Espace Enseignant</span><h1 id="teacherCurrentTitle">Suivi des élèves</h1><p id="teacherCurrentDescription" class="muted"></p></div>
+  </div>
+ </div>
+ <nav class="teacher-quick-nav" aria-label="Navigation des outils enseignant">
+  <button type="button" data-open-module="students">👥 Élèves</button>
+  <button type="button" data-open-module="classes">🏫 Classes & appel</button>
+  <button type="button" data-open-module="cahier">📘 Cahier de texte</button>
+  <button type="button" data-open-module="cerise">🍒 CERISE Pro</button>
+  <button type="button" data-open-module="parcours">⚓ Parcours</button>
+ </nav>
+</section>
+<section class="card teacher-tool" data-teacher-module="students" id="teacherStudentFilters"><h2>Filtres et synthèse</h2><p class="muted">Choisissez un niveau, une classe ou recherchez directement un élève.</p>
 <div class="level-tabs" id="levelTabs">
 <button type="button" data-level="" class="active">🎓 Tous niveaux</button>
 <button type="button" data-level="seconde">2️⃣ Seconde</button>
@@ -156,14 +210,14 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 <div class="actions"><button class="btn light" id="refreshNow" type="button">↻ Actualiser maintenant</button><span class="small" id="lastRefresh"></span></div>
 </section>
 
-<section class="card"><h2>2 · Élèves par niveau / classe</h2>
+<section class="card teacher-tool" data-teacher-module="students" id="teacherStudentsList"><h2>Liste des élèves et suivi</h2>
 <div class="tablewrap"><table><thead><tr>
 <th>Élève</th><th>Niveau</th><th>Classe</th><th>Séquence active</th><th>Exercices</th><th>Évaluations</th><th>Compétences auto</th><th>Dernière activité</th><th></th>
 </tr></thead><tbody id="studentRows"></tbody></table></div>
 <div id="pageMsg" class="msg"></div>
 </section>
 
-<section class="card"><h2>3 · Gestion des classes</h2>
+<section class="card teacher-tool" data-teacher-module="classes" id="teacherClassesManagement"><h2>Gestion des classes</h2><p class="muted">Créez une classe puis rattachez les élèves au bon niveau.</p>
 <div class="grid3">
 <label>Nom de la classe<input id="newClassName" value="2nde BAC PRO MN" readonly aria-readonly="true"></label>
 <label>Niveau / classe<select id="newClassLevel"><option value="seconde">2nde BAC PRO MN</option><option value="premiere">1re BAC PRO MN</option><option value="terminale">Tle BAC PRO MN</option><option value="cap">CAP MN</option></select></label>
@@ -177,10 +231,10 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
 
 
-<section class="card" id="attendanceCard">
+<section class="card teacher-tool" data-teacher-module="classes" id="attendanceCard">
 <div class="attendance-head">
  <div>
-  <h2>4 · Appel manuel · absences et retards</h2>
+  <h2>Appel · absences et retards</h2>
   <p class="muted">Fais l’appel manuellement par classe et par créneau. Tu peux enregistrer un élève présent, absent ou en retard, préciser la durée du retard et ajouter une note.</p>
  </div>
  <span class="attendance-badge">📋 Appel enseignant · V24.7</span>
@@ -268,10 +322,10 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </div>
 </section>
 
-<section class="card" id="cahierTexteCard">
+<section class="card teacher-tool" data-teacher-module="cahier" id="cahierTexteCard">
 <div class="cdt-head">
  <div>
-  <h2>5 · Cahier de texte ÉcoleDirecte</h2>
+  <h2>Cahier de texte ÉcoleDirecte</h2>
   <p class="muted">FigaroMN prépare automatiquement le contenu à partir de la classe et de la séance en cours. Tu peux corriger la sélection avant de copier le texte dans ÉcoleDirecte.</p>
  </div>
  <span class="cdt-badge">⚡ Génération automatique</span>
@@ -384,23 +438,27 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </section>
 
 
-<section class="card" id="ceriseProSection">
-<h2>7 · CERISE Pro · scénarios de toutes les classes</h2>
-<p class="muted">Liste complète organisée par niveau, puis séquence, puis séance. Chaque séance peut être exportée au format <strong>.SCPRO</strong>. L’export est enregistré dans le tableau de sauvegarde ci-dessous.</p>
-
+<section class="card teacher-tool" data-teacher-module="cerise" id="ceriseProSection">
+<h2>CERISE Pro · scénarios de toutes les classes</h2>
+<p class="muted">Liste complète organisée par <strong>niveau → séquence → séance</strong>. Les <strong>blocs de compétences</strong> apparaissent avant les compétences C1 à C12. Chaque séance peut être ouverte ou exportée au format <strong>.SCPRO</strong>.</p>
+<div class="teacher-cerise-legend">
+ <span class="teacher-legend-label">Repères :</span>
+ <span class="teacher-block-legend b1">Bloc 1 · Prise en charge</span>
+ <span class="teacher-block-legend b2">Bloc 2 · Diagnostic</span>
+ <span class="teacher-block-legend b3">Bloc 3 · Intervention</span>
+</div>
 <div id="fmncer-root">
  <div class="fmncer-toolbar">
   <label>Niveau
    <select id="fmncer-level-filter"><option value="">Tous les niveaux</option></select>
   </label>
   <label>Recherche
-   <input id="fmncer-search" type="search" placeholder="Séquence, séance, compétence…" autocomplete="off">
+   <input id="fmncer-search" type="search" placeholder="Séquence, séance, bloc, compétence…" autocomplete="off">
   </label>
   <label>Pack complet
    <a class="fmncer-btn good" href="cerise/packs/06-TOUS.zip" download>⬇ Tous les scénarios</a>
   </label>
  </div>
-
  <div class="fmncer-summary" aria-label="Résumé des scénarios">
   <div class="fmncer-stat"><b>4</b><span>niveaux</span></div>
   <div class="fmncer-stat"><b>28</b><span>séquences</span></div>
@@ -408,18 +466,15 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
   <div class="fmncer-stat"><b>168</b><span>boutons d’export</span></div>
   <div class="fmncer-stat"><b>.SCPRO</b><span>format CERISE Pro</span></div>
  </div>
-
  <div class="fmncer-note">
-  Les exports reprennent automatiquement le niveau, la séquence, la séance, le contexte professionnel, l’objectif, les compétences Cx, les savoirs, l’activité, la sécurité, les ressources et la production attendue disponibles dans FigaroMN. CERISE Pro reste l’étape de validation finale avant enregistrement du scénario.
+  Les scénarios reprennent le niveau, la séquence, la séance, le contexte professionnel, l’objectif, les blocs, les compétences Cx et les informations pédagogiques disponibles dans FigaroMN.
  </div>
-
  <div id="fmncer-levels"></div>
-
  <div class="fmncer-backup">
   <div class="fmncer-backup-head">
    <div>
     <h3>💾 Tableau de suivi / sauvegarde CERISE Pro</h3>
-    <p class="muted">Une ligne est conservée pour chaque séance exportée. La sauvegarde Supabase existante reste compatible avec la V24.11 ; si elle est indisponible, une sauvegarde locale du navigateur est utilisée automatiquement.</p>
+    <p class="muted">Une ligne est conservée pour chaque séance exportée. Si la sauvegarde Supabase est indisponible, la sauvegarde locale du navigateur reste utilisée automatiquement.</p>
    </div>
    <button type="button" class="fmncer-btn secondary" id="fmncer-export-csv">⬇ Exporter le suivi CSV</button>
   </div>
@@ -434,8 +489,17 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 </div>
 </section>
 
-<section class="card"><h2>8 · Observation enseignant</h2>
-<p class="muted">Le calcul automatique vient des exercices. Cette zone permet de compléter le suivi avec une observation réelle en TP, atelier, oral ou restitution.</p>
+<section class="card teacher-tool" data-teacher-module="parcours" id="teacherParcoursSection">
+ <h2>Parcours pédagogiques</h2>
+ <p class="muted">Accédez directement aux parcours de cours. Cette partie est séparée des outils de suivi pour garder l’espace enseignant clair.</p>
+ <div class="teacher-path-grid">
+  <a class="teacher-path-card" href="cap.html?mode=enseignant"><span>⚓</span><strong>CAP Maintenance Nautique</strong><small>Ouvrir le parcours CAP, les séquences et les séances.</small></a>
+  <a class="teacher-path-card" href="cycle-bac-pro.html"><span>🚤</span><strong>Cycle BAC PRO Maintenance Nautique</strong><small>Accéder à Seconde, Première et Terminale.</small></a>
+ </div>
+</section>
+
+<section class="card teacher-tool" data-teacher-module="students" id="teacherObservation"><h2>Observation pédagogique</h2>
+<p class="muted">Complétez le calcul automatique des exercices avec une observation réelle en TP, atelier, oral ou restitution.</p>
 <div class="grid3">
 <label>Élève<select id="obsStudent"></select></label>
 <label>Compétence<select id="obsComp"></select></label>
@@ -2411,6 +2475,4 @@ if($("pageMsg")&&!$("pageMsg").textContent.trim()){
 refreshTimer=setInterval(()=>{if(document.visibilityState==="visible")loadLive();},8000);
 window.addEventListener("beforeunload",()=>clearInterval(refreshTimer));
 })().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});
-</script><script src="figaromn-cerise-data-v249.js?v=2411"></script>
-<script src="figaromn-cerise-v249.js?v=2411"></script>
-</body></html>
+</script><script src="figaromn-cerise-data-v249.js?v=2414"></script><script src="figaromn-cerise-v249.js?v=2414"></script><script src="figaromn-enseignant-ui-v2414.js?v=2414"></script></body></html>

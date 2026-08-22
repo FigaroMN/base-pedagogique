@@ -437,4 +437,18 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
  }
 })();
 </script>
+
+<!-- V24.14 · Retour CERISE Pro explicite via ?from=cerise -->
+<script>
+(function(){
+ try{
+  if(new URLSearchParams(location.search).get("from")!=="cerise") return;
+  var target="enseignant.html#ceriseProSection";
+  document.querySelectorAll("body > .top .shell a, header.top a.brand, header.top a.back").forEach(function(a){a.href=target;a.textContent="← Retour à CERISE Pro";});
+  document.querySelectorAll(".actions.card a.btn, .fmn-session-nav a").forEach(function(a){
+   if(/Retour|Toutes les séances/i.test(a.textContent||"")){a.href=target;a.textContent="← Retour à CERISE Pro";}
+  });
+ }catch(e){}
+})();
+</script>
 </body></html>
