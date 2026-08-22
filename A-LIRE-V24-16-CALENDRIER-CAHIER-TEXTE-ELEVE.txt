@@ -1,0 +1,45 @@
+FIGAROMN V24.16 - CALENDRIER / CAHIER DE TEXTE ÉLÈVE
+========================================================
+
+Cette mise à jour est cumulative : elle contient la V24.15 (menu déroulant CERISE Pro)
+et ajoute le calendrier du cahier de texte dans les espaces élèves CAP, Seconde,
+Première et Terminale.
+
+NOUVEAUTÉS
+-----------
+- Nouvelle option "📅 Calendrier" tout à droite de la navigation élève.
+- Calendrier mensuel : les dates comportant une entrée du cahier de texte sont repérées.
+- Un clic sur une date affiche le contenu de la séance et le travail à faire.
+- Historique complet sous le calendrier, utile notamment après une absence.
+- L'élève ne voit que le cahier de texte de sa propre classe.
+- Compatible CAP, Seconde, Première et Terminale.
+- La V24.15 CERISE Pro reste incluse : séquences repliables, fiches sans identification,
+  retour vers CERISE Pro, blocs et compétences.
+
+IMPORTANT - UNE MIGRATION SQL EST NÉCESSAIRE
+--------------------------------------------
+Dans Supabase > SQL Editor, exécuter UNE FOIS :
+MIGRATION-V24-16-CALENDRIER-CAHIER-TEXTE-ELEVE.sql
+
+Cette migration n'efface aucune donnée. Elle ajoute uniquement une policy RLS de lecture
+permettant à un élève authentifié de consulter les entrées liées à sa classe.
+
+INSTALLATION GITHUB
+-------------------
+1. Décompresser ce ZIP.
+2. Envoyer/remplacer à la racine du dépôt GitHub les fichiers contenus dans ce ZIP.
+3. Ne pas supprimer le dossier cerise déjà présent sur GitHub.
+4. Attendre la coche verte GitHub Pages.
+5. Faire Ctrl + F5 dans le navigateur.
+6. Tester avec un compte élève rattaché à une classe :
+   Terminale (ou autre niveau) > 📅 Calendrier.
+
+PRÉREQUIS
+---------
+Pour voir les entrées :
+- l'élève doit être rattaché à une classe ;
+- l'enseignant doit avoir utilisé "Enregistrer dans l'historique" dans le cahier de texte ;
+- la migration V24.16 doit avoir été exécutée.
+
+Aucune entrée locale enregistrée uniquement dans le navigateur enseignant ne peut être
+visible par les élèves : seules les entrées sauvegardées dans Supabase sont partagées.

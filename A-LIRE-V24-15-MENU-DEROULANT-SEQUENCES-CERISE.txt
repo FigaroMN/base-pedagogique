@@ -1,0 +1,29 @@
+FIGAROMN — MISE À JOUR V24.15
+================================
+
+Cette version est cumulative : elle reprend la V24.14 et ajoute une navigation CERISE Pro plus lisible.
+
+NOUVEAU — CERISE PRO
+- Les 7 séquences de chaque niveau sont affichées comme des menus déroulants (accordéons).
+- Toutes les séquences sont repliées par défaut : on distingue immédiatement les différentes séquences.
+- Un clic sur une séquence affiche ses 6 séances.
+- En navigation normale, ouvrir une séquence referme automatiquement l'autre séquence ouverte du même niveau.
+- Bouton « Tout replier ».
+- Bouton « Tout déplier ».
+- Pendant une recherche, les séquences contenant les résultats s'ouvrent automatiquement.
+- Les boutons Ouvrir, Exporter .SCPRO, les blocs et les compétences restent inchangés.
+
+CONSERVÉ DE V24.14
+- Le bouton Ouvrir affiche la fiche pédagogique sans demander une identification élève.
+- Depuis une fiche ouverte via CERISE Pro, le bouton Retour revient vers CERISE Pro.
+- Organisation intuitive de l'espace Enseignant.
+- 42 fiches CAP dédiées + navigation BAC PRO.
+
+INSTALLATION
+1. Décompresser ce ZIP.
+2. Envoyer/remplacer à la racine du dépôt GitHub les fichiers contenus dans ce ZIP.
+3. Ne pas retransférer le dossier cerise ni les packs .SCPRO : ils restent inchangés.
+4. Attendre la coche verte GitHub Pages.
+5. Faire Ctrl + F5 dans le navigateur.
+
+Aucun SQL Supabase n'est nécessaire.

@@ -132,7 +132,7 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
 @media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid3,.grid4,.seq-grid,.skill-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.grid2,.grid3,.grid4,.kpis,.level-tabs,.seq-grid,.skill-grid{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column;padding:10px 0}.shell{width:min(100% - 18px,1220px)}}
-</style><link rel="stylesheet" href="figaromn-cerise-v249.css?v=2413"><link rel="stylesheet" href="figaromn-enseignant-ui-v2413.css?v=2414"></head><body>
+</style><link rel="stylesheet" href="figaromn-cerise-v249.css?v=2413"><link rel="stylesheet" href="figaromn-enseignant-ui-v2415.css?v=2415"></head><body>
 <header class="top"><div class="shell nav">
 <a class="brand" href="enseignant.html">🔐 FIGARO MN · Espace Enseignant</a>
 <div class="actions">
@@ -439,8 +439,8 @@ label{font-weight:800;font-size:.92rem}input,select,textarea{width:100%;padding:
 
 
 <section class="card teacher-tool" data-teacher-module="cerise" id="ceriseProSection">
-<h2>CERISE Pro · scénarios de toutes les classes</h2>
-<p class="muted">Liste complète organisée par <strong>niveau → séquence → séance</strong>. Les <strong>blocs de compétences</strong> apparaissent avant les compétences C1 à C12. Chaque séance peut être ouverte ou exportée au format <strong>.SCPRO</strong>.</p>
+<h2>CERISE Pro · scénarios par niveau, séquence et séance</h2>
+<p class="muted">Liste organisée par <strong>niveau → séquence déroulante → séance</strong>. Les séquences sont repliées par défaut pour mieux distinguer la progression. Ouvrez uniquement la séquence souhaitée ; les <strong>blocs de compétences</strong> apparaissent avant les compétences C1 à C12.</p>
 <div class="teacher-cerise-legend">
  <span class="teacher-legend-label">Repères :</span>
  <span class="teacher-block-legend b1">Bloc 1 · Prise en charge</span>
@@ -2475,4 +2475,4 @@ if($("pageMsg")&&!$("pageMsg").textContent.trim()){
 refreshTimer=setInterval(()=>{if(document.visibilityState==="visible")loadLive();},8000);
 window.addEventListener("beforeunload",()=>clearInterval(refreshTimer));
 })().catch(e=>{document.getElementById("pageMsg").textContent="Erreur : "+e.message;});
-</script><script src="figaromn-cerise-data-v249.js?v=2414"></script><script src="figaromn-cerise-v249.js?v=2414"></script><script src="figaromn-enseignant-ui-v2414.js?v=2414"></script></body></html>
+</script><script src="figaromn-cerise-data-v249.js?v=2414"></script><script src="figaromn-cerise-v249.js?v=2414"></script><script src="figaromn-enseignant-ui-v2415.js?v=2415"></script></body></html>

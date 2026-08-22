@@ -1,0 +1,228 @@
+
+/* FigaroMN V24.16 · Calendrier / cahier de texte élève */
+:is(#fmn-level-master,#capmn26-master) .nav{
+  grid-template-columns:repeat(7,minmax(0,1fr));
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-wrap{
+  display:grid;
+  gap:18px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-hero{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(135deg,#eef7f8,#ffffff);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-hero h2{
+  margin:0 0 6px;
+  color:var(--navy);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-hero p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.5;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-chip{
+  flex:0 0 auto;
+  padding:8px 11px;
+  border-radius:999px;
+  background:var(--navy);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-alert{
+  padding:14px 16px;
+  border-left:5px solid var(--orange);
+  border-radius:12px;
+  background:#fff7ec;
+  line-height:1.5;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-card,
+:is(#fmn-level-master,#capmn26-master) .fmn-history-card{
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:#fff;
+  padding:16px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-toolbar h3{
+  margin:0;
+  color:var(--navy);
+  text-transform:capitalize;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-actions button{
+  border:0;
+  border-radius:10px;
+  padding:9px 11px;
+  background:#e8f2f5;
+  color:var(--navy);
+  font-weight:900;
+  cursor:pointer;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:7px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-weekday{
+  text-align:center;
+  padding:8px 4px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day{
+  min-height:74px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#fff;
+  color:var(--text);
+  padding:8px;
+  text-align:left;
+  cursor:pointer;
+  position:relative;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day:hover,
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day:focus-visible{
+  border-color:var(--cyan);
+  outline:2px solid rgba(25,184,211,.14);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day.is-outside{
+  opacity:.35;
+  cursor:default;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day.has-entry{
+  background:#eefaf5;
+  border-color:#a9d8c4;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day.is-selected{
+  box-shadow:inset 0 0 0 2px var(--navy);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-cal-day.is-today .fmn-day-num{
+  background:var(--orange);
+  color:#fff;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-day-num{
+  display:inline-flex;
+  width:27px;
+  height:27px;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  font-weight:900;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-day-count{
+  display:block;
+  margin-top:7px;
+  font-size:11px;
+  font-weight:900;
+  color:var(--green);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-day-detail{
+  margin-top:14px;
+  display:grid;
+  gap:10px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-day-empty{
+  padding:13px;
+  border-radius:11px;
+  background:var(--bg);
+  color:var(--muted);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  background:#fff;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry + .fmn-log-entry{margin-top:10px}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:8px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry-title{
+  color:var(--navy);
+  font-weight:900;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry-meta{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry-content{
+  white-space:pre-wrap;
+  line-height:1.55;
+  color:var(--text);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-log-entry-homework{
+  margin-top:10px;
+  padding:11px 12px;
+  border-left:4px solid var(--orange);
+  border-radius:9px;
+  background:#fff7ec;
+  white-space:pre-wrap;
+  line-height:1.5;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-history-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-history-head h3{
+  margin:0;
+  color:var(--navy);
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-history-list{
+  display:grid;
+  gap:10px;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-status{
+  padding:13px;
+  border-radius:11px;
+  background:var(--bg);
+  color:var(--muted);
+  line-height:1.5;
+}
+:is(#fmn-level-master,#capmn26-master) .fmn-logbook-status.error{
+  background:#fff1f2;
+  color:#8a2430;
+}
+@media(max-width:1100px) and (min-width:801px){
+  :is(#fmn-level-master,#capmn26-master) .nav{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:800px){
+  :is(#fmn-level-master,#capmn26-master) .fmn-logbook-hero{flex-direction:column}
+  :is(#fmn-level-master,#capmn26-master) .fmn-calendar-grid{gap:4px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-cal-day{min-height:58px;padding:5px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-day-count{font-size:9px}
+}
+@media(max-width:520px){
+  :is(#fmn-level-master,#capmn26-master) .fmn-calendar-card{padding:10px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-cal-weekday{font-size:10px;padding:5px 2px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-cal-day{min-height:48px;border-radius:9px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-day-num{width:23px;height:23px;font-size:12px}
+  :is(#fmn-level-master,#capmn26-master) .fmn-day-count{display:none}
+}

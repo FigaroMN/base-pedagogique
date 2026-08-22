@@ -35,6 +35,7 @@ html,body{margin:0;background:#eef6f8}
 <link rel="stylesheet" href="figaromn-tools-v213.css?v=227">
 <link rel="stylesheet" href="figaromn-games-v213.css?v=234">
 <link rel="stylesheet" href="figaromn-sequence-flow-v22.css?v=239">
+<link rel="stylesheet" href="figaromn-student-logbook-v2416.css?v=2416">
 </head>
 <body>
 <header id="fmn-capbar">
@@ -64,7 +65,7 @@ html,body{margin:0;background:#eef6f8}
 #capmn26-master .header h1{margin:7px 0 4px;font-size:31px}
 #capmn26-master .header h2{margin:0;font-size:20px;font-weight:500}
 #capmn26-master .header p{max-width:800px;margin:13px auto 0;line-height:1.55}
-#capmn26-master .nav{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+#capmn26-master .nav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;padding:13px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 #capmn26-master .nav button{border:0;border-radius:11px;padding:12px 10px;background:#e8f2f5;color:var(--navy);font-weight:900;cursor:pointer}
 #capmn26-master .nav button.active{background:var(--navy);color:#fff}
 #capmn26-master .nav button:hover,#capmn26-master .nav button:focus-visible{outline:3px solid rgba(25,184,211,.18)}
@@ -925,6 +926,7 @@ html,body{margin:0;background:#eef6f8}
   <button type="button" data-view="evaluations">✅ Évaluations</button>
   <button type="button" data-view="tools">🧰 Outils</button>
   <button type="button" data-view="games">🎮 Applications interactives</button>
+  <button type="button" data-view="logbook">📅 Calendrier</button>
  </nav>
 
  <div class="body">
@@ -989,6 +991,7 @@ html,body{margin:0;background:#eef6f8}
   <section id="capmn26-eval-detail" class="hidden"></section>
   <section id="capmn26-tools" class="hidden"><div id="figaromn-tools" data-level="cap"></div></section>
   <section id="capmn26-games" class="hidden"><div id="figaromn-games" data-level="cap"></div></section>
+  <section id="capmn26-logbook" class="hidden" data-level="cap"><div class="fmn-logbook-status">Chargement du cahier de texte…</div></section>
 
  </div>
 </div>
@@ -1146,7 +1149,8 @@ var sections={
  evaluations:root.querySelector("#capmn26-evaluations"),
  evalDetail:root.querySelector("#capmn26-eval-detail"),
  tools:root.querySelector("#capmn26-tools"),
- games:root.querySelector("#capmn26-games")
+ games:root.querySelector("#capmn26-games"),
+ logbook:root.querySelector("#capmn26-logbook")
 };
 
 function capStorageKey(k){
@@ -3816,5 +3820,6 @@ show("home");
 
 <script src="figaromn-tools-v213.js?v=227"></script>
 <script src="figaromn-games-v213.js?v=234"></script>
+<script src="figaromn-student-logbook-v2416.js?v=2416"></script>
 </body>
 </html>
