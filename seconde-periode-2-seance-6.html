@@ -417,4 +417,46 @@ document.querySelectorAll(".saveFinalScore").forEach(function(btn){
   render();initializeGuard();
  });
 })();
-</script></body></html>
+</script>
+<!-- V24.12 · Retour CERISE PRO pour les enseignants -->
+<script>
+(async function(){
+ "use strict";
+ try{
+  if(!window.FigaroCloud || typeof FigaroCloud.session!=="function" || typeof FigaroCloud.profile!=="function") return;
+  var sess=FigaroCloud.session();
+  if(!sess || !sess.access_token) return;
+  var prof=await FigaroCloud.profile();
+  if(!prof || prof.role!=="teacher") return;
+  var target="enseignant.html#ceriseProSection";
+
+  /* Bouton supérieur : retour direct vers la bibliothèque CERISE PRO */
+  document.querySelectorAll("header.top a.brand, header.top a.back, body > .top .shell a").forEach(function(a){
+   a.href=target;
+   a.textContent="← Retour à CERISE Pro";
+   a.setAttribute("title","Retour aux scénarios CERISE Pro");
+  });
+
+  /* Bouton inférieur des séances de la séquence 1 */
+  document.querySelectorAll(".actions.card a.btn").forEach(function(a){
+   if(/Retour au parcours|Retour.*Seconde|Retour.*Première|Retour.*Terminale/i.test(a.textContent||"")){
+    a.href=target;
+    a.textContent="← Retour à CERISE Pro";
+    a.setAttribute("title","Retour aux scénarios CERISE Pro");
+   }
+  });
+
+  /* Dans les autres séances, le bouton « Toutes les séances » devient le retour CERISE */
+  document.querySelectorAll(".fmn-session-nav a").forEach(function(a){
+   if(/Toutes les séances/i.test(a.textContent||"")){
+    a.href=target;
+    a.textContent="← Retour à CERISE Pro";
+    a.setAttribute("title","Retour aux scénarios CERISE Pro");
+   }
+  });
+ }catch(e){
+  console.warn("FigaroMN V24.12 : retour CERISE non activé",e);
+ }
+})();
+</script>
+</body></html>

@@ -1,0 +1,40 @@
+FIGAROMN – MISE À JOUR V24.12
+BLOCS DE COMPÉTENCES + RETOUR DIRECT CERISE PRO
+
+CONTENU
+- 1 fichier de données CERISE mis à jour : figaromn-cerise-data-v249.js
+- 126 pages de séances BAC PRO avec retour enseignant vers : enseignant.html#ceriseProSection
+
+AFFICHAGE DES BLOCS DANS CERISE PRO
+Chaque séance affiche désormais le ou les blocs AVANT les compétences.
+
+CAP Maintenance nautique
+- Bloc 1 · UP1 · Prise en charge  -> C1 à C4
+- Bloc 2 · UP2 · Diagnostic      -> C5 à C8
+- Bloc 3 · UP3 · Intervention    -> C9 à C12
+
+BAC PRO Maintenance nautique
+- Bloc 1 · U2  · Prise en charge -> C1 à C4
+- Bloc 2 · U31 · Diagnostic      -> C5 à C8
+- Bloc 3 · U32 · Intervention    -> C9 à C12
+
+EXEMPLE
+Séance avec C1 et C2 :
+Bloc 1 · U2 · Prise en charge | C1 | C2
+
+Séance avec C4 et C9 :
+Bloc 1 · U2 · Prise en charge | Bloc 3 · U32 · Intervention | C4 | C9
+
+RETOUR CERISE PRO
+Pour un enseignant, les boutons Retour / Menu de séquence / Toutes les séances des pages BAC PRO renvoient vers la section CERISE Pro de l'espace enseignant.
+Les boutons Séance précédente / Séance suivante restent inchangés.
+
+INSTALLATION GITHUB
+1. Décompresser ce ZIP.
+2. Dans le dépôt GitHub base-pedagogique, téléverser les fichiers du dossier décompressé à la RACINE du dépôt.
+3. Accepter le remplacement des fichiers portant le même nom.
+4. Valider le commit.
+5. Attendre la coche verte GitHub Pages.
+6. Faire Ctrl+F5 dans le navigateur pour forcer le rechargement de figaromn-cerise-data-v249.js.
+
+AUCUN SQL SUPABASE N'EST NÉCESSAIRE.
