@@ -1,0 +1,10 @@
+FIGAROMN V24.24 — ÉVALUATIONS : QUESTIONS D'ABORD
+
+Modification :
+- À l'ouverture d'une évaluation, la question 1 apparaît immédiatement.
+- Les grands tableaux de compétences/indicateurs ne sont plus affichés avant les questions.
+- Pendant l'évaluation, le score et la progression restent visibles.
+- Après la dernière question, la synthèse complète des compétences et indicateurs apparaît avec la note.
+- Correction appliquée au CAP, à la Seconde, à la Première et à la Terminale.
+- Les évaluations compactes de la V24.23 sont conservées.
+- Aucun SQL Supabase supplémentaire n'est nécessaire.

@@ -887,12 +887,10 @@ function openEvaluation(ev,forceRedo){
   host.appendChild(detail);
  }
  var current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[];
- detail.innerHTML='<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button><span class="pill">'+esc((ev.comps||[]).join(" · "))+'</span></div>'+
-  '<div class="content-box"><h2>'+esc(ev.title)+'</h2><div class="competences"><strong>Compétences évaluées :</strong><br>'+esc((ev.comps||[]).map(function(c){return c+" – "+(ALL.competencies[c]||"");}).join(" · "))+'</div>'+
-  successIndicatorsPanelHTML(ev.comps)+
-  '<div class="skill-calc-box"><strong>📈 Calcul 100 % automatique</strong><p>Chaque réponse produit deux résultats en parallèle : 1) elle alimente l’indicateur associé pour calculer le pourcentage puis le niveau de compétence ; 2) elle entre dans le calcul de la note de l’évaluation sur 20.</p><p><strong>Note /20 = réponses correctes ÷ nombre total de questions × 20.</strong></p></div>'+
+ detail.innerHTML='<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button></div>'+
+  '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+
   '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 /20</span></div>'+
-  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-live"></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+
+  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+
   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="bac-bottom-prev-eval">← Précédent</button></div></div>';
  function bacReturnFromEvaluation(){
   window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;
@@ -907,7 +905,6 @@ function openEvaluation(ev,forceRedo){
  function update(){
   $("bac-eval-score").textContent="Score : "+score+" / "+ev.questions.length+" · Note : "+fr(note20(score,ev.questions.length))+" /20";
   liveAgg=currentAttemptIndicatorAggregate(ev.questions,responses);
-  $("bac-eval-live").innerHTML=indicatorAcquisitionHTML(liveAgg,ev.comps,'Évaluation en cours : calcul automatique par indicateur.');
  }
  function renderQ(){
   answered=false;var q=ev.questions[current];mixed=mixedOptions(q);
@@ -933,7 +930,7 @@ function openEvaluation(ev,forceRedo){
   try{
    var result=await saveAttempt("evaluation",ev,responses,score),agg=currentAttemptIndicatorAggregate(ev.questions,responses);
    resultBox.innerHTML='<h3>Évaluation terminée</h3><p>Réponses correctes : <strong>'+score+' / '+ev.questions.length+'</strong></p><p>Note automatique : <span class="note20">'+fr(result.note20)+' / 20</span></p><p>Réussite globale : <strong>'+fr(result.percent)+' %</strong></p><p class="small">Calcul de la note : réponses correctes ÷ '+ev.questions.length+' × 20.</p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+
-    '<h3>📊 Pourcentage par indicateur puis niveau de compétence</h3>'+indicatorAcquisitionHTML(agg,ev.comps,'Résultat automatique de cette évaluation.')+
+    '<h3>📊 Synthèse des compétences</h3><p class="small">Les compétences et indicateurs sont présentés uniquement après la dernière question.</p>'+indicatorAcquisitionHTML(agg,ev.comps,'Résultat automatique de cette évaluation.')+
     '<div class="toolbar"><button type="button" class="btn light" disabled>✅ Tentative synchronisée</button><button type="button" class="btn green" id="bac-pdf-eval">🖨️ Enregistrer en PDF avec réponses</button><button type="button" class="btn blue" id="bac-history-eval-now">📚 Historique complet</button></div>';
    $("bac-pdf-eval").onclick=function(){printReport(ev.title,ev,result,responses);};
    $("bac-history-eval-now").onclick=function(){showHistory("evaluation",ev);};

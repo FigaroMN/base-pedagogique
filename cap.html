@@ -3540,18 +3540,13 @@ function openEvaluation(index,forceRedo){
  detail.innerHTML=
   '<div class="content-head">'+
    '<button type="button" class="btn light" id="capmn26-back-eval">← Retour aux évaluations</button>'+
-   '<span class="pill">'+esc(ev.comps.join(" · "))+'</span>'+
   '</div>'+
   '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+
-   '<div class="competences"><strong>Compétences évaluées :</strong><br>'+compHtml(ev.comps)+'</div>'+
-   successIndicatorsPanelHTML(ev.comps)+
-   '<div class="skill-calc-box"><strong>📈 Niveau d’acquisition calculé par les réponses</strong><p>Pour chaque compétence : bonnes réponses / questions liées à la compétence × 100, puis attribution automatique du niveau d’acquisition.</p></div>'+
    '<div class="eval-top">'+
     '<span id="capmn26-eval-counter">Question 1 / '+ev.questions.length+'</span>'+
     '<span id="capmn26-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 / 20</span>'+
    '</div>'+
    '<div class="progressbar"><div id="capmn26-eval-progress" class="progressin"></div></div>'+
-   '<div id="capmn26-eval-live-indicators" aria-live="polite"></div>'+
    '<div id="capmn26-eval-question"></div>'+
    '<div class="toolbar"><button type="button" class="btn blue hidden" id="capmn26-eval-next">Question suivante →</button></div>'+
    '<div id="capmn26-eval-result" class="result hidden"></div>'+
@@ -3693,7 +3688,8 @@ function openEvaluation(index,forceRedo){
    '<p>Note : <span class="note20">'+frNumber(note)+' / 20</span></p>'+
    '<p>Réussite globale : <strong>'+overall+' %</strong></p>'+
    '<p>Tentative enregistrée : <strong>n°'+evalHistory.length+'</strong></p>'+
-   '<h3>📊 Pourcentage par indicateur puis niveau de la compétence</h3>'+
+   '<h3>📊 Synthèse des compétences</h3>'+
+   '<p class="small">Les compétences et indicateurs sont présentés uniquement après la dernière question.</p>'+
    indicatorAcquisitionHTML(
     indicatorStats,
     ev.comps,
