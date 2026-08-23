@@ -1,0 +1,10 @@
+FIGAROMN V24.26 – 3 nouveaux exercices d’anglais
+
+Ajouts dans Applications interactives > Communication :
+- Jeu 41 : English – accueillir un client (15 associations)
+- Jeu 42 : English – consignes d’atelier (15 questions)
+- Jeu 43 : English – prise en charge et restitution (15 étapes)
+
+Le compteur passe automatiquement de 40 à 43 jeux.
+Les nouveaux jeux sont disponibles en CAP, Seconde, Première et Terminale.
+Aucun SQL Supabase n’est nécessaire.
