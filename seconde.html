@@ -16,7 +16,7 @@
   <header class="header">
    <div class="icon" aria-hidden="true">🚤⚡</div>
    <h1>Seconde BAC PRO Maintenance Nautique</h1>
-   <h2>Accueil • Cours • Exercices • Évaluations</h2>
+   <h2>Accueil • Séquences • Exercices • Évaluations</h2>
    <p>Un seul espace pour suivre la progression de Seconde, travailler les compétences professionnelles et accéder aux 7 séquences de l’année.</p>
    <div class="top-actions">
     <button class="btn red" id="fmn-logout" type="button">Déconnexion</button>
@@ -25,7 +25,7 @@
 
   <nav class="nav" aria-label="Navigation principale">
    <button type="button" data-view="home" class="active">🏠 Accueil</button>
-   <button type="button" data-view="courses">📘 Cours</button>
+   <button type="button" data-view="courses">📘 Séquences</button>
    <button type="button" data-view="exercises">📝 Exercices</button>
    <button type="button" data-view="evaluations">✅ Évaluations</button>
    <button type="button" data-view="tools">🧰 Outils</button>
@@ -37,7 +37,7 @@
    <section id="fmn-view-home" class="main-view">
     <div class="info">
      <strong>Bienvenue en Seconde BAC PRO Maintenance Nautique.</strong><br>
-     Cette page reprend la même disposition que l’espace CAP : identité, blocs professionnels, progression, cours, exercices et évaluations.
+     Cette page reprend la même disposition que l’espace CAP : identité, blocs professionnels, progression, séquences, exercices et évaluations.
     </div>
 
     <div class="identity">
@@ -67,7 +67,7 @@
    </section>
 
    <section id="fmn-view-courses" class="main-view hidden">
-    <h2 class="title">📘 Mes cours</h2>
+    <h2 class="title">📘 Mes séquences</h2>
     <p class="sub">7 séquences de Seconde BAC PRO Maintenance Nautique. Chaque séquence donne accès à ses 6 séances déjà développées dans FigaroMN.</p>
     <div id="fmn-course-grid" class="menu-grid"></div>
     <div class="fmn-bottom-prev"><button type="button" class="btn light" id="fmn-bottom-prev-courses">← Précédent</button></div>
@@ -121,5 +121,37 @@
 <script src="figaromn-tools-v19.js?v=227"></script>
 <script src="figaromn-games-v20.js?v=2426"></script>
 <script src="figaromn-student-logbook-v2416.js?v=2418"></script>
+
+<script id="figaromn-v2427-sequences-ui">
+(function(){
+  function homeProgressGrids(){
+    return document.querySelectorAll('#fmn-progress-grid,#capmn26-progress-grid,.progress-grid');
+  }
+  function hideHomeSequenceButtons(){
+    homeProgressGrids().forEach(function(grid){
+      grid.querySelectorAll('a,button').forEach(function(el){
+        var txt=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+        if(txt.indexOf('ouvrir la séquence')!==-1){
+          el.style.display='none';
+          el.setAttribute('aria-hidden','true');
+          el.setAttribute('tabindex','-1');
+        }
+      });
+    });
+  }
+  function install(){
+    hideHomeSequenceButtons();
+    if(window.MutationObserver){
+      homeProgressGrids().forEach(function(grid){
+        new MutationObserver(hideHomeSequenceButtons).observe(grid,{childList:true,subtree:true});
+      });
+    }
+    setTimeout(hideHomeSequenceButtons,300);
+    setTimeout(hideHomeSequenceButtons,1000);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install);
+  else install();
+})();
+</script>
 </body>
 </html>
