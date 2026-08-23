@@ -1,0 +1,18 @@
+FIGAROMN V24.27 — NAVIGATION SEQUENCES / ACCUEIL ALLEGE
+
+Modifications :
+- Le bouton « Cours » devient « Séquences » dans les espaces élèves CAP, Seconde, Première et Terminale.
+- Le titre « Mes cours » devient « Mes séquences ».
+- Le bandeau supérieur affiche « Accueil • Séquences • Exercices • Évaluations ».
+- Sur l’écran Accueil, les boutons « Ouvrir la séquence → » placés sous les cartes de progression sont masqués.
+- Les cartes de progression et les barres de progression restent visibles.
+- Pour entrer dans une séquence, l’élève passe désormais par l’onglet « Séquences » en haut.
+- Les fonctions internes continuent d’utiliser data-view="courses" afin de ne pas casser la navigation existante.
+
+Aucun SQL Supabase n’est nécessaire.
+Le dossier cerise et les packs .SCPRO ne sont pas à retransférer pour cette mise à jour.
+
+Installation :
+1. Remplacer sur GitHub les fichiers contenus dans ce ZIP.
+2. Attendre la coche verte GitHub Pages.
+3. Faire Ctrl + F5.
