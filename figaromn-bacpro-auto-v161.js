@@ -1,7 +1,7 @@
 (function(){
 "use strict";
-window.FIGAROMN_BUILD_V161="16.1";
-console.info("FigaroMN Bac Pro moteur V16.1 chargé");
+window.FIGAROMN_BUILD_V161="16.1-v2423";
+console.info("FigaroMN Bac Pro moteur V16.1 / V24.23 affichage compact évaluations chargé");
 
 var root=document.getElementById("fmn-level-master");
 if(!root || !window.FIGAROMN_LEVEL_CONFIG || !window.FIGAROMN_BACPRO_AUTO_DATA || !window.FigaroCloud)return;
@@ -742,8 +742,64 @@ function openExercise(ex,forceRedo){
  });
  show("exercise-detail");
 }
+function ensureEvaluationCompactUI(){
+ var grid=$("fmn-eval-grid");
+ if(!grid)return;
+
+ if(!document.getElementById("fmn-eval-compact-style")){
+  var style=document.createElement("style");
+  style.id="fmn-eval-compact-style";
+  style.textContent=
+   '#fmn-level-master .evaluation-competence-details{margin-top:10px;padding-top:10px;border-top:1px dashed #cbd9de}'+
+   '#fmn-level-master .evaluation-competence-details.hidden{display:none!important}'+
+   '#fmn-level-master .eval-compact-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin:0 0 12px}'+
+   '#fmn-level-master .eval-compact-controls .compact-help{margin-right:auto;color:#607680;font-size:13px}'+
+   '#fmn-level-master .eval-competence-toggle{margin-top:9px}'+
+   '#fmn-level-master .evaluation-list .menu-card{align-items:flex-start}'+
+   '@media(max-width:760px){#fmn-level-master .eval-compact-controls{justify-content:stretch}#fmn-level-master .eval-compact-controls .compact-help{width:100%;margin:0}#fmn-level-master .eval-compact-controls .btn{flex:1 1 auto}}';
+  document.head.appendChild(style);
+ }
+
+ var controls=$("fmn-eval-compact-controls");
+ if(!controls){
+  controls=document.createElement("div");
+  controls.id="fmn-eval-compact-controls";
+  controls.className="eval-compact-controls";
+  controls.innerHTML=
+   '<span class="compact-help">Affichage compact : les compétences sont réduites pour voir plus facilement les 7 évaluations.</span>'+ 
+   '<button type="button" class="btn light" id="fmn-eval-expand-all">▾ Afficher toutes les compétences</button>'+ 
+   '<button type="button" class="btn light" id="fmn-eval-collapse-all">▴ Réduire toutes les compétences</button>';
+  grid.parentNode.insertBefore(controls,grid);
+ }
+
+ var expand=$("fmn-eval-expand-all");
+ if(expand)expand.onclick=function(){setAllEvaluationCompetences(true);};
+ var collapse=$("fmn-eval-collapse-all");
+ if(collapse)collapse.onclick=function(){setAllEvaluationCompetences(false);};
+}
+
+function setEvaluationCompetenceVisibility(card,open){
+ if(!card)return;
+ var details=card.querySelector(".evaluation-competence-details");
+ var btn=card.querySelector("[data-toggle-eval-competences]");
+ if(!details)return;
+ details.classList.toggle("hidden",!open);
+ details.setAttribute("aria-hidden",open?"false":"true");
+ if(btn){
+  btn.setAttribute("aria-expanded",open?"true":"false");
+  btn.textContent=open?"▴ Réduire les compétences":"▾ Voir les compétences";
+ }
+}
+
+function setAllEvaluationCompetences(open){
+ var grid=$("fmn-eval-grid");
+ if(!grid)return;
+ grid.querySelectorAll(".menu-card").forEach(function(card){setEvaluationCompetenceVisibility(card,open);});
+}
+
 function rebuildEvaluations(){
  var grid=$("fmn-eval-grid");if(!grid)return;
+ ensureEvaluationCompactUI();
  activeSequence=Number(window.FIGAROMN_CURRENT_SEQUENCE);
  if(!isFinite(activeSequence))activeSequence=0;
 
@@ -770,7 +826,8 @@ function rebuildEvaluations(){
    '<span class="pill">'+(rows.length?'✅ Évaluation terminée':'Compétences à positionner')+'</span> '+
    '<span class="pill">Tentatives : '+rows.length+'</span> '+
    (last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
-   indicatorAcquisitionHTML(agg,ev.comps,'')+'</div>'+
+   '<div><button type="button" class="btn light eval-competence-toggle" data-toggle-eval-competences="'+ev.sequence+'" aria-expanded="false">▾ Voir les compétences</button></div>'+
+   '<div class="evaluation-competence-details hidden" aria-hidden="true">'+indicatorAcquisitionHTML(agg,ev.comps,'')+'</div></div>'+
    (rows.length?
     '<div class="actions"><button type="button" class="btn light" disabled>✅ Évaluation terminée</button>'+
     '<button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔁 Refaire l’évaluation</button>'+
@@ -804,6 +861,12 @@ function rebuildEvaluations(){
 }
 function bindEvalButtons(){
  var grid=$("fmn-eval-grid");if(!grid)return;
+ grid.querySelectorAll("[data-toggle-eval-competences]").forEach(function(b){b.onclick=function(){
+  var card=b.closest(".menu-card");
+  var details=card&&card.querySelector(".evaluation-competence-details");
+  var open=details&&details.classList.contains("hidden");
+  setEvaluationCompetenceVisibility(card,!!open);
+ };});
  grid.querySelectorAll("[data-unlock-eval]").forEach(function(b){b.onclick=function(){
   var ev=findEval(b.dataset.unlockEval),card=b.closest(".menu-card"),input=card.querySelector("input"),msg=card.querySelector(".msg");
   if(input.value.trim().toLowerCase()===String(ev.code).toLowerCase()){msg.textContent="✅ Code correct";msg.className="msg ok";setTimeout(function(){openEvaluation(ev,false);},120);}else{msg.textContent="❌ Code incorrect";msg.className="msg badmsg";input.value="";input.focus();}
@@ -815,7 +878,15 @@ function openEvaluation(ev,forceRedo){
  if(!ev)return;
  var rows=evalRows(ev.sequence);
  if(rows.length&&!forceRedo){alert("Cette évaluation a déjà été réalisée. Pour la refaire, utilise « Refaire l’évaluation » et le code enseignant.");rebuildEvaluations();show("evaluations");return;}
- var detail=$("fmn-view-evaluation-detail"),current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[];
+ var detail=$("fmn-view-evaluation-detail");
+ if(!detail){
+  detail=document.createElement("section");
+  detail.id="fmn-view-evaluation-detail";
+  detail.className="main-view hidden";
+  var host=root.querySelector(".content")||root;
+  host.appendChild(detail);
+ }
+ var current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[];
  detail.innerHTML='<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button><span class="pill">'+esc((ev.comps||[]).join(" · "))+'</span></div>'+
   '<div class="content-box"><h2>'+esc(ev.title)+'</h2><div class="competences"><strong>Compétences évaluées :</strong><br>'+esc((ev.comps||[]).map(function(c){return c+" – "+(ALL.competencies[c]||"");}).join(" · "))+'</div>'+
   successIndicatorsPanelHTML(ev.comps)+

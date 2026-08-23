@@ -1,0 +1,14 @@
+FIGAROMN V24.22 — CORRECTIF OUVERTURE DES ÉVALUATIONS BAC PRO
+
+Problème corrigé :
+- Le code était reconnu comme correct, mais l’évaluation ne s’ouvrait pas.
+- Cause : la section HTML fmn-view-evaluation-detail manquait dans Seconde, Première et Terminale.
+
+Corrections :
+- Ajout de la section de détail des évaluations dans les 3 niveaux BAC PRO.
+- Sécurisation du moteur : création automatique de cette section si elle manque.
+- Correction/normalisation des 7 codes d’évaluation dans chaque niveau.
+- Actualisation des versions JS pour éviter un ancien cache navigateur.
+
+Aucun SQL Supabase n’est nécessaire.
+Après mise à jour GitHub Pages : attendre la coche verte puis Ctrl+F5.

@@ -1,0 +1,19 @@
+FIGAROMN – V24.23 – ÉVALUATIONS COMPACTES
+
+Cette version est cumulative et reprend la V24.22.
+
+MODIFICATION PRINCIPALE
+- Dans Seconde, Première et Terminale BAC PRO, la liste des évaluations est maintenant compacte.
+- Les blocs détaillés des compétences/indicateurs sont repliés par défaut.
+- Chaque évaluation possède un bouton « Voir les compétences » / « Réduire les compétences ».
+- Deux commandes générales permettent « Afficher toutes les compétences » ou « Réduire toutes les compétences ».
+- Le code enseignant, le bouton Accéder, les notes et l’état de l’évaluation restent immédiatement visibles.
+- Le correctif V24.22 d’ouverture des évaluations est conservé.
+
+INSTALLATION
+1. Envoyer les fichiers du ZIP à la racine du dépôt GitHub en remplaçant les fichiers existants.
+2. Attendre la coche verte GitHub Pages.
+3. Faire Ctrl + F5 dans le navigateur.
+
+Aucun nouveau SQL Supabase n’est nécessaire.
+Le dossier cerise et les packs .SCPRO n’ont pas besoin d’être retransférés.
