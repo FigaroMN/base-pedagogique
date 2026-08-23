@@ -1,0 +1,12 @@
+FIGAROMN V24.27 — Séquences + accueil simplifié
+
+Modifications :
+- Le bouton « Cours » devient « Séquences » dans les espaces élèves CAP, Seconde, Première et Terminale.
+- Le titre « Mes cours » devient « Mes séquences ».
+- Sur l’écran Accueil, les cartes de progression des 7 séquences restent visibles.
+- Les boutons/liens « Ouvrir la séquence » sont supprimés de l’accueil.
+- Les cartes de progression de l’accueil deviennent uniquement informatives : progression et nombre de séances terminées restent visibles.
+- Pour ouvrir une séquence, l’élève passe maintenant par le bouton « Séquences » de la barre de navigation.
+- Toutes les évolutions précédentes de la V24.26 sont conservées.
+- Aucun nouveau SQL Supabase n’est nécessaire.
+- Aucun dossier CERISE / pack .SCPRO à retransférer spécialement pour cette modification.

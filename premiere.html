@@ -122,36 +122,45 @@
 <script src="figaromn-games-v20.js?v=2426"></script>
 <script src="figaromn-student-logbook-v2416.js?v=2418"></script>
 
-<script id="figaromn-v2427-sequences-ui">
+<script>
+/* FigaroMN V24.27 — accueil : progression visible sans bouton d'ouverture de séquence */
 (function(){
-  function homeProgressGrids(){
-    return document.querySelectorAll('#fmn-progress-grid,#capmn26-progress-grid,.progress-grid');
-  }
-  function hideHomeSequenceButtons(){
-    homeProgressGrids().forEach(function(grid){
-      grid.querySelectorAll('a,button').forEach(function(el){
-        var txt=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-        if(txt.indexOf('ouvrir la séquence')!==-1){
-          el.style.display='none';
-          el.setAttribute('aria-hidden','true');
-          el.setAttribute('tabindex','-1');
-        }
-      });
+  function txt(el){return String((el&&el.textContent)||'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function clean(grid){
+    if(!grid)return;
+    grid.querySelectorAll('.open-hint').forEach(function(el){el.remove();});
+    grid.querySelectorAll('a,button,span').forEach(function(el){
+      var t=txt(el);
+      if(!/^(ouvrir la séquence|ouvrir les 6 séances)/.test(t))return;
+      var isTopCard=el.parentElement===grid && !!el.querySelector('h3,.sequence-progress,[class*="progress"]');
+      if(!isTopCard) el.remove();
+    });
+    Array.prototype.forEach.call(grid.children,function(card){
+      if(card.matches && card.matches('button,a,[role="button"]')){
+        card.style.cursor='default';
+        card.setAttribute('aria-disabled','true');
+        card.removeAttribute('aria-label');
+        card.tabIndex=-1;
+      }
     });
   }
-  function install(){
-    hideHomeSequenceButtons();
-    if(window.MutationObserver){
-      homeProgressGrids().forEach(function(grid){
-        new MutationObserver(hideHomeSequenceButtons).observe(grid,{childList:true,subtree:true});
-      });
-    }
-    setTimeout(hideHomeSequenceButtons,300);
-    setTimeout(hideHomeSequenceButtons,1000);
+  function install(grid){
+    if(!grid || grid.dataset.fmnV2427Installed==='1')return;
+    grid.dataset.fmnV2427Installed='1';
+    clean(grid);
+    grid.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();},true);
+    grid.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();}
+    },true);
+    new MutationObserver(function(){clean(grid);}).observe(grid,{childList:true,subtree:true});
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install);
-  else install();
+  function init(){
+    install(document.getElementById('fmn-progress-grid'));
+    install(document.getElementById('capmn26-progress-grid'));
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+
 </body>
 </html>
