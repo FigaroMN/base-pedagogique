@@ -1236,6 +1236,112 @@ function mixedAnswerOptions(question,targetCorrectPosition){
  return mixed;
 }
 
+function evaluationCreditLabel(percent){
+ var p=Number(percent)||0;
+ if(p>=100)return "✅ Réponse complète : 100 % des points.";
+ if(p>=60)return "🟡 Réponse pertinente mais incomplète : 60 % des points.";
+ if(p>=40)return "🟠 Réponse partielle : 40 % des points.";
+ return "🔸 Première étape pertinente : 20 % des points.";
+}
+function evaluationCreditValue(percent){return Math.max(0,Math.min(100,Number(percent)||0))/100;}
+function graduatedEvaluationTexts(q){
+ var question=String((q&&q.q)||"");
+ var best=String((q&&q.a&&q.a[q.c])||"");
+ var hay=(question+" "+best).toLowerCase();
+ var p60="",p40="",p20="";
+ var bestLower=best.trim().toLowerCase();
+ if(bestLower==="non"){
+  p60="Non, car il faut encore confirmer la situation par les contrôles ou critères prévus.";
+  p40="Pas systématiquement : une vérification complémentaire reste nécessaire avant de conclure.";
+  p20="Cela dépend des premiers indices, mais une conclusion immédiate serait encore prématurée.";
+ }else if(bestLower==="oui"){
+  p60="Oui, à condition de confirmer la situation par les vérifications prévues.";
+  p40="Oui dans le principe, mais seulement après une vérification partielle.";
+  p20="C’est possible dans certains cas, sans que les conditions soient encore toutes vérifiées.";
+ }else if(hay.indexOf("conclusion de diagnostic")!==-1){
+  p60="Une mesure pertinente ou une observation correctement interprétée, mais sans croiser encore tous les résultats disponibles.";
+  p40="Un résultat de contrôle cohérent mais isolé, avec une interprétation encore partielle.";
+  p20="Une première observation pertinente, mais pas encore suffisamment confirmée pour conclure.";
+ }else if(hay.indexOf("saint-malo")!==-1){
+  p60="Un port breton de la Manche, sans préciser encore la ville de départ.";
+  p40="Un port du nord-ouest de la France lié au départ de la course.";
+  p20="Un port français de départ, sans pouvoir le localiser précisément.";
+ }else if(hay.indexOf("pointe-à-pitre")!==-1 || hay.indexOf("pointe a pitre")!==-1){
+  p60="La Guadeloupe, sans préciser encore la ville d’arrivée.";
+  p40="Les Antilles françaises, sans identifier précisément le port d’arrivée.";
+  p20="Une destination française des Caraïbes, sans localisation plus précise.";
+ }else if(hay.indexOf("solitaire")!==-1){
+  p60="Le bateau est mené par un seul skipper pendant la course, sans détailler les conséquences de cette organisation.";
+  p40="L’équipage est réduit à une seule personne, sans préciser son rôle complet à bord.";
+  p20="La navigation se fait sans équipage collectif, sans expliquer précisément ce que cela implique.";
+ }else if(hay.indexOf("gps")!==-1){
+  p60="Un équipement de positionnement et d’aide à la route, sans détailler toutes ses fonctions.";
+  p40="Un équipement électronique permettant surtout de se repérer à bord.";
+  p20="Un équipement de bord utilisé pour aider la navigation, sans préciser son rôle exact.";
+ }else if(hay.indexOf("vhf")!==-1){
+  p60="Un moyen radio de communication maritime, sans préciser tous ses usages ni procédures.";
+  p40="Un équipement de communication utilisé à bord pour échanger des informations.";
+  p20="Un appareil de bord lié aux communications, sans préciser son utilisation maritime.";
+ }else if(/sécur|risque|protection|hygi|consign|epi/.test(hay)){
+  p60="Identifier les principaux risques et appliquer les précautions essentielles, mais sans vérifier toutes les conditions de sécurité.";
+  p40="Prendre les précautions les plus évidentes et utiliser les protections principales, avec une vérification encore partielle.";
+  p20="Repérer un risque majeur et prendre une première mesure de protection, sans traiter l’ensemble de la situation.";
+ }else if(/document|constructeur|fiche|donnée|information|référence|schema|schéma/.test(hay)){
+  p60="Consulter la documentation pertinente et relever les informations principales, mais sans croiser toutes les données utiles.";
+  p40="Utiliser une source adaptée et relever une partie des informations nécessaires, sans vérification complète.";
+  p20="Rechercher une première information utile dans la documentation, sans exploiter l’ensemble des données nécessaires.";
+ }else if(/mesur|contrô|controle|essai|test|valeur|multim|compression|pression/.test(hay)){
+  p60="Réaliser le contrôle principal et interpréter le résultat, mais sans effectuer toutes les vérifications complémentaires.";
+  p40="Effectuer une mesure ou un contrôle simple et comparer partiellement le résultat aux valeurs attendues.";
+  p20="Faire une première observation ou mesure utile, sans aller jusqu’au contrôle complet ni à l’interprétation finale.";
+ }else if(/diagnost|dysfonction|sympt|hypoth|cause|conclu|anomal/.test(hay)){
+  p60="Exploiter le symptôme et les principaux résultats pour proposer une hypothèse pertinente, mais encore incomplètement validée.";
+  p40="Formuler une hypothèse plausible à partir des indices principaux, sans mener toute la démarche de validation.";
+  p20="Repérer un premier indice cohérent et proposer une piste, sans disposer d’éléments suffisants pour conclure.";
+ }else if(/client|visiteur|communi|restit|compte rendu|expliquer|présent|informer/.test(hay)){
+  p60="Présenter clairement les informations et résultats principaux, mais sans détailler tous les éléments utiles au client.";
+  p40="Donner une explication générale correcte, avec seulement une partie des informations nécessaires.";
+  p20="Transmettre une information essentielle, mais de façon trop brève pour constituer une restitution complète.";
+ }else if(/planif|organis|prépar|prepar|ordre|planning|moyen|outillage/.test(hay)){
+  p60="Organiser les étapes principales et les moyens nécessaires, mais sans intégrer toutes les contraintes de l’intervention.";
+  p40="Prévoir les opérations essentielles et une partie des moyens, avec un ordre ou une préparation encore incomplets.";
+  p20="Identifier seulement la première étape et quelques moyens évidents, sans construire l’organisation complète.";
+ }else if(/install|remplac|répar|repar|interven|maintenance|démon|demon|remont|régl|regl|conform/.test(hay)){
+  p60="Réaliser l’opération principale selon la méthode attendue et vérifier le fonctionnement, mais sans finaliser tous les contrôles ou la traçabilité.";
+  p40="Réaliser l’essentiel de l’opération et un contrôle simple, avec une méthode encore partiellement conforme.";
+  p20="Engager correctement l’intervention et réaliser une première opération utile, sans aller jusqu’au contrôle final.";
+ }else if(/identif|collect|repér|reper|observer|prise en charge/.test(hay)){
+  p60="Identifier les éléments et informations principales utiles à la situation, mais sans compléter toutes les vérifications nécessaires.";
+  p40="Repérer la demande ou le système concerné et relever quelques informations pertinentes, sans analyse complète.";
+  p20="Faire une première observation cohérente et identifier un élément utile, sans traiter l’ensemble de la demande.";
+ }else{
+  p60=best+" — réponse pertinente, mais justification ou vérification complémentaire encore incomplète.";
+  p40="Donner une partie des éléments attendus et une démarche cohérente, sans répondre complètement à la question.";
+  p20="Identifier un premier élément pertinent lié à la question, sans développer la démarche nécessaire.";
+ }
+ return [
+  {label:best,percent:100},
+  {label:p60,percent:60},
+  {label:p40,percent:40},
+  {label:p20,percent:20}
+ ];
+}
+function shuffledGraduatedEvaluationOptions(q){
+ var arr=graduatedEvaluationTexts(q).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};});
+ for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
+ return arr;
+}
+
+function mixedWeightedEvaluationOptions(question,targetCorrectPosition){
+ var options=graduatedEvaluationTexts(question).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};});
+ var full=options.filter(function(o){return o.percent===100;})[0];
+ var partials=shuffleArray(options.filter(function(o){return o.percent!==100;}));
+ var target=Math.max(0,Math.min(Number(targetCorrectPosition)||0,3));
+ partials.splice(target,0,full);
+ return partials;
+}
+
+
 function show(view){
  Object.keys(sections).forEach(function(k){sections[k].classList.add("hidden");});
  sections[view].classList.remove("hidden");
@@ -1576,12 +1682,13 @@ function emptySkillStats(){
  return {};
 }
 
-function recordSkill(stats,codes,correct){
- (codes||[]).forEach(function(code){
-  if(!stats[code])stats[code]={good:0,total:0};
-  stats[code].total++;
-  if(correct)stats[code].good++;
- });
+function normalizedCredit(value){
+ if(value===true)return 1;if(value===false||value==null)return 0;
+ var n=Number(value);if(!isFinite(n))return 0;return Math.max(0,Math.min(1,n));
+}
+function recordSkill(stats,codes,creditValue){
+ var credit=normalizedCredit(creditValue);
+ (codes||[]).forEach(function(code){if(!stats[code])stats[code]={good:0,total:0};stats[code].total++;stats[code].good+=credit;});
 }
 
 function cloneSkillStats(stats){
@@ -1602,13 +1709,9 @@ function skillAcquisitionFromPercent(pct){
 }
 
 function skillCalculationText(item){
- if(!item || !item.total){
-  return "Aucune question prise en compte";
- }
+ if(!item || !item.total)return "Aucune question prise en compte";
  var pct=skillPercent(item);
- return item.good+" bonne"+(item.good>1?"s":"")+" réponse"+(item.good>1?"s":"")+
-  " / "+item.total+" question"+(item.total>1?"s":"")+
-  " = "+pct+" %";
+ return "Crédit cumulé : "+frNumber(item.good)+" / "+item.total+" = "+pct+" %";
 }
 
 function skillCalculationBoxHTML(stats,codes,contextText){
@@ -1671,14 +1774,12 @@ function cloneIndicatorStats(stats){
  return out;
 }
 
-function recordIndicatorStats(stats,q,correct){
+function recordIndicatorStats(stats,q,creditValue){
+ var credit=normalizedCredit(creditValue);
  (q.comps||[]).forEach(function(code){
-  var idx=q.inds && q.inds[code];
-  if(typeof idx!=="number")return;
-  if(!stats[code])stats[code]={};
-  if(!stats[code][idx])stats[code][idx]={good:0,total:0};
-  stats[code][idx].total++;
-  if(correct)stats[code][idx].good++;
+  var idx=q.inds && q.inds[code];if(typeof idx!=="number")return;
+  if(!stats[code])stats[code]={};if(!stats[code][idx])stats[code][idx]={good:0,total:0};
+  stats[code][idx].total++;stats[code][idx].good+=credit;
  });
 }
 
@@ -1708,7 +1809,7 @@ function indicatorStatsForSnapshot(kind,index,snapshot){
  (meta.responses||[]).forEach(function(r){
   var q=item.questions[r.qi];
   if(!q)return;
-  recordIndicatorStats(stats,q,!!r.correct);
+  recordIndicatorStats(stats,q,r.credit!=null?r.credit:!!r.correct);
  });
  return stats;
 }
@@ -2171,7 +2272,8 @@ function capCloudPayload(kind,index,snapshot,attemptNo){
    responses:meta.responses||[],
    context:meta.context||"",
    situation:meta.situation||item.situation||null,
-   course:meta.course||item.course||sequenceNo
+   course:meta.course||item.course||sequenceNo,
+   scoring_model:kind==="eval18"?"progressif_20_40_60_100":"binaire"
   },
   completed_at:snapshot.date||new Date().toISOString()
  };
@@ -2820,93 +2922,37 @@ function printExerciseReport(index,snapshot){
 }
 
 function printEvaluationReport(index,snapshot){
- var ev=DATA.evaluations[index];
- var snap=snapshot||readSkillSnapshot("eval18",index);
-
- if(!snap){
-  alert("Cette évaluation n’a pas encore été réalisée.");
-  return;
- }
-
- var meta=snap.meta||{};
- var responses=meta.responses||[];
- var score=Number(meta.score||0);
- var total=Number(meta.total||ev.questions.length);
- var note20=Number(meta.note20);
-
- if(!isFinite(note20)){
-  note20=total?Math.round((score/total)*200)/10:0;
- }
-
- var answersHtml='<h2>Questions, réponses de l’élève et correction</h2>';
-
+ var ev=DATA.evaluations[index],snap=snapshot||readSkillSnapshot("eval18",index);
+ if(!snap){alert("Cette évaluation n’a pas encore été réalisée.");return;}
+ var meta=snap.meta||{},responses=meta.responses||[],score=Number(meta.score||0),total=Number(meta.total||ev.questions.length),n20=Number(meta.note20);
+ if(!isFinite(n20))n20=total?Math.round((score/total)*200)/10:0;
+ var answersHtml='<h2>Questions, réponses de l’élève et barème</h2>';
  if(responses.length){
   answersHtml+=responses.map(function(r){
-   var q=ev.questions[r.qi];
-   if(!q)return "";
-
-   var studentAnswer=(q.a||[])[r.choice]||"Aucune réponse";
-   var correctAnswer=(q.a||[])[q.c]||"";
-
-   return '<div class="q">'+
-    '<strong>Question '+(r.qi+1)+' – '+esc(q.q)+'</strong><br>'+
-    '<span>Compétence(s) : '+esc((q.comps||[]).join(" · "))+'</span>'+
-    questionIndicatorRefsHTML(q)+
-    '<strong>Réponse de l’élève :</strong> '+esc(studentAnswer)+'<br>'+
-    '<strong>Bonne réponse :</strong> '+esc(correctAnswer)+'<br>'+
-    '<span class="'+(r.correct?"good":"bad")+'">'+
-     (r.correct?"✅ Réponse juste":"❌ Réponse incorrecte")+
-    '</span>'+
-   '</div>';
+   var q=ev.questions[r.qi];if(!q)return "";
+   var studentAnswer=r.label||((q.a||[])[r.choice]||"Aucune réponse"),correctAnswer=(q.a||[])[q.c]||"";
+   var pct=r.percent!=null?Number(r.percent):(r.correct?100:0);
+   return '<div class="q"><strong>Question '+(r.qi+1)+' – '+esc(q.q)+'</strong><br><span>Compétence(s) : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+
+    '<strong>Réponse de l’élève :</strong> '+esc(studentAnswer)+'<br><strong>Réponse de référence (100 %) :</strong> '+esc(correctAnswer)+'<br><span class="'+(pct>=60?"good":"bad")+'"><strong>'+pct+' % des points</strong> – '+esc(evaluationCreditLabel(pct))+'</span></div>';
   }).join("");
- }else{
-  answersHtml+=
-   '<div class="box warning">'+
-    'Les réponses détaillées de cette tentative ne sont pas disponibles dans le stockage local.'+
-   '</div>';
- }
-
- var body=
-  commonPrintHeader("Évaluation terminée",ev.title,snap.date)+
-  '<div class="box">'+
-   '<strong>Note :</strong> '+esc(frNumber(note20))+' / 20<br>'+
-   '<strong>Réponses correctes :</strong> '+score+' / '+total+
-  '</div>'+
-  '<h2>Compétences évaluées</h2>'+
-  competenceListHTML(ev.comps)+
-  '<h2>Pourcentage par indicateur puis compétence</h2>'+
-  indicatorAcquisitionPrintHTML(indicatorStatsForSnapshot("eval18",index,snap),ev.comps)+
-  answersHtml+
-  '<div class="box warning">'+
-   '<strong>Pour Cerise Pro :</strong> utiliser ce document comme trace du positionnement numérique. '+
-   'La validation reste à apprécier par l’enseignant à partir de l’ensemble des situations professionnelles observées.'+
-  '</div>';
-
+ }else answersHtml+='<div class="box warning">Les réponses détaillées de cette tentative ne sont pas disponibles dans le stockage local.</div>';
+ var body=commonPrintHeader("Évaluation terminée",ev.title,snap.date)+
+  '<div class="box"><strong>Note :</strong> '+esc(frNumber(n20))+' / 20<br><strong>Réussite pondérée :</strong> '+esc(frNumber(total?score/total*100:0))+' %</div>'+answersHtml+
+  '<h2>Synthèse des compétences</h2>'+competenceListHTML(ev.comps)+
+  '<h2>Pourcentage par indicateur puis compétence</h2>'+indicatorAcquisitionPrintHTML(indicatorStatsForSnapshot("eval18",index,snap),ev.comps)+
+  '<div class="box warning"><strong>Pour Cerise Pro :</strong> utiliser ce document comme trace du positionnement numérique. La validation reste à apprécier par l’enseignant à partir de l’ensemble des situations professionnelles observées.</div>';
  openPrintDocument(ev.title,body);
 }
 
 function historyQuestionsHTML(kind,index,snapshot){
  var item=kind==="ex24"?DATA.exercises[index]:DATA.evaluations[index];
  var responses=((snapshot||{}).meta||{}).responses||[];
- if(!responses.length){
-  return '<div class="history-question">Les réponses détaillées de cette tentative ne sont pas disponibles.</div>';
- }
-
+ if(!responses.length)return '<div class="history-question">Les réponses détaillées de cette tentative ne sont pas disponibles.</div>';
  return responses.map(function(r){
-  var q=item.questions[r.qi];
-  if(!q)return "";
-  var student=(q.a||[])[r.choice]||"Aucune réponse";
-  var good=(q.a||[])[q.c]||"";
-  return '<div class="history-question">'+
-   '<strong>Question '+(r.qi+1)+' – '+esc(q.q)+'</strong><br>'+
-   '<span>Compétence(s) : '+esc((q.comps||[]).join(" · "))+'</span>'+
-   questionIndicatorRefsHTML(q)+
-   '<strong>Réponse de l’élève :</strong> '+esc(student)+'<br>'+
-   '<strong>Bonne réponse :</strong> '+esc(good)+'<br>'+
-   '<span class="'+(r.correct?"hq-good":"hq-bad")+'">'+
-    (r.correct?"✅ Réponse correcte":"❌ Réponse incorrecte")+
-   '</span>'+
-  '</div>';
+  var q=item.questions[r.qi];if(!q)return "";
+  var student=r.label||((q.a||[])[r.choice]||"Aucune réponse"),good=(q.a||[])[q.c]||"",weighted=kind!=="ex24"&&r.percent!=null,pct=weighted?Number(r.percent):(r.correct?100:0);
+  return '<div class="history-question"><strong>Question '+(r.qi+1)+' – '+esc(q.q)+'</strong><br><span>Compétence(s) : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+
+   '<strong>Réponse de l’élève :</strong> '+esc(student)+'<br><strong>'+(weighted?'Réponse de référence (100 %)':'Bonne réponse')+' :</strong> '+esc(good)+'<br><span class="'+(pct>=60?"hq-good":"hq-bad")+'">'+(weighted?('<strong>'+pct+' % des points</strong> – '+esc(evaluationCreditLabel(pct))):(r.correct?'✅ Réponse correcte':'❌ Réponse incorrecte'))+'</span></div>';
  }).join("");
 }
 
@@ -2924,7 +2970,7 @@ function historyAttemptHTML(kind,index,snapshot,attemptNo,totalAttempts){
   '<div class="history-attempt-body">'+
    '<p><strong>Élève :</strong> '+esc(meta.student||studentName())+'</p>'+
    '<p><strong>Score :</strong> '+score+' / '+total+
-   ' · <strong>Note :</strong> '+esc(frNumber(n20))+' / 20</p>'+
+   ' · <strong>Note :</strong> '+esc(frNumber(n20))+' / 20'+(kind==="eval18"?' · <strong>Réussite pondérée :</strong> '+esc(frNumber(total?score/total*100:0))+' %':'')+'</p>'+
    '<h3>📊 Indicateurs de réussite puis compétences</h3>'+
    indicatorAcquisitionHTML(
     indicatorStatsForSnapshot(kind,index,snapshot),
@@ -3521,216 +3567,45 @@ evalGrid.addEventListener("click",function(e){
 });
 
 function openEvaluation(index,forceRedo){
- if(readSkillSnapshot("eval18",index) && !forceRedo){
-  alert("Cette évaluation a déjà été réalisée. Le PDF reste disponible. Pour la refaire, utilise le bouton « Refaire l’évaluation » et le code enseignant.");
-  rebuildEvalGrid();
-  show("evaluations");
-  return;
- }
-
- var ev=DATA.evaluations[index];
- var current=0,score=0,answered=false;
- var skillStats=emptySkillStats();
- var indicatorStats=emptyIndicatorStats();
- var responses=[];
- var detail=sections.evalDetail;
- var evalCorrectPositions=balancedCorrectPositions(ev.questions.length,4);
- var currentMixedOptions=[];
-
- detail.innerHTML=
-  '<div class="content-head">'+
-   '<button type="button" class="btn light" id="capmn26-back-eval">← Retour aux évaluations</button>'+
-  '</div>'+
-  '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+
-   '<div class="eval-top">'+
-    '<span id="capmn26-eval-counter">Question 1 / '+ev.questions.length+'</span>'+
-    '<span id="capmn26-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 / 20</span>'+
-   '</div>'+
-   '<div class="progressbar"><div id="capmn26-eval-progress" class="progressin"></div></div>'+
-   '<div id="capmn26-eval-question"></div>'+
-   '<div class="toolbar"><button type="button" class="btn blue hidden" id="capmn26-eval-next">Question suivante →</button></div>'+
-   '<div id="capmn26-eval-result" class="result hidden"></div>'+
-   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn26-bottom-prev-eval">← Précédent</button></div>'+
-  '</div>';
-
- function capReturnFromEvaluation(){
-  refreshSkillSummaries();
-  rebuildEvalGrid();
-  show("evaluations");
- }
-
- detail.querySelector("#capmn26-back-eval").addEventListener("click",capReturnFromEvaluation);
- var capBottomPrevEval=detail.querySelector("#capmn26-bottom-prev-eval");
- if(capBottomPrevEval)capBottomPrevEval.addEventListener("click",capReturnFromEvaluation);
-
- var qbox=detail.querySelector("#capmn26-eval-question");
- var next=detail.querySelector("#capmn26-eval-next");
-
- function updateScore(){
-  detail.querySelector("#capmn26-eval-score").textContent=
-   "Score : "+score+" / "+ev.questions.length+
-   " · Note : "+frNumber(note20(score,ev.questions.length))+" / 20";
- }
-
- function updateEvalIndicators(){
-  var box=detail.querySelector("#capmn26-eval-live-indicators");
-  if(box){
-   box.innerHTML=indicatorAcquisitionHTML(
-    indicatorStats,
-    ev.comps,
-    "Évaluation en cours : pourcentage par indicateur puis moyenne des indicateurs positionnés pour chaque compétence."
-   );
-  }
-  renderEvaluationSummary(indicatorStats);
- }
-
- updateEvalIndicators();
-
+ if(readSkillSnapshot("eval18",index) && !forceRedo){alert("Cette évaluation a déjà été réalisée. Le PDF reste disponible. Pour la refaire, utilise le bouton « Refaire l’évaluation » et le code enseignant.");rebuildEvalGrid();show("evaluations");return;}
+ var ev=DATA.evaluations[index],current=0,score=0,answered=false,skillStats=emptySkillStats(),indicatorStats=emptyIndicatorStats(),responses=[];
+ var detail=sections.evalDetail,evalCorrectPositions=balancedCorrectPositions(ev.questions.length,4),currentMixedOptions=[];
+ detail.innerHTML='<style>.answer.partial{border-color:#d29a2e!important;background:#fff8e8!important}.feedback.credit{font-weight:800}</style>'+ 
+  '<div class="content-head"><button type="button" class="btn light" id="capmn26-back-eval">← Retour aux évaluations</button></div>'+ 
+  '<div class="content-box"><h2>'+esc(ev.title)+'</h2><div class="eval-top"><span id="capmn26-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="capmn26-eval-score">Réussite pondérée : 0 % · Note : 0,0 / 20</span></div>'+ 
+  '<div class="progressbar"><div id="capmn26-eval-progress" class="progressin"></div></div><div id="capmn26-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="capmn26-eval-next">Question suivante →</button></div><div id="capmn26-eval-result" class="result hidden"></div><div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn26-bottom-prev-eval">← Précédent</button></div></div>';
+ function capReturnFromEvaluation(){refreshSkillSummaries();rebuildEvalGrid();show("evaluations");}
+ detail.querySelector("#capmn26-back-eval").addEventListener("click",capReturnFromEvaluation);var bp=detail.querySelector("#capmn26-bottom-prev-eval");if(bp)bp.addEventListener("click",capReturnFromEvaluation);
+ var qbox=detail.querySelector("#capmn26-eval-question"),next=detail.querySelector("#capmn26-eval-next");
+ function updateScore(){var pct=Math.round(score/ev.questions.length*1000)/10;detail.querySelector("#capmn26-eval-score").textContent="Réussite pondérée : "+frNumber(pct)+" % · Note : "+frNumber(note20(score,ev.questions.length))+" / 20";}
  function renderQ(){
-  answered=false;
-  var q=ev.questions[current];
-  currentMixedOptions=mixedAnswerOptions(q,evalCorrectPositions[current]);
-
-  detail.querySelector("#capmn26-eval-counter").textContent=
-   "Question "+(current+1)+" / "+ev.questions.length;
-
-  updateScore();
-
-  detail.querySelector("#capmn26-eval-progress").style.width=
-   Math.round((current/ev.questions.length)*100)+"%";
-
-  qbox.innerHTML=
-   '<div class="q-card">'+
-    '<span class="question-skill">Compétence évaluée : '+esc((q.comps||[]).join(" · "))+'</span>'+
-    questionIndicatorRefsHTML(q)+
-    '<strong>'+esc(q.q)+'</strong>'+
-    '<div class="answers">'+currentMixedOptions.map(function(option){
-     return '<button type="button" class="answer" data-choice="'+option.originalIndex+'">'+esc(option.label)+'</button>';
-    }).join("")+'</div>'+
-    '<div class="feedback hidden"></div>'+
-   '</div>';
-
-  next.classList.add("hidden");
+  answered=false;var q=ev.questions[current];currentMixedOptions=mixedWeightedEvaluationOptions(q,evalCorrectPositions[current]);
+  detail.querySelector("#capmn26-eval-counter").textContent="Question "+(current+1)+" / "+ev.questions.length;updateScore();detail.querySelector("#capmn26-eval-progress").style.width=Math.round((current/ev.questions.length)*100)+"%";
+  qbox.innerHTML='<div class="q-card"><span class="question-skill">Compétence évaluée : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+'<strong>'+esc(q.q)+'</strong><div class="answers">'+currentMixedOptions.map(function(option){return '<button type="button" class="answer" data-choice="'+option.originalIndex+'" data-credit="'+option.percent+'">'+esc(option.label)+'</button>';}).join("")+'</div><div class="feedback hidden"></div></div>';next.classList.add("hidden");
  }
-
  qbox.addEventListener("click",function(e){
-  var b=e.target.closest("[data-choice]");
-  if(!b || answered)return;
-
-  answered=true;
-  var q=ev.questions[current];
-  var choice=parseInt(b.getAttribute("data-choice"),10);
-  var correct=choice===q.c;
-
-  qbox.querySelectorAll(".answer").forEach(function(x){
-   x.disabled=true;
-   if(parseInt(x.getAttribute("data-choice"),10)===q.c)x.classList.add("good");
-  });
-
-  if(correct){score++;}else{b.classList.add("bad");}
-  recordSkill(skillStats,q.comps,correct);
-  recordIndicatorStats(indicatorStats,q,correct);
-  responses.push({qi:current,choice:choice,correct:correct});
-
-  var fb=qbox.querySelector(".feedback");
-  fb.classList.remove("hidden");
-  fb.textContent=correct?"✅ Bonne réponse.":"❌ Réponse incorrecte.";
-
-  updateScore();
-  updateEvalIndicators();
-  next.classList.remove("hidden");
-  next.textContent=current===ev.questions.length-1?"Voir mon résultat":"Question suivante →";
+  var b=e.target.closest("[data-credit]");if(!b||answered)return;answered=true;
+  var q=ev.questions[current],choice=parseInt(b.getAttribute("data-choice"),10),pct=Number(b.getAttribute("data-credit"))||20,credit=evaluationCreditValue(pct);
+  qbox.querySelectorAll(".answer").forEach(function(x){x.disabled=true;if(Number(x.getAttribute("data-credit"))===100)x.classList.add("good");});if(pct<100)b.classList.add("partial");
+  score+=credit;recordSkill(skillStats,q.comps,credit);recordIndicatorStats(indicatorStats,q,credit);responses.push({qi:current,choice:choice,correct:pct===100,percent:pct,credit:credit,label:b.textContent});
+  var fb=qbox.querySelector(".feedback");fb.classList.remove("hidden");fb.classList.add("credit");fb.textContent=evaluationCreditLabel(pct);updateScore();next.classList.remove("hidden");next.textContent=current===ev.questions.length-1?"Voir mon résultat":"Question suivante →";
  });
-
- next.addEventListener("click",function(){
-  if(!answered)return;
-  if(current<ev.questions.length-1){
-   current++;
-   renderQ();
-   return;
-  }
-  finish();
- });
-
+ next.addEventListener("click",function(){if(!answered)return;if(current<ev.questions.length-1){current++;renderQ();return;}finish();});
  function finish(){
-  qbox.innerHTML="";
-  next.classList.add("hidden");
-  detail.querySelector("#capmn26-eval-progress").style.width="100%";
-
-  var note=note20(score,ev.questions.length);
-  var bestKey="capmn26_eval18_best_note_"+(index+1);
-  var oldRaw=safeGet(bestKey);
-  var old=oldRaw!==null?parseFloat(oldRaw):-1;
-  if(note>old)safeSet(bestKey,String(note));
-
-  saveSkillSnapshot("eval18",index,skillStats,{
-   score:score,
-   total:ev.questions.length,
-   note20:note,
-   title:ev.title,
-   student:studentName(),
-   indicatorStats:cloneIndicatorStats(indicatorStats),
-   responses:responses
-  });
-
-  var snap=readSkillSnapshot("eval18",index);
-  var evalHistory=appendAttemptHistory("eval18",index,snap);
-  syncCapAttemptToCloud("eval18",index,snap,evalHistory.length);
-  var result=detail.querySelector("#capmn26-eval-result");
-  result.classList.remove("hidden");
-
-  var overall=Math.round(score/ev.questions.length*100);
-
-  result.innerHTML=
-   '<h3>Évaluation terminée</h3>'+
-   '<p><strong>'+esc(studentName())+'</strong></p>'+
-   '<p>Réponses correctes : <strong>'+score+' / '+ev.questions.length+'</strong></p>'+
-   '<p>Note : <span class="note20">'+frNumber(note)+' / 20</span></p>'+
-   '<p>Réussite globale : <strong>'+overall+' %</strong></p>'+
-   '<p>Tentative enregistrée : <strong>n°'+evalHistory.length+'</strong></p>'+
-   '<h3>📊 Synthèse des compétences</h3>'+
-   '<p class="small">Les compétences et indicateurs sont présentés uniquement après la dernière question.</p>'+
-   indicatorAcquisitionHTML(
-    indicatorStats,
-    ev.comps,
-    "Résultat de cette évaluation : pourcentage de chaque indicateur, puis moyenne des indicateurs positionnés pour calculer la compétence."
-   )+
-   '<div class="skill-note"><strong>Pour le suivi dans Cerise Pro :</strong> le tableau donne un positionnement numérique par compétence. La validation finale reste à apprécier par l’enseignant à partir de l’ensemble des situations professionnelles observées.</div>'+
-   '<div class="toolbar">'+
-    '<button type="button" class="btn light" disabled aria-disabled="true">✅ Tentative enregistrée</button>'+
-    '<button type="button" class="btn green" id="capmn26-pdf-eval">🖨️ Enregistrer en PDF avec réponses</button>'+
-    '<button type="button" class="btn blue" id="capmn26-copy-eval">📋 Copier le bilan pour Cerise Pro</button>'+
-    '<button type="button" class="btn blue" id="capmn26-history-eval-now">📚 Historique complet</button>'+
-    '<span class="copy-msg" id="capmn26-copy-eval-msg" aria-live="polite"></span>'+
-   '</div>';
-
-  result.querySelector("#capmn26-pdf-eval").addEventListener("click",function(){
-   printEvaluationReport(index,snap);
-  });
-
-  result.querySelector("#capmn26-history-eval-now").addEventListener("click",function(){
-   showAttemptHistory("eval18",index);
-  });
-
-  result.querySelector("#capmn26-copy-eval").addEventListener("click",function(){
-   copyText(
-    indicatorSkillText(
-     indicatorStats,
-     ev.comps,
-     ev.title,
-     "Élève : "+studentName()+"\nNote : "+frNumber(note)+"/20\nScore : "+score+"/"+ev.questions.length
-    ),
-    this,
-    result.querySelector("#capmn26-copy-eval-msg")
-   );
-  });
-
-  rebuildEvalGrid();
-  refreshSkillSummaries();
+  qbox.innerHTML="";next.classList.add("hidden");detail.querySelector("#capmn26-eval-progress").style.width="100%";
+  var note=note20(score,ev.questions.length),bestKey="capmn26_eval18_best_note_"+(index+1),oldRaw=safeGet(bestKey),old=oldRaw!==null?parseFloat(oldRaw):-1;if(note>old)safeSet(bestKey,String(note));
+  saveSkillSnapshot("eval18",index,skillStats,{score:score,total:ev.questions.length,note20:note,title:ev.title,student:studentName(),indicatorStats:cloneIndicatorStats(indicatorStats),responses:responses,scoringModel:"progressif_20_40_60_100"});
+  var snap=readSkillSnapshot("eval18",index),evalHistory=appendAttemptHistory("eval18",index,snap);syncCapAttemptToCloud("eval18",index,snap,evalHistory.length);
+  var result=detail.querySelector("#capmn26-eval-result");result.classList.remove("hidden");var overall=Math.round(score/ev.questions.length*1000)/10;
+  result.innerHTML='<h3>Évaluation terminée</h3><p><strong>'+esc(studentName())+'</strong></p><p>Réussite pondérée : <strong>'+frNumber(overall)+' %</strong></p><p>Note : <span class="note20">'+frNumber(note)+' / 20</span></p><p class="small">Barème progressif : 20 %, 40 %, 60 % ou 100 % des points selon la pertinence de la réponse.</p><p>Tentative enregistrée : <strong>n°'+evalHistory.length+'</strong></p>'+ 
+   '<h3>📊 Synthèse des compétences</h3><p class="small">Les compétences et indicateurs utilisent le même crédit partiel et sont présentés uniquement après la dernière question.</p>'+indicatorAcquisitionHTML(indicatorStats,ev.comps,"Résultat pondéré : points obtenus / points possibles par indicateur, puis moyenne pour la compétence.")+
+   '<div class="skill-note"><strong>Pour le suivi dans Cerise Pro :</strong> le tableau donne un positionnement numérique par compétence. La validation finale reste à apprécier par l’enseignant à partir de l’ensemble des situations professionnelles observées.</div>'+ 
+   '<div class="toolbar"><button type="button" class="btn light" disabled aria-disabled="true">✅ Tentative enregistrée</button><button type="button" class="btn green" id="capmn26-pdf-eval">🖨️ Enregistrer en PDF avec réponses</button><button type="button" class="btn blue" id="capmn26-copy-eval">📋 Copier le bilan pour Cerise Pro</button><button type="button" class="btn blue" id="capmn26-history-eval-now">📚 Historique complet</button><span class="copy-msg" id="capmn26-copy-eval-msg" aria-live="polite"></span></div>';
+  result.querySelector("#capmn26-pdf-eval").addEventListener("click",function(){printEvaluationReport(index,snap);});result.querySelector("#capmn26-history-eval-now").addEventListener("click",function(){showAttemptHistory("eval18",index);});
+  result.querySelector("#capmn26-copy-eval").addEventListener("click",function(){copyText(indicatorSkillText(indicatorStats,ev.comps,ev.title,"Élève : "+studentName()+"\nNote : "+frNumber(note)+"/20\nRéussite pondérée : "+frNumber(overall)+" %"),this,result.querySelector("#capmn26-copy-eval-msg"));});
+  rebuildEvalGrid();refreshSkillSummaries();
  }
-
- renderQ();
- show("evalDetail");
+ renderQ();show("evalDetail");
 }
 
 var capBottomPrevCourses=root.querySelector("#cap-bottom-prev-courses");

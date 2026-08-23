@@ -347,7 +347,7 @@ function renderGlobalSummary(kind,targetId,extraAgg){
   '<p><strong>'+counts.completed+' / '+counts.total+' '+label+' réalisés · '+counts.attempts+' tentative'+(counts.attempts>1?"s":"")+' enregistrée'+(counts.attempts>1?"s":"")+'.</strong><br>'+
   'Toutes les tentatives enregistrées sont prises en compte automatiquement.</p>'+
   '<div class="method-box"><strong>🧮 Méthode de calcul</strong><br>'+
-  'Pourcentage d’un indicateur = bonnes réponses / questions rattachées à cet indicateur × 100.<br>'+
+  'Pourcentage d’un indicateur = points obtenus / points possibles sur les questions rattachées × 100.<br>'+
   'Pourcentage de la compétence = moyenne des indicateurs positionnés. La compétence affiche un niveau seulement lorsque tous ses indicateurs requis ont été travaillés.</div>'+
   indicatorAcquisitionHTML(agg,allCodes(),
    'Calcul 100 % automatique à partir des réponses aux '+label+'. Les critères affichés sont ceux du référentiel Bac Pro Maintenance Nautique.')+
@@ -373,16 +373,115 @@ function mixedOptions(q){
  for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
  return arr;
 }
-function currentAttemptIndicatorAggregate(questions,responses){
+
+function evaluationCreditLabel(percent){
+ var p=Number(percent)||0;
+ if(p>=100)return "✅ Réponse complète : 100 % des points.";
+ if(p>=60)return "🟡 Réponse pertinente mais incomplète : 60 % des points.";
+ if(p>=40)return "🟠 Réponse partielle : 40 % des points.";
+ return "🔸 Première étape pertinente : 20 % des points.";
+}
+function evaluationCreditValue(percent){return Math.max(0,Math.min(100,Number(percent)||0))/100;}
+function graduatedEvaluationTexts(q){
+ var question=String((q&&q.q)||"");
+ var best=String((q&&q.a&&q.a[q.c])||"");
+ var hay=(question+" "+best).toLowerCase();
+ var p60="",p40="",p20="";
+ var bestLower=best.trim().toLowerCase();
+ if(bestLower==="non"){
+  p60="Non, car il faut encore confirmer la situation par les contrôles ou critères prévus.";
+  p40="Pas systématiquement : une vérification complémentaire reste nécessaire avant de conclure.";
+  p20="Cela dépend des premiers indices, mais une conclusion immédiate serait encore prématurée.";
+ }else if(bestLower==="oui"){
+  p60="Oui, à condition de confirmer la situation par les vérifications prévues.";
+  p40="Oui dans le principe, mais seulement après une vérification partielle.";
+  p20="C’est possible dans certains cas, sans que les conditions soient encore toutes vérifiées.";
+ }else if(hay.indexOf("conclusion de diagnostic")!==-1){
+  p60="Une mesure pertinente ou une observation correctement interprétée, mais sans croiser encore tous les résultats disponibles.";
+  p40="Un résultat de contrôle cohérent mais isolé, avec une interprétation encore partielle.";
+  p20="Une première observation pertinente, mais pas encore suffisamment confirmée pour conclure.";
+ }else if(hay.indexOf("saint-malo")!==-1){
+  p60="Un port breton de la Manche, sans préciser encore la ville de départ.";
+  p40="Un port du nord-ouest de la France lié au départ de la course.";
+  p20="Un port français de départ, sans pouvoir le localiser précisément.";
+ }else if(hay.indexOf("pointe-à-pitre")!==-1 || hay.indexOf("pointe a pitre")!==-1){
+  p60="La Guadeloupe, sans préciser encore la ville d’arrivée.";
+  p40="Les Antilles françaises, sans identifier précisément le port d’arrivée.";
+  p20="Une destination française des Caraïbes, sans localisation plus précise.";
+ }else if(hay.indexOf("solitaire")!==-1){
+  p60="Le bateau est mené par un seul skipper pendant la course, sans détailler les conséquences de cette organisation.";
+  p40="L’équipage est réduit à une seule personne, sans préciser son rôle complet à bord.";
+  p20="La navigation se fait sans équipage collectif, sans expliquer précisément ce que cela implique.";
+ }else if(hay.indexOf("gps")!==-1){
+  p60="Un équipement de positionnement et d’aide à la route, sans détailler toutes ses fonctions.";
+  p40="Un équipement électronique permettant surtout de se repérer à bord.";
+  p20="Un équipement de bord utilisé pour aider la navigation, sans préciser son rôle exact.";
+ }else if(hay.indexOf("vhf")!==-1){
+  p60="Un moyen radio de communication maritime, sans préciser tous ses usages ni procédures.";
+  p40="Un équipement de communication utilisé à bord pour échanger des informations.";
+  p20="Un appareil de bord lié aux communications, sans préciser son utilisation maritime.";
+ }else if(/sécur|risque|protection|hygi|consign|epi/.test(hay)){
+  p60="Identifier les principaux risques et appliquer les précautions essentielles, mais sans vérifier toutes les conditions de sécurité.";
+  p40="Prendre les précautions les plus évidentes et utiliser les protections principales, avec une vérification encore partielle.";
+  p20="Repérer un risque majeur et prendre une première mesure de protection, sans traiter l’ensemble de la situation.";
+ }else if(/document|constructeur|fiche|donnée|information|référence|schema|schéma/.test(hay)){
+  p60="Consulter la documentation pertinente et relever les informations principales, mais sans croiser toutes les données utiles.";
+  p40="Utiliser une source adaptée et relever une partie des informations nécessaires, sans vérification complète.";
+  p20="Rechercher une première information utile dans la documentation, sans exploiter l’ensemble des données nécessaires.";
+ }else if(/mesur|contrô|controle|essai|test|valeur|multim|compression|pression/.test(hay)){
+  p60="Réaliser le contrôle principal et interpréter le résultat, mais sans effectuer toutes les vérifications complémentaires.";
+  p40="Effectuer une mesure ou un contrôle simple et comparer partiellement le résultat aux valeurs attendues.";
+  p20="Faire une première observation ou mesure utile, sans aller jusqu’au contrôle complet ni à l’interprétation finale.";
+ }else if(/diagnost|dysfonction|sympt|hypoth|cause|conclu|anomal/.test(hay)){
+  p60="Exploiter le symptôme et les principaux résultats pour proposer une hypothèse pertinente, mais encore incomplètement validée.";
+  p40="Formuler une hypothèse plausible à partir des indices principaux, sans mener toute la démarche de validation.";
+  p20="Repérer un premier indice cohérent et proposer une piste, sans disposer d’éléments suffisants pour conclure.";
+ }else if(/client|visiteur|communi|restit|compte rendu|expliquer|présent|informer/.test(hay)){
+  p60="Présenter clairement les informations et résultats principaux, mais sans détailler tous les éléments utiles au client.";
+  p40="Donner une explication générale correcte, avec seulement une partie des informations nécessaires.";
+  p20="Transmettre une information essentielle, mais de façon trop brève pour constituer une restitution complète.";
+ }else if(/planif|organis|prépar|prepar|ordre|planning|moyen|outillage/.test(hay)){
+  p60="Organiser les étapes principales et les moyens nécessaires, mais sans intégrer toutes les contraintes de l’intervention.";
+  p40="Prévoir les opérations essentielles et une partie des moyens, avec un ordre ou une préparation encore incomplets.";
+  p20="Identifier seulement la première étape et quelques moyens évidents, sans construire l’organisation complète.";
+ }else if(/install|remplac|répar|repar|interven|maintenance|démon|demon|remont|régl|regl|conform/.test(hay)){
+  p60="Réaliser l’opération principale selon la méthode attendue et vérifier le fonctionnement, mais sans finaliser tous les contrôles ou la traçabilité.";
+  p40="Réaliser l’essentiel de l’opération et un contrôle simple, avec une méthode encore partiellement conforme.";
+  p20="Engager correctement l’intervention et réaliser une première opération utile, sans aller jusqu’au contrôle final.";
+ }else if(/identif|collect|repér|reper|observer|prise en charge/.test(hay)){
+  p60="Identifier les éléments et informations principales utiles à la situation, mais sans compléter toutes les vérifications nécessaires.";
+  p40="Repérer la demande ou le système concerné et relever quelques informations pertinentes, sans analyse complète.";
+  p20="Faire une première observation cohérente et identifier un élément utile, sans traiter l’ensemble de la demande.";
+ }else{
+  p60=best+" — réponse pertinente, mais justification ou vérification complémentaire encore incomplète.";
+  p40="Donner une partie des éléments attendus et une démarche cohérente, sans répondre complètement à la question.";
+  p20="Identifier un premier élément pertinent lié à la question, sans développer la démarche nécessaire.";
+ }
+ return [
+  {label:best,percent:100},
+  {label:p60,percent:60},
+  {label:p40,percent:40},
+  {label:p20,percent:20}
+ ];
+}
+function shuffledGraduatedEvaluationOptions(q){
+ var arr=graduatedEvaluationTexts(q).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};});
+ for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
+ return arr;
+}
+
+function currentAttemptIndicatorAggregate(questions,responses,weighted){
  var out={};
  (questions||[]).forEach(function(q,qi){
-  var correct=responses[qi]&&responses[qi].correct===true;
+  var r=responses[qi]||{};
+  var credit=weighted?(r.credit!=null?Number(r.credit):evaluationCreditValue(r.percent!=null?r.percent:(r.correct?100:0))):(r.correct===true?1:0);
+  credit=Math.max(0,Math.min(1,isFinite(credit)?credit:0));
   Object.keys(q.inds||{}).forEach(function(code){
    var idx=Number(q.inds[code]);
    if(!out[code])out[code]={};
    if(!out[code][idx])out[code][idx]={good:0,total:0};
    out[code][idx].total++;
-   if(correct)out[code][idx].good++;
+   out[code][idx].good+=credit;
   });
  });
  return out;
@@ -453,7 +552,9 @@ async function saveAttempt(kind,item,responses,score){
   engine:"bacpro_auto_v11",
   level:CFG.level,sequence:seq,session_no:no,title:item.title,
   responses:responses,
-  mapping:mapping
+  mapping:mapping,
+  indicator_scale:5,
+  scoring_model:kind==="evaluation"?"progressif_20_40_60_100":"binaire"
  };
  var inserted=await FigaroCloud.table("activity_attempts","",{
   method:"POST",headers:{"Prefer":"return=representation"},
@@ -471,8 +572,10 @@ async function saveAttempt(kind,item,responses,score){
    var idx=Number(q.inds[code]);
    var key=code+"|"+idx;
    if(!agg[key])agg[key]={code:code,idx:idx,good:0,total:0};
-   agg[key].total++;
-   if(responses[qi]&&responses[qi].correct===true)agg[key].good++;
+   agg[key].total+=5;
+   var response=responses[qi]||{};
+   var earned=kind==="evaluation"?Math.round((response.percent!=null?Number(response.percent):(response.correct?100:20))/20):(response.correct===true?5:0);
+   agg[key].good+=Math.max(0,Math.min(5,isFinite(earned)?earned:0));
   });
  });
  var indicatorRows=Object.keys(agg).map(function(k){
@@ -491,7 +594,7 @@ async function saveAttempt(kind,item,responses,score){
   var n20=note20(score,total);
   try{
    await FigaroCloud.table("evaluation_results","",{method:"POST",headers:{"Prefer":"return=minimal"},
-    body:JSON.stringify({student_id:state.profile.id,session_id:session.id,score:n20,attempt_no:attemptNo,details:{source:"FigaroMN BacPro Auto V11",engine:"bacpro_auto_v11",raw_score:score,total:total}})});
+    body:JSON.stringify({student_id:state.profile.id,session_id:session.id,score:n20,attempt_no:attemptNo,details:{source:"FigaroMN BacPro Auto V11",engine:"bacpro_auto_v11",raw_score:score,total:total,scoring_model:"progressif_20_40_60_100",indicator_scale:5}})});
   }catch(e){}
  }
  await markSessionCompleted(session);
@@ -511,12 +614,15 @@ function printReport(title,item,result,responses){
   '<h2>Questions et réponses</h2>'+
   item.questions.map(function(q,i){
    var r=responses[i]||{},choice=r.choice;
-   var chosen=(choice==null||!q.a)?"—":q.a[choice];
+   var weighted=r.percent!=null;
+   var chosen=r.label||((choice==null||!q.a)?"—":q.a[choice]);
    var expected=(q.c==null||!q.a)?"—":q.a[q.c];
-   var status=r.correct===true;
-   return '<div class="q '+(status?'ok':'ko')+'"><div class="qtitle"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><span>'+(status?'✅ Correct':'❌ À revoir')+'</span></div>'+
+   var pct=weighted?Number(r.percent):(r.correct===true?100:0);
+   var status=pct>=60;
+   return '<div class="q '+(status?'ok':'ko')+'"><div class="qtitle"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><span>'+(weighted?(fr(pct)+' % des points'):(r.correct?'✅ Correct':'❌ À revoir'))+'</span></div>'+
     '<p><strong>Réponse de l’élève :</strong> '+esc(chosen)+'</p>'+
-    '<p><strong>Réponse attendue :</strong> '+esc(expected)+'</p>'+
+    '<p><strong>Réponse de référence (100 %) :</strong> '+esc(expected)+'</p>'+
+    '<p><strong>Crédit obtenu :</strong> '+fr(pct)+' % des points de la question</p>'+
     '<p class="indicator"><strong>Indicateur :</strong> '+esc(Object.keys(q.inds||{}).map(function(c){return c+"-I"+(Number(q.inds[c])+1);}).join(" · ")||"—")+'</p></div>';
   }).join("")+
   '<p class="foot">Document généré depuis FigaroMN – exercice réalisé et réponses enregistrées.</p>';
@@ -880,46 +986,38 @@ function openEvaluation(ev,forceRedo){
  if(rows.length&&!forceRedo){alert("Cette évaluation a déjà été réalisée. Pour la refaire, utilise « Refaire l’évaluation » et le code enseignant.");rebuildEvaluations();show("evaluations");return;}
  var detail=$("fmn-view-evaluation-detail");
  if(!detail){
-  detail=document.createElement("section");
-  detail.id="fmn-view-evaluation-detail";
-  detail.className="main-view hidden";
-  var host=root.querySelector(".content")||root;
-  host.appendChild(detail);
+  detail=document.createElement("section");detail.id="fmn-view-evaluation-detail";detail.className="main-view hidden";
+  var host=root.querySelector(".content")||root;host.appendChild(detail);
  }
  var current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[];
- detail.innerHTML='<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button></div>'+
-  '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+
-  '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Score : 0 / '+ev.questions.length+' · Note : 0,0 /20</span></div>'+
-  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+
+ detail.innerHTML='<style>.answer.partial{border-color:#d29a2e!important;background:#fff8e8!important}.feedback.credit{font-weight:800}</style>'+ 
+  '<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button></div>'+ 
+  '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+ 
+  '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Réussite pondérée : 0 % · Note : 0,0 /20</span></div>'+ 
+  '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+ 
   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="bac-bottom-prev-eval">← Précédent</button></div></div>';
- function bacReturnFromEvaluation(){
-  window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;
-  activeSequence=ev.sequence;
-  rebuildEvaluations();
-  show("evaluations");
- }
- $("bac-back-eval").onclick=bacReturnFromEvaluation;
- var bacBottomPrevEval=$("bac-bottom-prev-eval");
- if(bacBottomPrevEval)bacBottomPrevEval.onclick=bacReturnFromEvaluation;
+ function bacReturnFromEvaluation(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");}
+ $("bac-back-eval").onclick=bacReturnFromEvaluation;var bp=$("bac-bottom-prev-eval");if(bp)bp.onclick=bacReturnFromEvaluation;
  var qbox=$("bac-eval-question"),next=$("bac-eval-next");
  function update(){
-  $("bac-eval-score").textContent="Score : "+score+" / "+ev.questions.length+" · Note : "+fr(note20(score,ev.questions.length))+" /20";
-  liveAgg=currentAttemptIndicatorAggregate(ev.questions,responses);
+  var pct=Math.round(score/ev.questions.length*1000)/10;
+  $("bac-eval-score").textContent="Réussite pondérée : "+fr(pct)+" % · Note : "+fr(note20(score,ev.questions.length))+" /20";
+  liveAgg=currentAttemptIndicatorAggregate(ev.questions,responses,true);
  }
  function renderQ(){
-  answered=false;var q=ev.questions[current];mixed=mixedOptions(q);
+  answered=false;var q=ev.questions[current];mixed=shuffledGraduatedEvaluationOptions(q);
   $("bac-eval-counter").textContent="Question "+(current+1)+" / "+ev.questions.length;
   $("bac-eval-progress").style.width=Math.round(current/ev.questions.length*100)+"%";
-  qbox.innerHTML='<div class="q-card"><span class="question-skill">Compétence évaluée : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+'<strong>'+esc(q.q)+'</strong><div class="answers">'+mixed.map(function(o){return '<button type="button" class="answer" data-choice="'+o.originalIndex+'">'+esc(o.label)+'</button>';}).join("")+'</div><div class="feedback hidden"></div></div>';
+  qbox.innerHTML='<div class="q-card"><span class="question-skill">Compétence évaluée : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+'<strong>'+esc(q.q)+'</strong><div class="answers">'+mixed.map(function(o){return '<button type="button" class="answer" data-choice="'+o.originalIndex+'" data-credit="'+o.percent+'">'+esc(o.label)+'</button>';}).join("")+'</div><div class="feedback hidden"></div></div>';
   next.classList.add("hidden");update();
  }
  qbox.onclick=function(e){
-  var b=e.target.closest("[data-choice]");if(!b||answered)return;answered=true;
-  var q=ev.questions[current],choice=Number(b.dataset.choice),correct=choice===q.c;
-  qbox.querySelectorAll(".answer").forEach(function(x){x.disabled=true;if(Number(x.dataset.choice)===q.c)x.classList.add("good");});
-  if(correct)score++;else b.classList.add("bad");
-  responses[current]={qi:current,choice:choice,correct:correct};
-  var fb=qbox.querySelector(".feedback");fb.classList.remove("hidden");fb.textContent=correct?"✅ Bonne réponse.":"❌ Réponse incorrecte.";
+  var b=e.target.closest("[data-credit]");if(!b||answered)return;answered=true;
+  var q=ev.questions[current],choice=Number(b.dataset.choice),pct=Number(b.dataset.credit)||20,credit=evaluationCreditValue(pct);
+  qbox.querySelectorAll(".answer").forEach(function(x){x.disabled=true;if(Number(x.dataset.credit)===100)x.classList.add("good");});
+  if(pct<100)b.classList.add("partial");score+=credit;
+  responses[current]={qi:current,choice:choice,correct:pct===100,percent:pct,credit:credit,label:b.textContent};
+  var fb=qbox.querySelector(".feedback");fb.classList.remove("hidden");fb.classList.add("credit");fb.textContent=evaluationCreditLabel(pct);
   update();next.classList.remove("hidden");next.textContent=current===ev.questions.length-1?"Voir mon résultat":"Question suivante →";
  };
  next.onclick=async function(){
@@ -928,13 +1026,11 @@ function openEvaluation(ev,forceRedo){
   qbox.innerHTML="";next.classList.add("hidden");$("bac-eval-progress").style.width="100%";
   var resultBox=$("bac-eval-result");resultBox.classList.remove("hidden");resultBox.innerHTML="<h3>Enregistrement automatique…</h3>";
   try{
-   var result=await saveAttempt("evaluation",ev,responses,score),agg=currentAttemptIndicatorAggregate(ev.questions,responses);
-   resultBox.innerHTML='<h3>Évaluation terminée</h3><p>Réponses correctes : <strong>'+score+' / '+ev.questions.length+'</strong></p><p>Note automatique : <span class="note20">'+fr(result.note20)+' / 20</span></p><p>Réussite globale : <strong>'+fr(result.percent)+' %</strong></p><p class="small">Calcul de la note : réponses correctes ÷ '+ev.questions.length+' × 20.</p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+
-    '<h3>📊 Synthèse des compétences</h3><p class="small">Les compétences et indicateurs sont présentés uniquement après la dernière question.</p>'+indicatorAcquisitionHTML(agg,ev.comps,'Résultat automatique de cette évaluation.')+
+   var result=await saveAttempt("evaluation",ev,responses,score),agg=currentAttemptIndicatorAggregate(ev.questions,responses,true);
+   resultBox.innerHTML='<h3>Évaluation terminée</h3><p>Réussite pondérée : <strong>'+fr(result.percent)+' %</strong></p><p>Note automatique : <span class="note20">'+fr(result.note20)+' / 20</span></p><p class="small">Barème progressif : chaque réponse vaut 20 %, 40 %, 60 % ou 100 % des points selon sa pertinence.</p><p>Tentative enregistrée : <strong>n°'+result.attemptNo+'</strong></p>'+ 
+    '<h3>📊 Synthèse des compétences</h3><p class="small">Les compétences et indicateurs sont présentés uniquement après la dernière question. Ils utilisent le même crédit partiel que la note.</p>'+indicatorAcquisitionHTML(agg,ev.comps,'Résultat pondéré de cette évaluation : points obtenus / points possibles par indicateur.')+
     '<div class="toolbar"><button type="button" class="btn light" disabled>✅ Tentative synchronisée</button><button type="button" class="btn green" id="bac-pdf-eval">🖨️ Enregistrer en PDF avec réponses</button><button type="button" class="btn blue" id="bac-history-eval-now">📚 Historique complet</button></div>';
-   $("bac-pdf-eval").onclick=function(){printReport(ev.title,ev,result,responses);};
-   $("bac-history-eval-now").onclick=function(){showHistory("evaluation",ev);};
-   rebuildExercises();rebuildEvaluations();
+   $("bac-pdf-eval").onclick=function(){printReport(ev.title,ev,result,responses);};$("bac-history-eval-now").onclick=function(){showHistory("evaluation",ev);};rebuildExercises();rebuildEvaluations();
   }catch(e){resultBox.innerHTML='<h3>Évaluation terminée</h3><p class="badmsg">Synchronisation impossible : '+esc(e.message)+'</p>';}
  };
  renderQ();show("evaluation-detail");

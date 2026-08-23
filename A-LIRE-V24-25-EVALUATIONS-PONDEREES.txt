@@ -1,0 +1,14 @@
+FIGAROMN V24.25 — ÉVALUATIONS PONDÉRÉES
+
+Nouveau barème sur toutes les évaluations CAP, Seconde, Première et Terminale :
+- réponse très partielle : 20 % des points
+- réponse partielle : 40 % des points
+- réponse pertinente mais incomplète : 60 % des points
+- réponse complète : 100 % des points
+
+Les pourcentages ne sont PAS affichés avant le choix de l’élève. Ils sont révélés après la réponse.
+La note /20, le pourcentage global, les indicateurs et les compétences utilisent le crédit partiel.
+Les questions sont au début et la synthèse des compétences reste à la fin.
+
+IMPORTANT : exécuter une seule fois MIGRATION-V24-25-PONDERATION-EVALUATIONS.sql dans Supabase > SQL Editor.
+Cette migration ne change pas les anciennes notes : elle met seulement les compteurs internes des indicateurs Bac Pro sur la même échelle que le nouveau barème.
