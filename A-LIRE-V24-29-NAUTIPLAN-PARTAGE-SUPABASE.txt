@@ -1,0 +1,20 @@
+FIGAROMN V24.29 — NautiPlan Pro partagé
+=======================================
+
+Cette version fait évoluer NautiPlan Pro du mode local vers un planning partagé multi-appareils.
+
+Fonctionnement :
+- sans code : consultation publique du tableau de bord, planning et interventions opérationnelles ; les coordonnées clients et données sensibles ne sont pas envoyées ;
+- code Administrateur : accès complet, création, modification, suppression, restauration JSON ;
+- code Technicien : accès complet aux informations et modification des interventions / statuts ;
+- code Lecture seule : accès aux fiches détaillées sans modification ;
+- synchronisation automatique Supabase environ toutes les 5 secondes ;
+- les fiches PDF restent disponibles ;
+- les anciennes données locales peuvent être importées automatiquement dans le planning partagé lors de la première connexion Administrateur.
+
+IMPORTANT :
+1. Exécuter le fichier SQL V24.29 fourni séparément dans Supabase > SQL Editor.
+2. NE PAS envoyer ce fichier SQL dans un dépôt GitHub public : il contient les codes initiaux.
+3. Ensuite envoyer les fichiers du ZIP V24.29 à la racine GitHub, attendre la coche verte et faire Ctrl + F5.
+
+Aucun dossier CERISE / pack .SCPRO n'est à retransférer spécialement pour cette évolution.
