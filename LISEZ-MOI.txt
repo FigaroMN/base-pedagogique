@@ -1,0 +1,18 @@
+FIGAROMN V24.36 - CORRECTIF URGENT NAUTIPLAN PRO
+
+1. Décompresser ce ZIP.
+2. Dans GitHub > base-pedagogique > racine du dépôt, remplacer UNIQUEMENT le fichier nautiplan-pro.html par celui de ce dossier.
+3. Ne supprimer aucun autre fichier du dépôt.
+4. Valider le commit.
+5. Attendre la fin du déploiement GitHub Pages.
+6. Ouvrir FigaroMN et faire Ctrl+F5.
+
+Ce correctif répare l'erreur JavaScript de la V24.35 qui bloquait tous les boutons de NautiPlan Pro.
+Il conserve :
+- navigation regroupée sans onglet Planning en haut ;
+- bloc Planning placé en bas du tableau de bord ;
+- Visualiser / PDF / Modifier / Supprimer ;
+- confirmation avant suppression ;
+- synchronisation Supabase existante.
+
+Aucun SQL Supabase n'est nécessaire.
