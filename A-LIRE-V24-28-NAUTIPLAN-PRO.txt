@@ -1,0 +1,28 @@
+FIGAROMN V24.28 — NAUTIPLAN PRO
+
+NOUVEAU : outil en libre accès sur la page d'accueil.
+Nom : NautiPlan Pro · Gestion des interventions.
+
+Fonctions incluses :
+- Tableau de bord : interventions du jour, urgences, retards, techniciens disponibles, terminées.
+- Identification automatique de l'intervention en cours.
+- Planning calendrier jour / semaine / mois.
+- Glisser-déposer des interventions pour changer la date.
+- Couleurs par statut ou par technicien.
+- Fiches clients avec historique et équipements.
+- Fiches techniciens avec compétences, horaires, disponibilité, secteur, interventions affectées.
+- Création et modification d'interventions : client, adresse, date, heure, durée, type, technicien, priorité, consignes.
+- Statuts : à planifier, planifiée, en route, en cours, en attente, terminée, annulée.
+- Gestion des équipements : appareil, marque, modèle, numéro de série, date d'installation, historique pannes.
+- Impression / PDF : intervention, client, technicien, équipement.
+- Sauvegarde et restauration JSON.
+
+IMPORTANT :
+NautiPlan Pro V1 fonctionne en libre accès et stocke ses données localement dans le navigateur de l'appareil.
+Il n'y a aucun nouveau SQL Supabase à exécuter.
+Pour un usage partagé multi-techniciens et multi-appareils, une future version avec comptes et synchronisation Supabase devra être ajoutée.
+
+INSTALLATION :
+Envoyer les fichiers du ZIP à la racine du dépôt GitHub, comme les mises à jour précédentes.
+Le fichier index.html ajoute la carte NautiPlan Pro sur la page d'accueil.
+Le fichier nautiplan-pro.html contient l'application.
