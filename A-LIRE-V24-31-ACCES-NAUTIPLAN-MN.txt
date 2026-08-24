@@ -1,0 +1,8 @@
+FIGAROMN V24.31 — Accès NautiPlan Pro MN
+
+- Le champ « Nom / prénom » de NautiPlan Pro est prérempli avec : MN
+- Le champ « Code d’accès équipe » est renommé « Mot de passe ».
+- Le mot de passe administrateur doit être modifié dans Supabase avec le fichier SQL séparé :
+  MIGRATION-V24-31-ACCES-NAUTIPLAN-MN.sql
+- Le mot de passe n’est PAS écrit dans le HTML ni dans le dépôt GitHub.
+- La synchronisation NautiPlan Pro V24.29 reste inchangée.
