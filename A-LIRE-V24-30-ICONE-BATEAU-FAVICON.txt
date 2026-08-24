@@ -1,0 +1,20 @@
+FIGAROMN V24.30 — ICÔNE BATEAU DANS L'ONGLET DU NAVIGATEUR
+
+Cette mise à jour remplace l'icône générique de type globe affichée par le navigateur par une icône bateau FigaroMN.
+
+Fichiers ajoutés :
+- favicon.svg
+- favicon-32.png
+- favicon-64.png
+- favicon.ico
+- apple-touch-icon.png
+
+Le favicon est référencé dans les pages HTML du pack afin qu'il reste visible dans l'onglet pendant la navigation.
+
+Après le déploiement GitHub Pages :
+1. Attendre la coche verte du workflow.
+2. Fermer l'ancien onglet FigaroMN.
+3. Rouvrir https://figaromn.github.io/base-pedagogique/
+4. Si l'ancien globe reste affiché, faire Ctrl+F5 puis fermer/réouvrir le navigateur. Les favicons sont fortement mis en cache par les navigateurs.
+
+Aucun SQL Supabase n'est nécessaire.
