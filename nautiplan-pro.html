@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NautiPlan Pro · Planning partagé des interventions</title>
-<link rel="icon" href="favicon.svg?v=2432" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png?v=2432" type="image/png" sizes="32x32">
-<link rel="shortcut icon" href="favicon.ico?v=2432">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2432">
+<link rel="icon" href="favicon.svg?v=2433" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=2433" type="image/png" sizes="32x32">
+<link rel="shortcut icon" href="favicon.ico?v=2433">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2433">
 <style>
 :root{--navy:#1d3145;--navy2:#284c66;--bg:#eef5f7;--card:#fff;--line:#d7e2e7;--text:#182b3d;--muted:#617482;--green:#4d8d68;--orange:#ef8737;--red:#c75155;--blue:#36759b;--yellow:#c9962f;--purple:#745b94}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -42,7 +42,7 @@ body.role-admin #adminQuickActions{display:flex!important}
 <body>
 <header class="top"><div class="topin"><div class="brand">⚓ NautiPlan Pro <small>· Gestion des interventions</small></div><div class="topactions"><span class="sync-badge warn" id="syncBadge">⏳ Synchronisation…</span><button class="btn ghost" id="teamAccessBtn">🔐 Accès équipe</button><button class="btn ghost" id="teamLogoutBtn" hidden>↩ Consultation publique</button><a class="btn ghost" href="index.html">← FigaroMN</a><button class="btn ghost" id="exportBtn">⬇ Sauvegarde</button><button class="btn ghost" id="importBtn">⬆ Restaurer</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn orange" data-new="intervention">＋ Nouvelle intervention</button></div></div></header>
 <main class="shell">
-<section class="hero"><div><h1>NautiPlan Pro</h1><p>Planification partagée, suivi clients, techniciens, équipements et interventions nautiques.</p><div class="access-line"><span class="access-role" id="accessRole">Consultation publique</span><span id="lastSyncText" style="font-size:12px;opacity:.85">Connexion au planning partagé…</span></div></div><div class="local-note"><strong>Planning partagé via Supabase.</strong><br>Sans code, tout le monde peut voir le planning opérationnel et l’intervention en cours sans coordonnées clients. Un code équipe déverrouille les fiches détaillées et les modifications.<div class="public-info">Actualisation automatique environ toutes les 5 secondes.</div></div></section>
+<section class="hero"><div><h1>NautiPlan Pro</h1><p>Planification partagée, suivi clients, techniciens, équipements et interventions nautiques.</p><div class="access-line"><span class="access-role" id="accessRole">Consultation publique</span><span id="lastSyncText" style="font-size:12px;opacity:.85">Connexion au planning partagé…</span></div></div></section>
 <nav class="nav" id="mainNav"><button class="active" data-view="dashboard">📊 Tableau de bord</button><button data-view="planning">📅 Planning</button><button data-view="interventions">🧰 Interventions</button><button class="private-nav" data-view="clients">👤 Clients</button><button class="private-nav" data-view="technicians">👨‍🔧 Techniciens</button><button class="private-nav" data-view="equipments">⚙️ Équipements</button></nav>
 <section id="adminQuickActions"><strong>＋ Création rapide :</strong><button class="btn sm primary" data-new="intervention">Intervention</button><button class="btn sm primary" data-new="client">Client</button><button class="btn sm primary" data-new="technician">Technicien</button><button class="btn sm primary" data-new="equipment">Équipement</button></section>
 <section class="view active" id="view-dashboard">
@@ -72,14 +72,14 @@ body.role-admin #adminQuickActions{display:flex!important}
 <script>
 (function(){
 'use strict';
-const KEY='nautiplan_pro_v1';
+const KEY='nautiplan_pro_v1', DIRTY_KEY='nautiplan_pro_dirty_v2433', REV_KEY='nautiplan_pro_revision_v2433';
 const CODE_KEY='nautiplan_team_code_v2429', OPERATOR_KEY='nautiplan_operator_v2429';
 const STATUS={a_planifier:'À planifier',planifiee:'Planifiée',en_route:'En route',en_cours:'En cours',en_attente:'En attente',terminee:'Terminée',annulee:'Annulée'};
 const PRIORITY={normale:'Normale',haute:'Haute',urgente:'Urgente'};
 const localState=load();
 let state=JSON.parse(JSON.stringify(localState));
 let accessRole='public', accessCode=sessionStorage.getItem(CODE_KEY)||'', operatorName=sessionStorage.getItem(OPERATOR_KEY)||'MN';
-let cloudReady=false, cloudRevision=0, syncBusy=false, saveTimer=null, lastCloudFingerprint='';
+let cloudReady=false, cloudRevision=Number(localStorage.getItem(REV_KEY)||0), syncBusy=false, saveTimer=null, lastCloudFingerprint='', dirty=localStorage.getItem(DIRTY_KEY)==='1', savingPromise=null;
 let calDate=startDay(new Date()), dragId=null;
 const $=id=>document.getElementById(id);
 function blankState(){return {clients:[],technicians:[],equipments:[],interventions:[],seq:1};}
@@ -93,15 +93,97 @@ function fingerprint(x){try{return JSON.stringify(x)}catch(e){return ''}}
 function setSyncBadge(text,type='warn'){$('syncBadge').textContent=text;$('syncBadge').className='sync-badge '+type}
 function roleLabel(){return accessRole==='admin'?'Administrateur':accessRole==='technicien'?'Technicien':accessRole==='lecture'?'Lecture seule':'Consultation publique'}
 function updateAccessUi(){document.body.classList.remove('role-public','role-admin','role-technicien','role-lecture');document.body.classList.add('role-'+accessRole);$('accessRole').textContent=roleLabel();$('accessRole').className='access-role '+(accessRole==='public'?'':accessRole);$('teamAccessBtn').hidden=accessRole!=='public';$('teamLogoutBtn').hidden=accessRole==='public';$('importBtn').hidden=!canAdmin();document.querySelectorAll('#mainNav .private-nav').forEach(b=>b.hidden=!canSeePrivate());if(!canSeePrivate()&&document.querySelector('.view.active')?.id&&!['view-dashboard','view-planning','view-interventions'].includes(document.querySelector('.view.active').id))showView('dashboard');}
-async function rpc(name,args){if(!window.FigaroCloud||!FigaroCloud.api)throw new Error('Connexion Supabase FigaroMN indisponible.');return FigaroCloud.api('/rest/v1/rpc/'+name,{method:'POST',body:JSON.stringify(args||{})});}
+async function rpc(name,args){
+ if(!window.FigaroCloud||!FigaroCloud.api)throw new Error('Connexion Supabase FigaroMN indisponible.');
+ return FigaroCloud.api('/rest/v1/rpc/'+name,{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(args||{})});
+}
 function one(x){return Array.isArray(x)?x[0]:x}
-function applyRemote(row){if(!row||!row.state)return;const incoming=normalizeState(row.state);const fp=fingerprint(incoming);cloudRevision=Number(row.revision)||0;cloudReady=true;if(fp&&fp!==lastCloudFingerprint){state=incoming;lastCloudFingerprint=fp;localStorage.setItem(KEY,JSON.stringify(state));renderAll();}if(row.updated_at){const d=new Date(row.updated_at);$('lastSyncText').textContent='Dernière synchronisation : '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}setSyncBadge('☁️ Synchronisé','ok');}
-async function loadPublicState(silent=false){if(syncBusy)return;syncBusy=true;try{const row=one(await rpc('nautiplan_public_state_v1',{}));applyRemote(row);if(accessRole!=='public')return;}catch(e){cloudReady=false;if(!silent){setSyncBadge('⚠️ Mode local','bad');$('lastSyncText').textContent='Exécutez la migration SQL V24.29 pour activer le partage.';} }finally{syncBusy=false}}
-async function loadTeamState(code,silent=false){if(syncBusy)return;syncBusy=true;try{const row=one(await rpc('nautiplan_open_workspace_v1',{p_code:code}));if(!row||!row.role)throw new Error('Code équipe incorrect.');accessRole=row.role;accessCode=code;sessionStorage.setItem(CODE_KEY,code);if(operatorName)sessionStorage.setItem(OPERATOR_KEY,operatorName);applyRemote(row);updateAccessUi();applyPermissions();bindNew();if(accessRole==='admin'&&!hasLocalData(state)&&hasLocalData(localState)&&!silent&&confirm('Le planning partagé est vide. Importer les anciennes données locales de cet appareil dans Supabase ?')){state=normalizeState(JSON.parse(JSON.stringify(localState)));await saveToCloud(true);}return true;}catch(e){const msg=String(e.message||e||'Accès équipe impossible.');if(!silent)alert(msg);if(/code.*incorrect|accès.*incorrect/i.test(msg)){sessionStorage.removeItem(CODE_KEY);accessCode='';accessRole='public';updateAccessUi();}else if(silent){setSyncBadge('⚠️ Synchronisation interrompue','warn');}return false;}finally{syncBusy=false}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll();if(canEditIntervention()){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveToCloud(false),180)}}
-async function saveToCloud(force=false){if(!accessCode||!canEditIntervention())return;if(syncBusy&&!force){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveToCloud(false),450);return}syncBusy=true;setSyncBadge('⬆ Enregistrement…','warn');try{const row=one(await rpc('nautiplan_save_workspace_v1',{p_code:accessCode,p_state:state,p_editor:operatorName||roleLabel()}));if(row){cloudRevision=Number(row.revision)||cloudRevision;lastCloudFingerprint=fingerprint(state);if(row.updated_at)$('lastSyncText').textContent='Dernière synchronisation : '+new Date(row.updated_at).toLocaleTimeString('fr-FR');}setSyncBadge('☁️ Synchronisé','ok');}catch(e){setSyncBadge('⚠️ Non enregistré','bad');alert('NautiPlan Pro : la modification est conservée sur cet appareil mais la synchronisation Supabase a échoué.\n\n'+(e.message||e));}finally{syncBusy=false}}
+function rememberRevision(rev){cloudRevision=Number(rev)||cloudRevision||0;localStorage.setItem(REV_KEY,String(cloudRevision))}
+function applyRemote(row,force=false){
+ if(!row||!row.state)return;
+ // Une donnée locale non encore confirmée par Supabase ne doit jamais être écrasée par le rafraîchissement automatique.
+ if(dirty&&!force&&accessRole!=='public')return;
+ const incoming=normalizeState(row.state),fp=fingerprint(incoming);
+ rememberRevision(row.revision);
+ cloudReady=true;
+ if(fp&&fp!==lastCloudFingerprint){state=incoming;lastCloudFingerprint=fp;localStorage.setItem(KEY,JSON.stringify(state));renderAll();}
+ if(row.updated_at){const d=new Date(row.updated_at);$('lastSyncText').textContent='Dernière synchronisation : '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+ setSyncBadge('☁️ Synchronisé','ok');
+}
+async function loadPublicState(silent=false){
+ if(syncBusy||savingPromise)return;
+ syncBusy=true;
+ try{const row=one(await rpc('nautiplan_public_state_v1',{}));applyRemote(row,true);}
+ catch(e){cloudReady=false;if(!silent){setSyncBadge('⚠️ Mode local','bad');$('lastSyncText').textContent='Synchronisation publique indisponible.';}}
+ finally{syncBusy=false}
+}
+async function loadTeamState(code,silent=false){
+ if(syncBusy||savingPromise)return false;
+ syncBusy=true;
+ try{
+  const row=one(await rpc('nautiplan_open_workspace_v1',{p_code:code}));
+  if(!row||!row.role)throw new Error('Code équipe incorrect.');
+  accessRole=row.role;accessCode=code;sessionStorage.setItem(CODE_KEY,code);if(operatorName)sessionStorage.setItem(OPERATOR_KEY,operatorName);
+  const remoteState=normalizeState(row.state);
+  // Compatibilité V24.32 : si Supabase est encore vide mais que cet appareil possède déjà
+  // des clients/techniciens/équipements/interventions locaux, on les transfère automatiquement
+  // avant qu'un rafraîchissement puisse les effacer.
+  if(accessRole==='admin'&&!hasLocalData(remoteState)&&hasLocalData(localState)){
+   state=normalizeState(JSON.parse(JSON.stringify(localState)));markDirty();renderAll();updateAccessUi();applyPermissions();bindNew();syncBusy=false;
+   await saveToCloud(true);
+   return true;
+  }
+  // Si une saisie locale est restée en attente (fermeture/rechargement avant confirmation), on la préserve et on la renvoie au serveur.
+  if(dirty&&hasLocalData(localState)&&accessRole!=='lecture'){
+   state=normalizeState(JSON.parse(JSON.stringify(localState)));renderAll();updateAccessUi();applyPermissions();bindNew();syncBusy=false;
+   await saveToCloud(true);
+   return true;
+  }
+  applyRemote(row,true);dirty=false;localStorage.removeItem(DIRTY_KEY);updateAccessUi();applyPermissions();bindNew();return true;
+ }catch(e){
+  const msg=String(e.message||e||'Accès équipe impossible.');
+  if(!silent)alert(msg);
+  if(/code.*incorrect|accès.*incorrect/i.test(msg)){sessionStorage.removeItem(CODE_KEY);accessCode='';accessRole='public';updateAccessUi();}
+  else if(silent)setSyncBadge('⚠️ Synchronisation interrompue','warn');
+  return false;
+ }finally{syncBusy=false}
+}
+function markDirty(){dirty=true;localStorage.setItem(DIRTY_KEY,'1')}
+function scheduleCloudSave(delay=80){
+ if(!accessCode||!canEditIntervention())return;
+ clearTimeout(saveTimer);
+ saveTimer=setTimeout(()=>{saveTimer=null;saveToCloud(false)},delay);
+}
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(state));markDirty();renderAll();scheduleCloudSave(60);
+}
+async function saveToCloud(force=false){
+ if(!accessCode||!canEditIntervention())return false;
+ if(savingPromise)return savingPromise;
+ if(syncBusy&&!force){scheduleCloudSave(250);return false;}
+ const payload=normalizeState(JSON.parse(JSON.stringify(state))),sentFp=fingerprint(payload);
+ savingPromise=(async()=>{
+  syncBusy=true;setSyncBadge('⬆ Enregistrement…','warn');
+  try{
+   const row=one(await rpc('nautiplan_save_workspace_v1',{p_code:accessCode,p_state:payload,p_editor:operatorName||roleLabel()}));
+   if(row){rememberRevision(row.revision);if(row.updated_at)$('lastSyncText').textContent='Dernière synchronisation : '+new Date(row.updated_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+   lastCloudFingerprint=sentFp;
+   // On ne marque propre que si aucune nouvelle modification n'est apparue pendant l'enregistrement.
+   if(fingerprint(state)===sentFp){dirty=false;localStorage.removeItem(DIRTY_KEY)}
+   setSyncBadge(dirty?'⏳ Nouvelle modification…':'☁️ Synchronisé',dirty?'warn':'ok');
+   return true;
+  }catch(e){
+   markDirty();setSyncBadge('⚠️ Non enregistré','bad');
+   if(!force)console.error('NautiPlan sync',e);else alert('NautiPlan Pro : la sauvegarde Supabase a échoué. La saisie reste conservée sur cet appareil.\n\n'+(e.message||e));
+   return false;
+  }finally{syncBusy=false}
+ })();
+ const ok=await savingPromise;savingPromise=null;
+ if(ok&&dirty)scheduleCloudSave(100);
+ return ok;
+}
 async function loginTeam(code,name,silent=false){operatorName=String(name||operatorName||'').trim();return loadTeamState(String(code||'').trim(),silent)}
-function logoutTeam(){sessionStorage.removeItem(CODE_KEY);sessionStorage.removeItem(OPERATOR_KEY);accessCode='';operatorName='MN';accessRole='public';lastCloudFingerprint='';updateAccessUi();loadPublicState(false)}
+async function logoutTeam(){if(dirty){const ok=await saveToCloud(true);if(!ok&&!confirm('La dernière modification n’a pas encore été enregistrée dans Supabase. Quitter quand même l’espace équipe ?'))return;}sessionStorage.removeItem(CODE_KEY);sessionStorage.removeItem(OPERATOR_KEY);accessCode='';operatorName='MN';accessRole='public';lastCloudFingerprint='';dirty=false;localStorage.removeItem(DIRTY_KEY);updateAccessUi();await loadPublicState(false)}
 function openTeamAccess(){openModal('Accès équipe NautiPlan Pro','<div class="local-note" style="margin-bottom:14px"><strong>Accès sécurisé au planning complet.</strong><br>Entrez votre nom et votre mot de passe. Sans code, la consultation publique reste disponible sans coordonnées clients.</div><div class="form-grid">'+f('operator','Nom / prénom',operatorName||'MN')+f('code','Mot de passe','','password')+'</div>',async fd=>{const ok=await loginTeam(fd.get('code'),fd.get('operator'),false);if(!ok)throw new Error('Code d’accès incorrect.');sessionStorage.setItem(OPERATOR_KEY,operatorName)});$('modalSubmit').textContent='🔓 Ouvrir l’espace partagé'}
 function uid(prefix){return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
@@ -122,13 +204,13 @@ function renderAll(){renderDashboard();renderInterventions();renderClients();ren
 function applyPermissions(){updateAccessUi();document.querySelectorAll('[data-new]').forEach(b=>b.removeAttribute('hidden'));document.querySelectorAll('[data-view-jump="technicians"]').forEach(b=>b.hidden=!canSeePrivate());document.querySelectorAll('button[onclick]').forEach(b=>{const a=b.getAttribute('onclick')||'';if(/NP\.editIntervention/.test(a))b.hidden=!canEditIntervention();else if(/NP\.(editClient|editTechnician|editEquipment)/.test(a))b.hidden=!canAdmin();else if(/NP\.deleteItem/.test(a))b.hidden=!canAdmin();});document.querySelectorAll('#interventionTable select').forEach(x=>x.disabled=!canEditIntervention());document.querySelectorAll('.cal-event').forEach(x=>x.draggable=canEditIntervention());}
 function renderDashboard(){const today=localDate(new Date());const todays=state.interventions.filter(i=>i.date===today).sort((a,b)=>(a.time||'').localeCompare(b.time||''));const urg=state.interventions.filter(i=>!isFinished(i)&&i.priority==='urgente').length;const late=state.interventions.filter(isLate).length;const avail=availableTechs();const done=todays.filter(i=>i.status==='terminee').length;const vals=[['Interventions du jour',todays.length,'📅'],['Urgences',urg,'🚨'],['Retards',late,'⏱️'],['Techniciens disponibles',avail.length,'👨‍🔧'],['Terminées aujourd’hui',done,'✅']];$('kpis').innerHTML=vals.map(x=>'<div class="kpi"><div class="label">'+x[2]+' '+x[0]+'</div><div class="n">'+x[1]+'</div></div>').join('');
  const cur=currentIntervention(), box=$('currentCard'); if(!cur){box.classList.add('none');box.innerHTML='<div><div class="current-title">🎯 Intervention en cours</div><div class="muted">Aucune intervention active identifiée actuellement.</div></div><button class="btn primary" data-new="intervention">＋ Planifier</button>';bindNew(box);}
- else{box.classList.remove('none');const c=client(cur.clientId),t=tech(cur.technicianId);box.innerHTML='<div><div class="current-title">🎯 '+esc(cur.ref)+' · '+esc(cur.type||'Intervention')+'</div><div>'+esc(c?c.name:'Client non renseigné')+' · '+esc(cur.address||c?.address||'Adresse non renseignée')+'</div><div class="meta">'+statusPill(cur.status)+'<span class="pill">🕒 '+esc(cur.time||'—')+' · '+esc(cur.duration||60)+' min</span><span class="pill">👨‍🔧 '+esc(t?t.name:'Non affecté')+'</span></div></div><div class="item-actions"><button class="btn sm" onclick="NP.printIntervention(\''+cur.id+'\')">🖨️ PDF</button><button class="btn sm primary" onclick="NP.editIntervention(\''+cur.id+'\')">Ouvrir la fiche</button></div>'}
+ else{box.classList.remove('none');const c=client(cur.clientId),t=tech(cur.technicianId);box.innerHTML='<div><div class="current-title">🎯 '+esc(cur.ref)+' · '+esc(cur.type||'Intervention')+'</div><div>'+esc(c?c.name:(cur.publicClientName||'Client'))+(accessRole==='public'?'':' · '+esc(cur.address||c?.address||'Adresse non renseignée'))+'</div><div class="meta">'+statusPill(cur.status)+'<span class="pill">🕒 '+esc(cur.time||'—')+' · '+esc(cur.duration||60)+' min</span><span class="pill">👨‍🔧 '+esc(t?t.name:(cur.publicTechnicianName||'Non affecté'))+'</span></div></div><div class="item-actions"><button class="btn sm" onclick="NP.printIntervention(\''+cur.id+'\')">🖨️ PDF</button><button class="btn sm primary" onclick="NP.editIntervention(\''+cur.id+'\')">Ouvrir la fiche</button></div>'}
  $('todayList').innerHTML=todays.length?todays.map(interventionItem).join(''):'<div class="empty">Aucune intervention planifiée aujourd’hui.</div>';
  $('availableList').innerHTML=avail.length?avail.map(t=>'<div class="item"><div class="item-row"><div><div class="item-title">'+esc(t.name)+'</div><div class="muted">'+esc(t.sector||'Secteur non renseigné')+' · '+esc(t.skills||'Compétences à renseigner')+'</div></div><span class="status st-terminee">Disponible</span></div></div>').join(''):'<div class="empty">Aucun technicien disponible identifié.</div>';
  bindNew($('todayList').parentElement);}
-function interventionItem(i){const c=client(i.clientId),t=tech(i.technicianId);return '<div class="item"><div class="item-row"><div><div class="item-title">'+esc(i.time||'—')+' · '+esc(i.ref)+' · '+esc(i.type||'Intervention')+'</div><div class="muted">'+esc(c?c.name:'Sans client')+' · '+esc(t?t.name:'Non affecté')+'</div><div class="meta">'+statusPill(i.status)+'<span class="pill">'+esc(PRIORITY[i.priority]||'Normale')+'</span></div></div><div class="item-actions"><button class="btn sm" onclick="NP.printIntervention(\''+i.id+'\')">🖨️ PDF</button><button class="btn sm" onclick="NP.editIntervention(\''+i.id+'\')">Modifier</button></div></div></div>'}
+function interventionItem(i){const c=client(i.clientId),t=tech(i.technicianId);return '<div class="item"><div class="item-row"><div><div class="item-title">'+esc(i.time||'—')+' · '+esc(i.ref)+' · '+esc(i.type||'Intervention')+'</div><div class="muted">'+esc(c?c.name:(i.publicClientName||'Client'))+' · '+esc(t?t.name:(i.publicTechnicianName||'Non affecté'))+'</div><div class="meta">'+statusPill(i.status)+'<span class="pill">'+esc(PRIORITY[i.priority]||'Normale')+'</span></div></div><div class="item-actions"><button class="btn sm" onclick="NP.printIntervention(\''+i.id+'\')">🖨️ PDF</button><button class="btn sm" onclick="NP.editIntervention(\''+i.id+'\')">Modifier</button></div></div></div>'}
 function statusOptions(selected){return Object.entries(STATUS).map(([k,v])=>'<option value="'+k+'" '+(k===selected?'selected':'')+'>'+v+'</option>').join('')}
-function renderInterventions(){if(!$('intStatus').dataset.ready){$('intStatus').innerHTML='<option value="">Tous les statuts</option>'+statusOptions('');$('intStatus').dataset.ready='1'}const q=($('intSearch').value||'').toLowerCase(),sf=$('intStatus').value;let list=[...state.interventions].sort((a,b)=>dateTime(b)-dateTime(a));list=list.filter(i=>!sf||i.status===sf).filter(i=>{const c=client(i.clientId),t=tech(i.technicianId);return !q||[i.ref,i.type,i.address,c?.name,t?.name].join(' ').toLowerCase().includes(q)});$('interventionTable').innerHTML=list.length?'<div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>Réf.</th><th>Client</th><th>Intervention</th><th>Technicien</th><th>Priorité</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+list.map(i=>{const c=client(i.clientId),t=tech(i.technicianId);return '<tr><td>'+formatDate(i.date)+'<br><strong>'+esc(i.time||'')+'</strong></td><td>'+esc(i.ref)+'</td><td>'+esc(c?c.name:'—')+'</td><td><strong>'+esc(i.type||'—')+'</strong><br><span class="muted">'+esc(i.address||c?.address||'')+'</span></td><td>'+esc(t?t.name:'—')+'</td><td>'+esc(PRIORITY[i.priority]||'Normale')+'</td><td><select onchange="NP.setStatus(\''+i.id+'\',this.value)">'+statusOptions(i.status)+'</select></td><td><div class="row-actions"><button class="btn sm" onclick="NP.editIntervention(\''+i.id+'\')">✏️</button><button class="btn sm" onclick="NP.printIntervention(\''+i.id+'\')">🖨️ PDF</button><button class="btn sm red" onclick="NP.deleteItem(\'intervention\',\''+i.id+'\')">🗑️</button></div></td></tr>'}).join('')+'</tbody></table></div>':'<div class="empty">Aucune intervention.</div>';
+function renderInterventions(){if(!$('intStatus').dataset.ready){$('intStatus').innerHTML='<option value="">Tous les statuts</option>'+statusOptions('');$('intStatus').dataset.ready='1'}const q=($('intSearch').value||'').toLowerCase(),sf=$('intStatus').value;let list=[...state.interventions].sort((a,b)=>dateTime(b)-dateTime(a));list=list.filter(i=>!sf||i.status===sf).filter(i=>{const c=client(i.clientId),t=tech(i.technicianId);return !q||[i.ref,i.type,i.address,c?.name,t?.name].join(' ').toLowerCase().includes(q)});$('interventionTable').innerHTML=list.length?'<div class="table-wrap"><table class="table"><thead><tr><th>Date</th><th>Réf.</th><th>Client</th><th>Intervention</th><th>Technicien</th><th>Priorité</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+list.map(i=>{const c=client(i.clientId),t=tech(i.technicianId);return '<tr><td>'+formatDate(i.date)+'<br><strong>'+esc(i.time||'')+'</strong></td><td>'+esc(i.ref)+'</td><td>'+esc(c?c.name:(i.publicClientName||'—'))+'</td><td><strong>'+esc(i.type||'—')+'</strong><br><span class="muted">'+esc(i.address||c?.address||'')+'</span></td><td>'+esc(t?t.name:(i.publicTechnicianName||'—'))+'</td><td>'+esc(PRIORITY[i.priority]||'Normale')+'</td><td><select onchange="NP.setStatus(\''+i.id+'\',this.value)">'+statusOptions(i.status)+'</select></td><td><div class="row-actions"><button class="btn sm" onclick="NP.editIntervention(\''+i.id+'\')">✏️</button><button class="btn sm" onclick="NP.printIntervention(\''+i.id+'\')">🖨️ PDF</button><button class="btn sm red" onclick="NP.deleteItem(\'intervention\',\''+i.id+'\')">🗑️</button></div></td></tr>'}).join('')+'</tbody></table></div>':'<div class="empty">Aucune intervention.</div>';
  $('statusBoard').innerHTML=Object.entries(STATUS).map(([k,v])=>{const a=state.interventions.filter(i=>i.status===k).sort((x,y)=>dateTime(x)-dateTime(y));return '<div class="status-col"><h3>'+v+' · '+a.length+'</h3>'+a.map(i=>{const c=client(i.clientId);return '<div class="status-card"><strong>'+esc(i.ref)+'</strong><br>'+esc(c?c.name:'Sans client')+'<br><span class="muted">'+formatDate(i.date)+' · '+esc(i.time||'')+'</span></div>'}).join('')+'</div>'}).join('')}
 function renderClients(){const q=($('clientSearch').value||'').toLowerCase();const list=state.clients.filter(c=>!q||[c.name,c.phone,c.email,c.address].join(' ').toLowerCase().includes(q));$('clientsGrid').innerHTML=list.length?list.map(c=>{const ints=state.interventions.filter(i=>i.clientId===c.id),eq=state.equipments.filter(e=>e.clientId===c.id);return '<div class="card entity"><h3>'+esc(c.name)+'</h3><div class="details">📞 '+esc(c.phone||'—')+'<br>✉️ '+esc(c.email||'—')+'<br>📍 '+esc(c.address||'—')+'</div><div class="history"><strong>'+ints.length+'</strong> intervention(s) · <strong>'+eq.length+'</strong> équipement(s)</div><div class="row-actions" style="margin-top:10px"><button class="btn sm" onclick="NP.editClient(\''+c.id+'\')">Modifier</button><button class="btn sm" onclick="NP.clientHistory(\''+c.id+'\')">Historique</button><button class="btn sm" onclick="NP.printClient(\''+c.id+'\')">🖨️ PDF</button><button class="btn sm red" onclick="NP.deleteItem(\'client\',\''+c.id+'\')">🗑️</button></div></div>'}).join(''):'<div class="empty">Aucun client enregistré.</div>'}
 function renderTechs(){const list=state.technicians;$('techniciansGrid').innerHTML=list.length?list.map(t=>{const ints=state.interventions.filter(i=>i.technicianId===t.id&&!isFinished(i));return '<div class="card entity"><h3>'+esc(t.name)+'</h3><div class="details"><strong>Compétences :</strong> '+esc(t.skills||'—')+'<br><strong>Horaires :</strong> '+esc(t.hours||'—')+'<br><strong>Disponibilité :</strong> '+esc(t.availability||'Disponible')+'<br><strong>Secteur :</strong> '+esc(t.sector||'—')+'</div><div class="history"><strong>'+ints.length+'</strong> intervention(s) active(s)</div><div class="row-actions" style="margin-top:10px"><button class="btn sm" onclick="NP.editTechnician(\''+t.id+'\')">Modifier</button><button class="btn sm" onclick="NP.printTechnician(\''+t.id+'\')">🖨️ PDF</button><button class="btn sm red" onclick="NP.deleteItem(\'technician\',\''+t.id+'\')">🗑️</button></div></div>'}).join(''):'<div class="empty">Aucun technicien enregistré.</div>'}
@@ -164,9 +246,9 @@ function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'
 function importData(file){if(!canAdmin()){alert('Accès administrateur requis pour restaurer une sauvegarde.');return}const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.clients||!d.technicians||!d.equipments||!d.interventions)throw Error();if(confirm('Remplacer les données actuelles par cette sauvegarde ?')){state=d;save()}}catch(e){alert('Fichier de sauvegarde invalide.')}};r.readAsText(file)}
 window.NP={editClient,editTechnician,editEquipment,editIntervention,setStatus,deleteItem,clientHistory,printIntervention,printClient,printTechnician,printEquipment};
 document.querySelectorAll('#mainNav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));document.querySelectorAll('[data-view-jump]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.viewJump)));bindNew();$('modalClose').onclick=closeModal;$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-$('intSearch').addEventListener('input',renderInterventions);$('intStatus').addEventListener('change',renderInterventions);$('clientSearch').addEventListener('input',renderClients);$('equipmentSearch').addEventListener('input',renderEquipments);$('calendarView').addEventListener('change',renderCalendar);$('colorMode').addEventListener('change',renderCalendar);$('calPrev').onclick=()=>{const m=$('calendarView').value;if(m==='month')calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);else{calDate.setDate(calDate.getDate()-(m==='week'?7:1))}renderCalendar()};$('calNext').onclick=()=>{const m=$('calendarView').value;if(m==='month')calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);else{calDate.setDate(calDate.getDate()+(m==='week'?7:1))}renderCalendar()};$('calToday').onclick=()=>{calDate=startDay(new Date());renderCalendar()};$('exportBtn').onclick=exportData;$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{if(e.target.files[0])importData(e.target.files[0]);e.target.value=''};$('teamAccessBtn').onclick=openTeamAccess;$('teamLogoutBtn').onclick=logoutTeam;
-async function refreshCloud(){if(document.hidden||syncBusy)return;if(accessRole==='public')await loadPublicState(true);else if(accessCode)await loadTeamState(accessCode,true)}
-async function boot(){renderAll();updateAccessUi();await loadPublicState(false);if(accessCode)await loadTeamState(accessCode,true);setInterval(refreshCloud,5000)}
+$('intSearch').addEventListener('input',renderInterventions);$('intStatus').addEventListener('change',renderInterventions);$('clientSearch').addEventListener('input',renderClients);$('equipmentSearch').addEventListener('input',renderEquipments);$('calendarView').addEventListener('change',renderCalendar);$('colorMode').addEventListener('change',renderCalendar);$('calPrev').onclick=()=>{const m=$('calendarView').value;if(m==='month')calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);else{calDate.setDate(calDate.getDate()-(m==='week'?7:1))}renderCalendar()};$('calNext').onclick=()=>{const m=$('calendarView').value;if(m==='month')calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);else{calDate.setDate(calDate.getDate()+(m==='week'?7:1))}renderCalendar()};$('calToday').onclick=()=>{calDate=startDay(new Date());renderCalendar()};$('exportBtn').onclick=exportData;$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=e=>{if(e.target.files[0])importData(e.target.files[0]);e.target.value=''};$('teamAccessBtn').onclick=openTeamAccess;$('teamLogoutBtn').onclick=()=>logoutTeam();window.addEventListener('beforeunload',()=>{if(dirty)localStorage.setItem(DIRTY_KEY,'1')});
+async function refreshCloud(){if(document.hidden||syncBusy||savingPromise||saveTimer||dirty)return;if(accessRole==='public')await loadPublicState(true);else if(accessCode)await loadTeamState(accessCode,true)}
+async function boot(){renderAll();updateAccessUi();if(accessCode){await loadTeamState(accessCode,true)}else{accessRole='public';updateAccessUi();await loadPublicState(false)}setInterval(refreshCloud,5000)}
 boot();
 })();
 </script>
