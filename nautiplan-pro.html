@@ -51,7 +51,7 @@ body.role-admin #adminQuickActions{display:flex!important}
 <header class="top"><div class="topin"><div class="brand">⚓ NautiPlan Pro <small>· Gestion des interventions</small></div><div class="topactions"><span class="sync-badge warn" id="syncBadge">⏳ Synchronisation…</span><button class="btn ghost" id="teamAccessBtn">🔐 Accès équipe</button><button class="btn ghost" id="teamLogoutBtn" hidden>↩ Consultation publique</button><a class="btn ghost" href="index.html">← FigaroMN</a><button class="btn ghost" id="exportBtn">⬇ Sauvegarde</button><button class="btn ghost" id="importBtn">⬆ Restaurer</button><input id="importFile" type="file" accept="application/json" hidden><button class="btn orange" data-new="intervention">＋ Nouvelle intervention</button></div></div></header>
 <main class="shell">
 <section class="hero"><div><h1>NautiPlan Pro</h1><p>Planification partagée, suivi clients, techniciens, équipements et interventions nautiques.</p><div class="access-line"><span class="access-role" id="accessRole">Consultation publique</span><span id="lastSyncText" style="font-size:12px;opacity:.85">Connexion au planning partagé…</span></div></div></section>
-<nav class="nav" id="mainNav"><button class="active" data-view="dashboard">📊 Tableau de bord</button><button data-view="interventions">🧰 Interventions</button><button class="private-nav" data-view="clients">👤 Clients</button><button class="private-nav" data-view="technicians">👨‍🔧 Techniciens</button><button class="private-nav" data-view="equipments">⚙️ Équipements</button></nav>
+<nav class="nav" id="mainNav"><button class="active" data-view="dashboard">📊 Tableau de bord</button><button class="private-nav" data-view="clients">👤 Clients</button><button class="private-nav" data-view="equipments">⚙️ Équipements</button><button class="private-nav" data-view="technicians">👨‍🔧 Techniciens</button><button data-view="interventions">🧰 Interventions</button></nav>
 <section id="adminQuickActions"><strong>＋ Création rapide :</strong><button class="btn sm primary" data-new="intervention">Intervention</button><button class="btn sm primary" data-new="client">Client</button><button class="btn sm primary" data-new="technician">Technicien</button><button class="btn sm primary" data-new="equipment">Équipement</button></section>
 <section class="view active" id="view-dashboard">
  <div class="grid kpis" id="kpis"></div>
@@ -83,7 +83,7 @@ body.role-admin #adminQuickActions{display:flex!important}
 <script>
 (function(){
 'use strict';
-// V24.36 : correctif blocage V24.35 + planning séparé + suppression directe des interventions.
+// V24.37 : ordre navigation espace équipe = Clients, Équipements, Techniciens, Interventions.
 const KEY='nautiplan_pro_v1', DIRTY_KEY='nautiplan_pro_dirty_v2433', REV_KEY='nautiplan_pro_revision_v2433';
 const CODE_KEY='nautiplan_team_code_v2429', OPERATOR_KEY='nautiplan_operator_v2429';
 const STATUS={a_planifier:'À planifier',planifiee:'Planifiée',en_route:'En route',en_cours:'En cours',en_attente:'En attente',terminee:'Terminée',annulee:'Annulée'};
