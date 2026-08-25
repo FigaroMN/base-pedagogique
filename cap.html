@@ -3427,6 +3427,25 @@ end.querySelector("#capmn26-pdf-ex").addEventListener("click",function(){
 
 var evalGrid=root.querySelector("#capmn26-eval-grid");
 
+/* =========================================================
+   ANTI-TRICHE ÉVALUATIONS V24.44
+   - changement d’onglet / minimisation / navigation = évaluation bloquée
+   - la même évaluation ne peut être relancée qu’avec le code enseignant
+   - une autre évaluation reste accessible avec son code habituel
+========================================================= */
+function capEvaluationGuardKey(index){
+ var who=String(studentName()||"eleve").toLowerCase();
+ return "figaromn_eval_guard_v2444_cap_"+String(index)+"_"+encodeURIComponent(who);
+}
+function capEvaluationGuardRead(index){
+ try{var raw=localStorage.getItem(capEvaluationGuardKey(index));if(!raw)return null;var data=JSON.parse(raw);return data&&data.locked?data:null;}catch(e){return null;}
+}
+function capEvaluationGuardIsLocked(index){return !!capEvaluationGuardRead(index);}
+function capEvaluationGuardLock(index,reason){
+ try{localStorage.setItem(capEvaluationGuardKey(index),JSON.stringify({locked:true,reason:String(reason||"sortie détectée"),at:new Date().toISOString()}));}catch(e){}
+}
+function capEvaluationGuardClear(index){try{localStorage.removeItem(capEvaluationGuardKey(index));}catch(e){}}
+
 function rebuildEvalGrid(){
  evalGrid.innerHTML="";
 
@@ -3435,6 +3454,7 @@ function rebuildEvalGrid(){
   var best=bestRaw!==null?parseFloat(bestRaw):null;
   var snap=readSkillSnapshot("eval18",i);
   var history=attemptHistoryWithCurrent("eval18",i);
+  var locked=capEvaluationGuardIsLocked(i);
   var lastAttempt=history.length?history[history.length-1]:null;
   var lastNote=lastAttempt?attemptNote20(lastAttempt,ev.questions.length):null;
   var card=document.createElement("article");
@@ -3452,7 +3472,7 @@ function rebuildEvalGrid(){
      (best!==null && !isNaN(best)?"Note : "+frNumber(best)+"/20":"Non réalisée")+
     '</span> '+
     '<span class="pill">'+
-     (snap?"✅ Évaluation terminée":"Compétences à positionner")+
+     (snap?"✅ Évaluation terminée":(locked?"⛔ Bloquée · sortie détectée":"Compétences à positionner"))+
     '</span> '+
     '<span class="pill">Tentatives : '+history.length+'</span> '+
     (lastNote!==null?'<span class="pill">Dernière note : '+esc(frNumber(lastNote))+'/20</span>':'')+
@@ -3465,13 +3485,16 @@ function rebuildEvalGrid(){
        '<button type="button" class="btn blue" data-history-eval="'+i+'">📚 Historique complet ('+history.length+')</button>'+
        '<button type="button" class="btn blue" data-eval-pdf="'+i+'">🖨️ PDF dernière tentative</button>'+
       '</div>'
-    : '<div>'+
-       '<div class="eval-lock">'+
-        '<input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
-        '<button type="button" class="btn" data-unlock="'+i+'">Accéder</button>'+
-       '</div>'+
-       '<div class="msg" aria-live="polite"></div>'+
-      '</div>'
+    : (locked
+      ? '<div class="actions"><div class="msg badmsg">⛔ Évaluation bloquée : une sortie de l’évaluation a été détectée.</div>'+
+        '<button type="button" class="btn red" data-redo-eval="'+i+'">🔓 Recommencer avec le code enseignant</button></div>'
+      : '<div>'+
+        '<div class="eval-lock">'+
+         '<input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
+         '<button type="button" class="btn" data-unlock="'+i+'">Accéder</button>'+
+        '</div>'+
+        '<div class="msg" aria-live="polite"></div>'+
+       '</div>')
    );
 
   evalGrid.appendChild(card);
@@ -3527,6 +3550,7 @@ evalGrid.addEventListener("click",function(e){
   }
 
   archiveCurrentSnapshot("eval18",redoEvalIndex);
+  capEvaluationGuardClear(redoEvalIndex);
   openEvaluation(redoEvalIndex,true);
   return;
  }
@@ -3542,6 +3566,12 @@ evalGrid.addEventListener("click",function(e){
  if(!b)return;
 
  var i=parseInt(b.getAttribute("data-unlock"),10);
+
+ if(capEvaluationGuardIsLocked(i)){
+  alert("Cette évaluation a été bloquée après une sortie. Utilise « Recommencer avec le code enseignant ».");
+  rebuildEvalGrid();
+  return;
+ }
 
  if(readSkillSnapshot("eval18",i)){
   alert("Cette évaluation a déjà été réalisée. Pour la refaire, utilise le bouton « Refaire l’évaluation » et le code enseignant.");
@@ -3567,6 +3597,8 @@ evalGrid.addEventListener("click",function(e){
 });
 
 function openEvaluation(index,forceRedo){
+ if(capEvaluationGuardIsLocked(index) && !forceRedo){alert("Cette évaluation est bloquée car une sortie a été détectée. Pour la recommencer, utilise le bouton prévu et le code enseignant.");rebuildEvalGrid();show("evaluations");return;}
+ if(forceRedo)capEvaluationGuardClear(index);
  if(readSkillSnapshot("eval18",index) && !forceRedo){alert("Cette évaluation a déjà été réalisée. Le PDF reste disponible. Pour la refaire, utilise le bouton « Refaire l’évaluation » et le code enseignant.");rebuildEvalGrid();show("evaluations");return;}
  var ev=DATA.evaluations[index],current=0,score=0,answered=false,skillStats=emptySkillStats(),indicatorStats=emptyIndicatorStats(),responses=[];
  var detail=sections.evalDetail,evalCorrectPositions=balancedCorrectPositions(ev.questions.length,4),currentMixedOptions=[];
@@ -3574,9 +3606,34 @@ function openEvaluation(index,forceRedo){
   '<div class="content-head"><button type="button" class="btn light" id="capmn26-back-eval">← Retour aux évaluations</button></div>'+ 
   '<div class="content-box"><h2>'+esc(ev.title)+'</h2><div class="eval-top"><span id="capmn26-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="capmn26-eval-score">Réussite pondérée : 0 % · Note : 0,0 / 20</span></div>'+ 
   '<div class="progressbar"><div id="capmn26-eval-progress" class="progressin"></div></div><div id="capmn26-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="capmn26-eval-next">Question suivante →</button></div><div id="capmn26-eval-result" class="result hidden"></div><div class="fmn-bottom-prev"><button type="button" class="btn light" id="capmn26-bottom-prev-eval">← Précédent</button></div></div>';
- function capReturnFromEvaluation(){refreshSkillSummaries();rebuildEvalGrid();show("evaluations");}
- detail.querySelector("#capmn26-back-eval").addEventListener("click",capReturnFromEvaluation);var bp=detail.querySelector("#capmn26-bottom-prev-eval");if(bp)bp.addEventListener("click",capReturnFromEvaluation);
  var qbox=detail.querySelector("#capmn26-eval-question"),next=detail.querySelector("#capmn26-eval-next");
+ var capEvaluationGuardActive=true,capEvaluationGuardTriggered=false;
+ function removeCapEvaluationGuard(){
+  document.removeEventListener("visibilitychange",onCapEvaluationVisibility,true);
+  window.removeEventListener("pagehide",onCapEvaluationPageHide,true);
+  root.removeEventListener("click",onCapEvaluationNavigation,true);
+ }
+ function renderCapEvaluationLocked(reason){
+  if(capEvaluationGuardTriggered)return;
+  capEvaluationGuardTriggered=true;capEvaluationGuardActive=false;
+  capEvaluationGuardLock(index,reason);removeCapEvaluationGuard();
+  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2><p><strong>Une sortie de l’évaluation a été détectée.</strong></p><p>La tentative en cours est annulée et ne peut pas être poursuivie.</p><p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p><div class="toolbar"><button type="button" class="btn red" id="capmn26-locked-back">← Retour aux évaluations</button></div></div>';
+  var back=detail.querySelector("#capmn26-locked-back");if(back)back.onclick=function(){refreshSkillSummaries();rebuildEvalGrid();show("evaluations");};
+ }
+ function onCapEvaluationVisibility(){if(capEvaluationGuardActive&&document.visibilityState==="hidden")renderCapEvaluationLocked("changement d’onglet ou fenêtre masquée");}
+ function onCapEvaluationPageHide(){if(capEvaluationGuardActive){capEvaluationGuardLock(index,"fermeture, actualisation ou navigation hors de la page");capEvaluationGuardActive=false;}}
+ function onCapEvaluationNavigation(e){
+  if(!capEvaluationGuardActive)return;
+  var t=e.target&&e.target.closest?e.target.closest("button[data-view],a[href]"):null;
+  if(!t||detail.contains(t))return;
+  e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  renderCapEvaluationLocked("navigation vers une autre rubrique");
+ }
+ document.addEventListener("visibilitychange",onCapEvaluationVisibility,true);
+ window.addEventListener("pagehide",onCapEvaluationPageHide,true);
+ root.addEventListener("click",onCapEvaluationNavigation,true);
+ function capReturnFromEvaluation(){if(capEvaluationGuardActive){renderCapEvaluationLocked("retour volontaire avant la fin");return;}refreshSkillSummaries();rebuildEvalGrid();show("evaluations");}
+ detail.querySelector("#capmn26-back-eval").addEventListener("click",capReturnFromEvaluation);var bp=detail.querySelector("#capmn26-bottom-prev-eval");if(bp)bp.addEventListener("click",capReturnFromEvaluation);
  function updateScore(){var pct=Math.round(score/ev.questions.length*1000)/10;detail.querySelector("#capmn26-eval-score").textContent="Réussite pondérée : "+frNumber(pct)+" % · Note : "+frNumber(note20(score,ev.questions.length))+" / 20";}
  function renderQ(){
   answered=false;var q=ev.questions[current];currentMixedOptions=mixedWeightedEvaluationOptions(q,evalCorrectPositions[current]);
@@ -3592,6 +3649,7 @@ function openEvaluation(index,forceRedo){
  });
  next.addEventListener("click",function(){if(!answered)return;if(current<ev.questions.length-1){current++;renderQ();return;}finish();});
  function finish(){
+  capEvaluationGuardActive=false;removeCapEvaluationGuard();capEvaluationGuardClear(index);
   qbox.innerHTML="";next.classList.add("hidden");detail.querySelector("#capmn26-eval-progress").style.width="100%";
   var note=note20(score,ev.questions.length),bestKey="capmn26_eval18_best_note_"+(index+1),oldRaw=safeGet(bestKey),old=oldRaw!==null?parseFloat(oldRaw):-1;if(note>old)safeSet(bestKey,String(note));
   saveSkillSnapshot("eval18",index,skillStats,{score:score,total:ev.questions.length,note20:note,title:ev.title,student:studentName(),indicatorStats:cloneIndicatorStats(indicatorStats),responses:responses,scoringModel:"progressif_20_40_60_100"});

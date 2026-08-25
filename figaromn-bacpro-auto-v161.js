@@ -903,6 +903,37 @@ function setAllEvaluationCompetences(open){
  grid.querySelectorAll(".menu-card").forEach(function(card){setEvaluationCompetenceVisibility(card,open);});
 }
 
+/* =========================================================
+   ANTI-TRICHE ÉVALUATIONS V24.44
+   - changement d'onglet / minimisation / navigation = évaluation bloquée
+   - la même évaluation ne peut être relancée qu'avec le code enseignant
+   - une autre évaluation reste accessible avec son code habituel
+========================================================= */
+function evaluationGuardKey(ev){
+ var who="eleve";
+ try{
+  if(state&&state.profile){who=String(state.profile.email||state.profile.full_name||state.profile.name||state.profile.id||"eleve");}
+ }catch(e){}
+ return "figaromn_eval_guard_v2444_"+String(CFG.level||"bacpro")+"_"+String(ev&&ev.sequence||0)+"_"+encodeURIComponent(who.toLowerCase());
+}
+function evaluationGuardRead(ev){
+ try{
+  var raw=localStorage.getItem(evaluationGuardKey(ev));
+  if(!raw)return null;
+  var data=JSON.parse(raw);
+  return data&&data.locked?data:null;
+ }catch(e){return null;}
+}
+function evaluationGuardIsLocked(ev){return !!evaluationGuardRead(ev);}
+function evaluationGuardLock(ev,reason){
+ try{
+  localStorage.setItem(evaluationGuardKey(ev),JSON.stringify({locked:true,reason:String(reason||"sortie détectée"),at:new Date().toISOString()}));
+ }catch(e){}
+}
+function evaluationGuardClear(ev){
+ try{localStorage.removeItem(evaluationGuardKey(ev));}catch(e){}
+}
+
 function rebuildEvaluations(){
  var grid=$("fmn-eval-grid");if(!grid)return;
  ensureEvaluationCompactUI();
@@ -922,14 +953,14 @@ function rebuildEvaluations(){
  if(!evals.length){grid.innerHTML="<p>Aucune évaluation disponible.</p>";return;}
 
  grid.innerHTML=evals.map(function(ev){
-  var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null;
+  var rows=evalRows(ev.sequence),best=bestAttempt(rows),last=rows.length?rows[rows.length-1]:null,locked=evaluationGuardIsLocked(ev);
   var agg=aggregateIndicators("evaluation",function(a){var db=dbSession(ev.sequence,6);return db&&a.session_id===db.id;});
   return '<article class="menu-card" data-evaluation-index="'+(ev.sequence-1)+'"><div><div class="top-icon">✅</div>'+
    '<span class="pill">SÉQUENCE '+ev.sequence+'</span>'+
    '<h3>'+esc(ev.title)+' – 18 questions notées sur 20</h3><p>'+esc(ev.desc||"")+'</p>'+
    '<span class="pill">18 questions · note /20</span> '+
    '<span class="pill">'+(best?'Meilleure note : '+fr(note20(best.score,best.total))+'/20':'Non réalisée')+'</span> '+
-   '<span class="pill">'+(rows.length?'✅ Évaluation terminée':'Compétences à positionner')+'</span> '+
+   '<span class="pill">'+(rows.length?'✅ Évaluation terminée':(locked?'⛔ Bloquée · sortie détectée':'Compétences à positionner'))+'</span> '+
    '<span class="pill">Tentatives : '+rows.length+'</span> '+
    (last?'<span class="pill">Dernière note : '+fr(note20(last.score,last.total))+'/20</span>':'')+
    '<div><button type="button" class="btn light eval-competence-toggle" data-toggle-eval-competences="'+ev.sequence+'" aria-expanded="false">▾ Voir les compétences</button></div>'+
@@ -938,9 +969,12 @@ function rebuildEvaluations(){
     '<div class="actions"><button type="button" class="btn light" disabled>✅ Évaluation terminée</button>'+
     '<button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔁 Refaire l’évaluation</button>'+
     '<button type="button" class="btn blue" data-history-eval="'+ev.sequence+'">📚 Historique complet ('+rows.length+')</button></div>':
-    '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
-    '<button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div>'+
-    '<div class="msg" aria-live="polite"></div></div>')+
+    (locked?
+     '<div class="actions"><div class="msg badmsg">⛔ Évaluation bloquée : une sortie de l’évaluation a été détectée.</div>'+
+     '<button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔓 Recommencer avec le code enseignant</button></div>':
+     '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
+     '<button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div>'+
+     '<div class="msg" aria-live="polite"></div></div>'))+
    '</article>';
  }).join("");
 
@@ -975,14 +1009,17 @@ function bindEvalButtons(){
  };});
  grid.querySelectorAll("[data-unlock-eval]").forEach(function(b){b.onclick=function(){
   var ev=findEval(b.dataset.unlockEval),card=b.closest(".menu-card"),input=card.querySelector("input"),msg=card.querySelector(".msg");
+  if(evaluationGuardIsLocked(ev)){msg.textContent="⛔ Cette évaluation a été bloquée après une sortie. Utilise « Recommencer avec le code enseignant ».";msg.className="msg badmsg";return;}
   if(input.value.trim().toLowerCase()===String(ev.code).toLowerCase()){msg.textContent="✅ Code correct";msg.className="msg ok";setTimeout(function(){openEvaluation(ev,false);},120);}else{msg.textContent="❌ Code incorrect";msg.className="msg badmsg";input.value="";input.focus();}
  };});
- grid.querySelectorAll("[data-redo-eval]").forEach(function(b){b.onclick=function(){var code=prompt("Code enseignant pour refaire l’évaluation :");if(code===null)return;if(code.trim().toLowerCase()!==String(DATA.redoEvaluationCode||"evaluation").toLowerCase()){alert("Code incorrect.");return;}openEvaluation(findEval(b.dataset.redoEval),true);};});
+ grid.querySelectorAll("[data-redo-eval]").forEach(function(b){b.onclick=function(){var ev=findEval(b.dataset.redoEval),code=prompt("Code enseignant pour refaire l’évaluation :");if(code===null)return;if(code.trim().toLowerCase()!==String(DATA.redoEvaluationCode||"evaluation").toLowerCase()){alert("Code incorrect.");return;}evaluationGuardClear(ev);openEvaluation(ev,true);};});
  grid.querySelectorAll("[data-history-eval]").forEach(function(b){b.onclick=function(){showHistory("evaluation",findEval(b.dataset.historyEval));};});
 }
 function openEvaluation(ev,forceRedo){
  if(!ev)return;
  var rows=evalRows(ev.sequence);
+ if(evaluationGuardIsLocked(ev)&&!forceRedo){alert("Cette évaluation est bloquée car une sortie a été détectée. Pour la recommencer, utilise le bouton prévu et le code enseignant.");rebuildEvaluations();show("evaluations");return;}
+ if(forceRedo)evaluationGuardClear(ev);
  if(rows.length&&!forceRedo){alert("Cette évaluation a déjà été réalisée. Pour la refaire, utilise « Refaire l’évaluation » et le code enseignant.");rebuildEvaluations();show("evaluations");return;}
  var detail=$("fmn-view-evaluation-detail");
  if(!detail){
@@ -996,9 +1033,39 @@ function openEvaluation(ev,forceRedo){
   '<div class="eval-top"><span id="bac-eval-counter">Question 1 / '+ev.questions.length+'</span><span id="bac-eval-score">Réussite pondérée : 0 % · Note : 0,0 /20</span></div>'+ 
   '<div class="progressbar"><div id="bac-eval-progress" class="progressin"></div></div><div id="bac-eval-question"></div><div class="toolbar"><button type="button" class="btn blue hidden" id="bac-eval-next">Question suivante →</button></div><div id="bac-eval-result" class="result hidden"></div>'+ 
   '<div class="fmn-bottom-prev"><button type="button" class="btn light" id="bac-bottom-prev-eval">← Précédent</button></div></div>';
- function bacReturnFromEvaluation(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");}
+ function bacReturnFromEvaluation(){if(evaluationGuardActive){renderEvaluationLocked("retour volontaire avant la fin");return;}window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");}
  $("bac-back-eval").onclick=bacReturnFromEvaluation;var bp=$("bac-bottom-prev-eval");if(bp)bp.onclick=bacReturnFromEvaluation;
  var qbox=$("bac-eval-question"),next=$("bac-eval-next");
+ var evaluationGuardActive=true,evaluationGuardTriggered=false;
+ function removeEvaluationGuard(){
+  document.removeEventListener("visibilitychange",onEvaluationVisibility,true);
+  window.removeEventListener("pagehide",onEvaluationPageHide,true);
+  root.removeEventListener("click",onEvaluationNavigation,true);
+ }
+ function renderEvaluationLocked(reason){
+  if(evaluationGuardTriggered)return;
+  evaluationGuardTriggered=true;evaluationGuardActive=false;
+  evaluationGuardLock(ev,reason);
+  removeEvaluationGuard();
+  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2>'+ 
+   '<p><strong>Une sortie de l’évaluation a été détectée.</strong></p>'+ 
+   '<p>La tentative en cours est annulée et ne peut pas être poursuivie.</p>'+ 
+   '<p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p>'+ 
+   '<div class="toolbar"><button type="button" class="btn red" id="bac-locked-back">← Retour aux évaluations</button></div></div>';
+  var back=$("bac-locked-back");if(back)back.onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");};
+ }
+ function onEvaluationVisibility(){if(evaluationGuardActive&&document.visibilityState==="hidden")renderEvaluationLocked("changement d’onglet ou fenêtre masquée");}
+ function onEvaluationPageHide(){if(evaluationGuardActive){evaluationGuardLock(ev,"fermeture, actualisation ou navigation hors de la page");evaluationGuardActive=false;}}
+ function onEvaluationNavigation(e){
+  if(!evaluationGuardActive)return;
+  var t=e.target&&e.target.closest?e.target.closest("button[data-view],a[href]"):null;
+  if(!t||detail.contains(t))return;
+  e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  renderEvaluationLocked("navigation vers une autre rubrique");
+ }
+ document.addEventListener("visibilitychange",onEvaluationVisibility,true);
+ window.addEventListener("pagehide",onEvaluationPageHide,true);
+ root.addEventListener("click",onEvaluationNavigation,true);
  function update(){
   var pct=Math.round(score/ev.questions.length*1000)/10;
   $("bac-eval-score").textContent="Réussite pondérée : "+fr(pct)+" % · Note : "+fr(note20(score,ev.questions.length))+" /20";
@@ -1023,6 +1090,7 @@ function openEvaluation(ev,forceRedo){
  next.onclick=async function(){
   if(!answered)return;
   if(current<ev.questions.length-1){current++;renderQ();return;}
+  evaluationGuardActive=false;removeEvaluationGuard();evaluationGuardClear(ev);
   qbox.innerHTML="";next.classList.add("hidden");$("bac-eval-progress").style.width="100%";
   var resultBox=$("bac-eval-result");resultBox.classList.remove("hidden");resultBox.innerHTML="<h3>Enregistrement automatique…</h3>";
   try{
