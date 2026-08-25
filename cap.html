@@ -3457,7 +3457,17 @@ function capIntegrityQueue(index,reason,meta,eventId){
 async function capIntegrityFlushPending(){
  var sid=(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID;
  if(capIntegrityFlushBusy||!window.FigaroCloud||!sid)return;var rows=capIntegrityReadPending();if(!rows.length)return;capIntegrityFlushBusy=true;
- try{var keep=[];for(var i=0;i<rows.length;i++){var row=rows[i];if(!row||row.student_id!==sid){keep.push(row);continue;}try{await FigaroCloud.table("evaluation_integrity_alerts","on_conflict=client_event_id",{method:"POST",keepalive:true,headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(row)});}catch(e){keep.push(row);}}capIntegrityWritePending(keep);}finally{capIntegrityFlushBusy=false;}
+ try{var keep=[];for(var i=0;i<rows.length;i++){var row=rows[i];if(!row||row.student_id!==sid){keep.push(row);continue;}try{
+  // V24.47 : insertion simple. L'ancien UPSERT "merge-duplicates" exigeait
+  // une politique UPDATE et empêchait l'élève d'envoyer le signalement.
+  await FigaroCloud.table("evaluation_integrity_alerts","",{method:"POST",keepalive:true,headers:{"Prefer":"return=minimal"},body:JSON.stringify(row)});
+ }catch(e){
+  var duplicateSynced=false;
+  if(e&&Number(e.status)===409){
+   try{var already=await FigaroCloud.table("evaluation_integrity_alerts","client_event_id=eq."+encodeURIComponent(row.client_event_id)+"&student_id=eq."+encodeURIComponent(sid)+"&select=id&limit=1");duplicateSynced=Array.isArray(already)&&already.length>0;}catch(checkErr){}
+  }
+  if(!duplicateSynced)keep.push(row);
+ }}capIntegrityWritePending(keep);}finally{capIntegrityFlushBusy=false;}
 }
 async function capIntegrityCheckAuthorization(index){
  var lock=capEvaluationGuardRead(index),sid=(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID;if(!lock||!lock.client_event_id||!sid||!window.FigaroCloud)return false;

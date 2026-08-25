@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 window.FIGAROMN_BUILD_V161="16.1-v2445";
-console.info("FigaroMN Bac Pro moteur V16.1 / V24.45 anti-triche + signalements enseignant chargé");
+console.info("FigaroMN Bac Pro moteur V16.1 / V24.47 correctif synchronisation signalements anti-triche chargé");
 
 var root=document.getElementById("fmn-level-master");
 if(!root || !window.FIGAROMN_LEVEL_CONFIG || !window.FIGAROMN_BACPRO_AUTO_DATA || !window.FigaroCloud)return;
@@ -971,8 +971,23 @@ async function evaluationIntegrityFlushPending(){
    var row=rows[i];
    if(!row||row.student_id!==state.profile.id){keep.push(row);continue;}
    try{
-    await FigaroCloud.table("evaluation_integrity_alerts","on_conflict=client_event_id",{method:"POST",keepalive:true,headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(row)});
-   }catch(e){keep.push(row);}
+    // V24.47 : insertion simple. L'ancien UPSERT "merge-duplicates" exigeait
+    // une politique UPDATE et bloquait les élèves avec la RLS Supabase.
+    await FigaroCloud.table("evaluation_integrity_alerts","",{method:"POST",keepalive:true,headers:{"Prefer":"return=minimal"},body:JSON.stringify(row)});
+   }catch(e){
+    // Si l'événement a déjà été enregistré lors d'un premier envoi mais que
+    // le navigateur n'a pas reçu la réponse, le client_event_id unique peut
+    // provoquer un 409. Dans ce cas on vérifie son existence et on considère
+    // la synchronisation comme réussie.
+    var duplicateSynced=false;
+    if(e&&Number(e.status)===409){
+     try{
+      var already=await FigaroCloud.table("evaluation_integrity_alerts","client_event_id=eq."+encodeURIComponent(row.client_event_id)+"&student_id=eq."+encodeURIComponent(state.profile.id)+"&select=id&limit=1");
+      duplicateSynced=Array.isArray(already)&&already.length>0;
+     }catch(checkErr){}
+    }
+    if(!duplicateSynced)keep.push(row);
+   }
   }
   evaluationIntegrityWritePending(keep);
  }finally{evaluationIntegrityFlushBusy=false;}

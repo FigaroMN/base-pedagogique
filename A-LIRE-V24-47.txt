@@ -1,0 +1,20 @@
+FIGAROMN V24.47 — CORRECTIF SIGNALEMENTS ANTI-TRICHE
+
+Cause corrigée :
+L'envoi V24.45 utilisait un UPSERT Supabase (Prefer: resolution=merge-duplicates).
+Avec la sécurité RLS, un élève possède le droit INSERT mais pas UPDATE sur la table
+evaluation_integrity_alerts. L'UPSERT pouvait donc être refusé et le signalement restait
+uniquement dans la file locale du navigateur.
+
+Correction V24.47 :
+- insertion simple POST compatible avec la politique INSERT élève ;
+- conservation de la file locale si le réseau échoue ;
+- gestion d'un doublon éventuel (HTTP 409) par vérification du client_event_id ;
+- aucun changement dans les évaluations, les notes ou l'espace enseignant.
+
+Fichiers GitHub à remplacer :
+- figaromn-bacpro-auto-v161.js
+- cap.html
+
+Aucun nouveau SQL de migration n'est nécessaire si MIGRATION V24.45 a déjà été exécutée.
+Le fichier DIAGNOSTIC-V24-47-SIGNALEMENTS.sql est facultatif.
