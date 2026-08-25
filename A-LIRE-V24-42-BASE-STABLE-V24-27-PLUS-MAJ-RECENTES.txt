@@ -1,0 +1,41 @@
+FIGAROMN V24.42 — BASE STABLE V24.27 + MISES À JOUR RÉCENTES
+===============================================================
+
+BASE DE TRAVAIL
+- La base pédagogique est exactement le ZIP V24.27 fourni par Fabien.
+- Les fichiers pédagogiques V24.27 ont été conservés octet pour octet.
+- Aucun ancien package V24.34/V24.35/V24.36 n'a servi de base aux parcours élèves.
+
+MISES À JOUR RÉAPPLIQUÉES SANS TOUCHER AUX PARCOURS PÉDAGOGIQUES
+1. NautiPlan Pro sur la page d'accueil.
+2. Planning partagé Supabase et consultation publique.
+3. Accès équipe (nom prérempli MN ; mot de passe contrôlé par Supabase).
+4. Création Client / Équipement / Technicien / Intervention.
+5. Sauvegarde automatique Supabase et synchronisation publique.
+6. Visualisation de la fiche d'intervention + PDF.
+7. Bouton Modifier et bouton Supprimer avec confirmation.
+8. Planning séparé vers le bas du tableau de bord.
+9. Ordre de navigation : Clients > Équipements > Techniciens > Interventions.
+10. Bouton « Accueil » à la place de « FigaroMN » dans NautiPlan.
+11. Favicon bateau plus visible.
+12. Accès élèves sécurisé depuis l'accueil :
+    - BAC PRO -> choix du niveau -> connexion-eleve.html avec mot de passe.
+    - CAP -> connexion-eleve.html avec mot de passe.
+    - l'ancienne page cycle-bac-pro.html redirige vers le choix sécurisé.
+13. Accès professeur : connexion.html?mode=enseignant&scope=all.
+
+IMPORTANT POUR GITHUB
+- C'est un PATCH CUMULATIF à déposer SUR le dépôt existant.
+- Ne supprimez PAS les autres fichiers du dépôt avant l'envoi.
+- Décompressez puis téléversez les fichiers à la racine en acceptant les remplacements.
+- Cette version ne contient PAS les migrations NautiPlan V24.29/V24.31/V24.33 : elles ont déjà été exécutées dans Supabase.
+- Aucun nouveau SQL n'est requis pour V24.42.
+
+TESTS À FAIRE APRÈS DÉPLOIEMENT
+1. Fenêtre privée -> Accueil -> BAC PRO -> Terminale -> écran Identification élève obligatoire.
+2. Fenêtre privée -> Accueil -> CAP -> écran Identification élève obligatoire.
+3. Espace élève -> vérifier Séquences / Exercices / Évaluations / Cahier de texte.
+4. NautiPlan public -> intervention du jour visible sans coordonnées privées.
+5. Accès équipe -> connexion, Clients > Équipements > Techniciens > Interventions.
+6. Créer une intervention -> attendre « Synchronisé » -> revenir en public -> intervention toujours visible.
+7. Visualiser / PDF / Modifier / Supprimer.
