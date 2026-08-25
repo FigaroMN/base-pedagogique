@@ -3441,12 +3441,36 @@ function capEvaluationGuardRead(index){
  try{var raw=localStorage.getItem(capEvaluationGuardKey(index));if(!raw)return null;var data=JSON.parse(raw);return data&&data.locked?data:null;}catch(e){return null;}
 }
 function capEvaluationGuardIsLocked(index){return !!capEvaluationGuardRead(index);}
-function capEvaluationGuardLock(index,reason){
- try{localStorage.setItem(capEvaluationGuardKey(index),JSON.stringify({locked:true,reason:String(reason||"sortie détectée"),at:new Date().toISOString()}));}catch(e){}
+
+/* V24.45 — file locale + synchronisation Supabase des alertes anti-triche CAP. */
+var capIntegrityFlushBusy=false;
+function capIntegrityPendingKey(){return "figaromn_eval_integrity_pending_v2445";}
+function capIntegrityReadPending(){try{var a=JSON.parse(localStorage.getItem(capIntegrityPendingKey())||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}}
+function capIntegrityWritePending(rows){try{localStorage.setItem(capIntegrityPendingKey(),JSON.stringify(rows||[]));}catch(e){}}
+function capIntegrityEventId(){try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();}catch(e){}return "evt-"+Date.now()+"-"+Math.random().toString(36).slice(2,11);}
+function capIntegrityQueue(index,reason,meta,eventId){
+ var sid=(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID;
+ if(!sid)return;meta=meta||{};var ev=DATA.evaluations[index]||{};
+ var row={client_event_id:eventId||capIntegrityEventId(),student_id:sid,student_name:String(studentName()||"Élève"),student_level:"cap",evaluation_key:"cap:sequence:"+String(index+1),evaluation_title:String(ev.title||"Évaluation CAP"),sequence_no:index+1,question_no:Number(meta.question_no||0)||null,question_total:Number(meta.question_total||0)||null,reason:String(reason||"sortie détectée"),detected_at:new Date().toISOString(),status:"new"};
+ var rows=capIntegrityReadPending();if(!rows.some(function(x){return x&&x.client_event_id===row.client_event_id;})){rows.push(row);capIntegrityWritePending(rows);}capIntegrityFlushPending();
+}
+async function capIntegrityFlushPending(){
+ var sid=(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID;
+ if(capIntegrityFlushBusy||!window.FigaroCloud||!sid)return;var rows=capIntegrityReadPending();if(!rows.length)return;capIntegrityFlushBusy=true;
+ try{var keep=[];for(var i=0;i<rows.length;i++){var row=rows[i];if(!row||row.student_id!==sid){keep.push(row);continue;}try{await FigaroCloud.table("evaluation_integrity_alerts","on_conflict=client_event_id",{method:"POST",keepalive:true,headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(row)});}catch(e){keep.push(row);}}capIntegrityWritePending(keep);}finally{capIntegrityFlushBusy=false;}
+}
+async function capIntegrityCheckAuthorization(index){
+ var lock=capEvaluationGuardRead(index),sid=(window.FIGAROMN_CAP_PROFILE&&window.FIGAROMN_CAP_PROFILE.id)||window.FIGAROMN_CAP_USER_ID;if(!lock||!lock.client_event_id||!sid||!window.FigaroCloud)return false;
+ try{var rows=await FigaroCloud.table("evaluation_integrity_alerts","client_event_id=eq."+encodeURIComponent(lock.client_event_id)+"&student_id=eq."+encodeURIComponent(sid)+"&select=id,status,authorized_at&limit=1");if(Array.isArray(rows)&&rows[0]&&(rows[0].status==="authorized"||(rows[0].status==="handled"&&rows[0].authorized_at))){capEvaluationGuardClear(index);return true;}}catch(e){}return false;
+}
+function capEvaluationGuardLock(index,reason,meta){
+ var existing=capEvaluationGuardRead(index);if(existing)return existing;var eventId=capIntegrityEventId();var data={locked:true,reason:String(reason||"sortie détectée"),at:new Date().toISOString(),client_event_id:eventId};
+ try{localStorage.setItem(capEvaluationGuardKey(index),JSON.stringify(data));}catch(e){}capIntegrityQueue(index,reason,meta,eventId);return data;
 }
 function capEvaluationGuardClear(index){try{localStorage.removeItem(capEvaluationGuardKey(index));}catch(e){}}
 
 function rebuildEvalGrid(){
+ capIntegrityFlushPending();
  evalGrid.innerHTML="";
 
  DATA.evaluations.forEach(function(ev,i){
@@ -3486,7 +3510,8 @@ function rebuildEvalGrid(){
        '<button type="button" class="btn blue" data-eval-pdf="'+i+'">🖨️ PDF dernière tentative</button>'+
       '</div>'
     : (locked
-      ? '<div class="actions"><div class="msg badmsg">⛔ Évaluation bloquée : une sortie de l’évaluation a été détectée.</div>'+
+      ? '<div class="actions"><div class="msg badmsg">⛔ Évaluation bloquée : une sortie de l’évaluation a été détectée et signalée à l’enseignant.</div>'+
+        '<button type="button" class="btn blue" data-check-cap-auth="'+i+'">↻ Vérifier l’autorisation enseignant</button>'+
         '<button type="button" class="btn red" data-redo-eval="'+i+'">🔓 Recommencer avec le code enseignant</button></div>'
       : '<div>'+
         '<div class="eval-lock">'+
@@ -3536,6 +3561,13 @@ evalGrid.addEventListener("click",function(e){
  var histEval=e.target.closest("[data-history-eval]");
  if(histEval){
   showAttemptHistory("eval18",parseInt(histEval.getAttribute("data-history-eval"),10));
+  return;
+ }
+
+ var checkAuth=e.target.closest("[data-check-cap-auth]");
+ if(checkAuth){
+  var checkIndex=parseInt(checkAuth.getAttribute("data-check-cap-auth"),10);checkAuth.disabled=true;checkAuth.textContent="Vérification…";
+  capIntegrityCheckAuthorization(checkIndex).then(function(ok){if(ok){alert("✅ L’enseignant a autorisé une nouvelle tentative.");rebuildEvalGrid();}else{alert("Aucune autorisation de recommencer n’a encore été enregistrée par l’enseignant.");checkAuth.disabled=false;checkAuth.textContent="↻ Vérifier l’autorisation enseignant";}});
   return;
  }
 
@@ -3616,12 +3648,12 @@ function openEvaluation(index,forceRedo){
  function renderCapEvaluationLocked(reason){
   if(capEvaluationGuardTriggered)return;
   capEvaluationGuardTriggered=true;capEvaluationGuardActive=false;
-  capEvaluationGuardLock(index,reason);removeCapEvaluationGuard();
-  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2><p><strong>Une sortie de l’évaluation a été détectée.</strong></p><p>La tentative en cours est annulée et ne peut pas être poursuivie.</p><p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p><div class="toolbar"><button type="button" class="btn red" id="capmn26-locked-back">← Retour aux évaluations</button></div></div>';
+  capEvaluationGuardLock(index,reason,{question_no:current+1,question_total:ev.questions.length});removeCapEvaluationGuard();
+  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2><p><strong>Une sortie de l’évaluation a été détectée et un signalement a été envoyé à l’enseignant.</strong></p><p>La tentative en cours est annulée et ne peut pas être poursuivie.</p><p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p><div class="toolbar"><button type="button" class="btn red" id="capmn26-locked-back">← Retour aux évaluations</button></div></div>';
   var back=detail.querySelector("#capmn26-locked-back");if(back)back.onclick=function(){refreshSkillSummaries();rebuildEvalGrid();show("evaluations");};
  }
  function onCapEvaluationVisibility(){if(capEvaluationGuardActive&&document.visibilityState==="hidden")renderCapEvaluationLocked("changement d’onglet ou fenêtre masquée");}
- function onCapEvaluationPageHide(){if(capEvaluationGuardActive){capEvaluationGuardLock(index,"fermeture, actualisation ou navigation hors de la page");capEvaluationGuardActive=false;}}
+ function onCapEvaluationPageHide(){if(capEvaluationGuardActive){capEvaluationGuardLock(index,"fermeture, actualisation ou navigation hors de la page",{question_no:current+1,question_total:ev.questions.length});capEvaluationGuardActive=false;}}
  function onCapEvaluationNavigation(e){
   if(!capEvaluationGuardActive)return;
   var t=e.target&&e.target.closest?e.target.closest("button[data-view],a[href]"):null;
@@ -3717,6 +3749,7 @@ show("home");
        return fail("connexion-eleve.html?level=cap");
      }
      window.FIGAROMN_CAP_PROFILE=p;
+     try{capIntegrityFlushPending();}catch(e){}
      if(window.FIGAROMN_SYNC_CAP_HISTORY){
        window.FIGAROMN_SYNC_CAP_HISTORY().catch(function(e){
          console.warn("FigaroMN CAP : reprise de l'historique local non synchronisée.",e);
