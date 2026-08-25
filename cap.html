@@ -3577,7 +3577,7 @@ evalGrid.addEventListener("click",function(e){
  var checkAuth=e.target.closest("[data-check-cap-auth]");
  if(checkAuth){
   var checkIndex=parseInt(checkAuth.getAttribute("data-check-cap-auth"),10);checkAuth.disabled=true;checkAuth.textContent="Vérification…";
-  capIntegrityCheckAuthorization(checkIndex).then(function(ok){if(ok){alert("✅ L’enseignant a autorisé une nouvelle tentative.");rebuildEvalGrid();}else{alert("Aucune autorisation de recommencer n’a encore été enregistrée par l’enseignant.");checkAuth.disabled=false;checkAuth.textContent="↻ Vérifier l’autorisation enseignant";}});
+  capIntegrityCheckAuthorization(checkIndex).then(function(ok){if(ok){alert("✅ L’enseignant a autorisé la reprise. L’évaluation redémarre maintenant depuis le début.");openEvaluation(checkIndex,true);}else{alert("Aucune autorisation de reprendre n’a encore été enregistrée par l’enseignant.");checkAuth.disabled=false;checkAuth.textContent="↻ Vérifier l’autorisation enseignant";}});
   return;
  }
 
@@ -3659,8 +3659,20 @@ function openEvaluation(index,forceRedo){
   if(capEvaluationGuardTriggered)return;
   capEvaluationGuardTriggered=true;capEvaluationGuardActive=false;
   capEvaluationGuardLock(index,reason,{question_no:current+1,question_total:ev.questions.length});removeCapEvaluationGuard();
-  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2><p><strong>Une sortie de l’évaluation a été détectée et un signalement a été envoyé à l’enseignant.</strong></p><p>La tentative en cours est annulée et ne peut pas être poursuivie.</p><p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p><div class="toolbar"><button type="button" class="btn red" id="capmn26-locked-back">← Retour aux évaluations</button></div></div>';
-  var back=detail.querySelector("#capmn26-locked-back");if(back)back.onclick=function(){refreshSkillSummaries();rebuildEvalGrid();show("evaluations");};
+  detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2><p><strong>Une sortie de l’évaluation a été détectée et un signalement a été envoyé à l’enseignant.</strong></p><p>La tentative en cours est annulée.</p><p><strong>En attente de l’autorisation de l’enseignant…</strong> Dès qu’il clique sur « Autoriser à recommencer », cette même évaluation redémarrera automatiquement depuis le début, sans ressaisir le code.</p><div class="msg" id="capmn26-integrity-wait" aria-live="polite">Vérification automatique de l’autorisation toutes les 3 secondes.</div><div class="toolbar"><button type="button" class="btn blue" id="capmn26-check-auth-now">↻ Vérifier maintenant</button><button type="button" class="btn red" id="capmn26-locked-back">← Retour aux évaluations</button></div></div>';
+  var capAuthPollStopped=false,capAuthPollBusy=false,capAuthPollTimer=null;
+  function checkCapTeacherAuthorization(auto){
+   if(capAuthPollStopped||capAuthPollBusy)return Promise.resolve(false);capAuthPollBusy=true;
+   var wait=detail.querySelector("#capmn26-integrity-wait"),check=detail.querySelector("#capmn26-check-auth-now");if(check&&!auto){check.disabled=true;check.textContent="Vérification…";}
+   return capIntegrityCheckAuthorization(index).then(function(ok){
+    if(ok){capAuthPollStopped=true;if(capAuthPollTimer)clearInterval(capAuthPollTimer);if(wait){wait.textContent="✅ Reprise autorisée. Redémarrage de l’évaluation…";wait.className="msg ok";}setTimeout(function(){openEvaluation(index,true);},350);return true;}
+    if(wait&&!auto)wait.textContent="⏳ L’enseignant n’a pas encore autorisé la reprise.";return false;
+   }).catch(function(){return false;}).then(function(ok){capAuthPollBusy=false;if(check&&!capAuthPollStopped){check.disabled=false;check.textContent="↻ Vérifier maintenant";}return ok;});
+  }
+  var checkNow=detail.querySelector("#capmn26-check-auth-now");if(checkNow)checkNow.onclick=function(){checkCapTeacherAuthorization(false);};
+  capAuthPollTimer=setInterval(function(){if(document.visibilityState!=="hidden")checkCapTeacherAuthorization(true);},3000);
+  checkCapTeacherAuthorization(true);
+  var back=detail.querySelector("#capmn26-locked-back");if(back)back.onclick=function(){capAuthPollStopped=true;if(capAuthPollTimer)clearInterval(capAuthPollTimer);refreshSkillSummaries();rebuildEvalGrid();show("evaluations");};
  }
  function onCapEvaluationVisibility(){if(capEvaluationGuardActive&&document.visibilityState==="hidden")renderCapEvaluationLocked("changement d’onglet ou fenêtre masquée");}
  function onCapEvaluationPageHide(){if(capEvaluationGuardActive){capEvaluationGuardLock(index,"fermeture, actualisation ou navigation hors de la page",{question_no:current+1,question_total:ev.questions.length});capEvaluationGuardActive=false;}}

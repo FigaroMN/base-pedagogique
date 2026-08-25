@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 window.FIGAROMN_BUILD_V161="16.1-v2445";
-console.info("FigaroMN Bac Pro moteur V16.1 / V24.47 correctif synchronisation signalements anti-triche chargé");
+console.info("FigaroMN Bac Pro moteur V16.1 / V24.48 reprise automatique après autorisation enseignant chargée");
 
 var root=document.getElementById("fmn-level-master");
 if(!root || !window.FIGAROMN_LEVEL_CONFIG || !window.FIGAROMN_BACPRO_AUTO_DATA || !window.FigaroCloud)return;
@@ -1098,7 +1098,7 @@ function bindEvalButtons(){
   if(evaluationGuardIsLocked(ev)){msg.textContent="⛔ Cette évaluation a été bloquée après une sortie. Utilise « Recommencer avec le code enseignant ».";msg.className="msg badmsg";return;}
   if(input.value.trim().toLowerCase()===String(ev.code).toLowerCase()){msg.textContent="✅ Code correct";msg.className="msg ok";setTimeout(function(){openEvaluation(ev,false);},120);}else{msg.textContent="❌ Code incorrect";msg.className="msg badmsg";input.value="";input.focus();}
  };});
- grid.querySelectorAll("[data-check-eval-auth]").forEach(function(b){b.onclick=async function(){var ev=findEval(b.dataset.checkEvalAuth);b.disabled=true;b.textContent="Vérification…";var ok=await evaluationIntegrityCheckAuthorization(ev);if(ok){alert("✅ L’enseignant a autorisé une nouvelle tentative.");rebuildEvaluations();}else{alert("Aucune autorisation de recommencer n’a encore été enregistrée par l’enseignant.");b.disabled=false;b.textContent="↻ Vérifier l’autorisation enseignant";}};});
+ grid.querySelectorAll("[data-check-eval-auth]").forEach(function(b){b.onclick=async function(){var ev=findEval(b.dataset.checkEvalAuth);b.disabled=true;b.textContent="Vérification…";var ok=await evaluationIntegrityCheckAuthorization(ev);if(ok){alert("✅ L’enseignant a autorisé la reprise. L’évaluation redémarre maintenant depuis le début.");openEvaluation(ev,true);}else{alert("Aucune autorisation de reprendre n’a encore été enregistrée par l’enseignant.");b.disabled=false;b.textContent="↻ Vérifier l’autorisation enseignant";}};});
  grid.querySelectorAll("[data-redo-eval]").forEach(function(b){b.onclick=function(){var ev=findEval(b.dataset.redoEval),code=prompt("Code enseignant pour refaire l’évaluation :");if(code===null)return;if(code.trim().toLowerCase()!==String(DATA.redoEvaluationCode||"evaluation").toLowerCase()){alert("Code incorrect.");return;}evaluationGuardClear(ev);openEvaluation(ev,true);};});
  grid.querySelectorAll("[data-history-eval]").forEach(function(b){b.onclick=function(){showHistory("evaluation",findEval(b.dataset.historyEval));};});
 }
@@ -1136,10 +1136,25 @@ function openEvaluation(ev,forceRedo){
   removeEvaluationGuard();
   detail.innerHTML='<div class="content-box"><h2>⛔ Évaluation bloquée</h2>'+ 
    '<p><strong>Une sortie de l’évaluation a été détectée et un signalement a été envoyé à l’enseignant.</strong></p>'+ 
-   '<p>La tentative en cours est annulée et ne peut pas être poursuivie.</p>'+ 
-   '<p>Pour refaire cette même évaluation, retourne à la liste et utilise le <strong>code enseignant de nouvelle tentative</strong>. Tu peux aussi choisir une autre évaluation avec son code habituel.</p>'+ 
-   '<div class="toolbar"><button type="button" class="btn red" id="bac-locked-back">← Retour aux évaluations</button></div></div>';
-  var back=$("bac-locked-back");if(back)back.onclick=function(){window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");};
+   '<p>La tentative en cours est annulée.</p>'+ 
+   '<p><strong>En attente de l’autorisation de l’enseignant…</strong> Dès qu’il clique sur « Autoriser à recommencer », cette même évaluation redémarrera automatiquement depuis le début, sans ressaisir le code.</p>'+ 
+   '<div class="msg" id="bac-integrity-wait" aria-live="polite">Vérification automatique de l’autorisation toutes les 3 secondes.</div>'+ 
+   '<div class="toolbar"><button type="button" class="btn blue" id="bac-check-auth-now">↻ Vérifier maintenant</button><button type="button" class="btn red" id="bac-locked-back">← Retour aux évaluations</button></div></div>';
+  var authPollStopped=false,authPollBusy=false,authPollTimer=null;
+  async function checkTeacherAuthorization(auto){
+   if(authPollStopped||authPollBusy)return false;authPollBusy=true;
+   var wait=$("bac-integrity-wait"),check=$("bac-check-auth-now");if(check&&!auto){check.disabled=true;check.textContent="Vérification…";}
+   try{
+    var ok=await evaluationIntegrityCheckAuthorization(ev);
+    if(ok){authPollStopped=true;if(authPollTimer)clearInterval(authPollTimer);if(wait){wait.textContent="✅ Reprise autorisée. Redémarrage de l’évaluation…";wait.className="msg ok";}setTimeout(function(){openEvaluation(ev,true);},350);return true;}
+    if(wait&&!auto)wait.textContent="⏳ L’enseignant n’a pas encore autorisé la reprise.";
+   }finally{authPollBusy=false;if(check&&!authPollStopped){check.disabled=false;check.textContent="↻ Vérifier maintenant";}}
+   return false;
+  }
+  var checkNow=$("bac-check-auth-now");if(checkNow)checkNow.onclick=function(){checkTeacherAuthorization(false);};
+  authPollTimer=setInterval(function(){if(document.visibilityState!=="hidden")checkTeacherAuthorization(true);},3000);
+  checkTeacherAuthorization(true);
+  var back=$("bac-locked-back");if(back)back.onclick=function(){authPollStopped=true;if(authPollTimer)clearInterval(authPollTimer);window.FIGAROMN_CURRENT_SEQUENCE=ev.sequence;activeSequence=ev.sequence;rebuildEvaluations();show("evaluations");};
  }
  function onEvaluationVisibility(){if(evaluationGuardActive&&document.visibilityState==="hidden")renderEvaluationLocked("changement d’onglet ou fenêtre masquée");}
  function onEvaluationPageHide(){if(evaluationGuardActive){evaluationGuardLock(ev,"fermeture, actualisation ou navigation hors de la page",{question_no:current+1,question_total:ev.questions.length});evaluationGuardActive=false;}}
