@@ -368,10 +368,45 @@ function questionIndicatorRefsHTML(q){
  Object.keys(q.inds||{}).forEach(function(c){bits.push(c+'-I'+(Number(q.inds[c])+1));});
  return bits.length?'<span class="question-indicator">Indicateur : '+esc(bits.join(" · "))+'</span>':'';
 }
-function mixedOptions(q){
- var arr=(q.a||[]).map(function(label,i){return {label:label,originalIndex:i};});
- for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
- return arr;
+function shuffleArray(arr){
+ var copy=(arr||[]).slice();
+ for(var i=copy.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=copy[i];copy[i]=copy[j];copy[j]=tmp;}
+ return copy;
+}
+function balancedCorrectPositions(questionCount,answerCount){
+ answerCount=Math.max(1,Number(answerCount)||1);
+ var positions=[],previous=-1;
+ while(positions.length<questionCount){
+  var cycle=[];for(var i=0;i<answerCount;i++)cycle.push(i);
+  cycle=shuffleArray(cycle);
+  if(answerCount>1&&previous===cycle[0]){
+   var swapIndex=1;while(swapIndex<cycle.length&&cycle[swapIndex]===previous)swapIndex++;
+   if(swapIndex<cycle.length){var t=cycle[0];cycle[0]=cycle[swapIndex];cycle[swapIndex]=t;}
+  }
+  for(var j=0;j<cycle.length&&positions.length<questionCount;j++){positions.push(cycle[j]);previous=cycle[j];}
+ }
+ return positions;
+}
+function balancedCorrectPositionsForQuestions(questions){
+ var out=new Array((questions||[]).length),groups={};
+ (questions||[]).forEach(function(q,index){
+  var count=Math.max(1,(q.a||[]).length);
+  if(!groups[count])groups[count]=[];groups[count].push(index);
+ });
+ Object.keys(groups).forEach(function(key){
+  var count=Number(key),indices=groups[key],positions=balancedCorrectPositions(indices.length,count);
+  indices.forEach(function(qIndex,i){out[qIndex]=positions[i];});
+ });
+ return out;
+}
+function mixedOptions(q,targetCorrectPosition){
+ var options=(q.a||[]).map(function(label,i){return {label:label,originalIndex:i,correct:i===Number(q.c)};});
+ var correct=null,distractors=[];
+ options.forEach(function(o){if(o.correct)correct=o;else distractors.push(o);});
+ distractors=shuffleArray(distractors);
+ if(!correct)return shuffleArray(options);
+ var maxPos=Math.max(0,options.length-1),target=Math.max(0,Math.min(Number(targetCorrectPosition)||0,maxPos));
+ var mixed=distractors.slice();mixed.splice(target,0,correct);return mixed;
 }
 
 function evaluationCreditLabel(percent){
@@ -465,9 +500,16 @@ function graduatedEvaluationTexts(q){
  ];
 }
 function shuffledGraduatedEvaluationOptions(q){
- var arr=graduatedEvaluationTexts(q).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};});
- for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;}
- return arr;
+ return shuffleArray(graduatedEvaluationTexts(q).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};}));
+}
+function mixedWeightedEvaluationOptions(q,targetCorrectPosition){
+ var options=graduatedEvaluationTexts(q).map(function(o,i){return {label:o.label,percent:o.percent,originalIndex:i};});
+ var full=null,partials=[];
+ options.forEach(function(o){if(Number(o.percent)===100)full=o;else partials.push(o);});
+ partials=shuffleArray(partials);
+ if(!full)return shuffleArray(options);
+ var target=Math.max(0,Math.min(Number(targetCorrectPosition)||0,options.length-1));
+ partials.splice(target,0,full);return partials;
 }
 
 function currentAttemptIndicatorAggregate(questions,responses,weighted){
@@ -774,9 +816,10 @@ function printCompletedExercise(ex){
 
 function printBlankExercise(ex){
  var w=window.open("","_blank");if(!w){alert("Le navigateur a bloqué la fenêtre d’impression.");return;}
+ var printCorrectPositions=balancedCorrectPositionsForQuestions(ex.questions);
  var body='<h1>'+esc(ex.title)+'</h1><p><strong>'+esc(CFG.full)+'</strong> · Séquence '+ex.sequence+' · Situation '+ex.situation+'</p><p>'+esc(ex.objective||"")+'</p>'+
   successIndicatorsPanelHTML(ex.comps)+
-  ex.questions.map(function(q,i){return '<div class="q"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><br>'+q.a.map(function(a,j){return '☐ '+esc(a);}).join('<br>')+'</div>';}).join("");
+  ex.questions.map(function(q,i){var opts=mixedOptions(q,printCorrectPositions[i]);return '<div class="q"><strong>'+(i+1)+'. '+esc(q.q)+'</strong><br>'+opts.map(function(o){return '☐ '+esc(o.label);}).join('<br>')+'</div>';}).join("");
  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>body{font-family:Arial;padding:24px}.q{border:1px solid #ddd;padding:10px;margin:10px 0}h1{color:#06283d}.success-panel{border:1px solid #d9e6ea;padding:12px}</style></head><body>'+body+'</body></html>');w.document.close();setTimeout(function(){w.print();},250);
 }
 function openExercise(ex,forceRedo){
@@ -784,8 +827,9 @@ function openExercise(ex,forceRedo){
  var rows=attemptRows("exercise",ex.sequence,ex.situation);
  if(rows.length&&!forceRedo){alert("Cet exercice a déjà été réalisé. Pour le refaire, utilise « Refaire l’exercice » et le code enseignant.");rebuildExercises();show("exercises");return;}
  var detail=$("fmn-view-exercise-detail"),score=0,answered=0,responses=[],liveAgg={};
+ var exCorrectPositions=balancedCorrectPositionsForQuestions(ex.questions);
  var qhtml=ex.questions.map(function(q,qi){
-  var opts=mixedOptions(q);
+  var opts=mixedOptions(q,exCorrectPositions[qi]);
   return '<div class="q-card" data-q="'+qi+'"><span class="question-skill">Compétence : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+
    '<strong>'+(qi+1)+'. '+esc(q.q)+'</strong><div class="answers">'+opts.map(function(o){return '<button type="button" class="answer" data-a="'+o.originalIndex+'">'+esc(o.label)+'</button>';}).join("")+'</div><div class="feedback hidden"></div></div>';
  }).join("");
@@ -1113,7 +1157,7 @@ function openEvaluation(ev,forceRedo){
   detail=document.createElement("section");detail.id="fmn-view-evaluation-detail";detail.className="main-view hidden";
   var host=root.querySelector(".content")||root;host.appendChild(detail);
  }
- var current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[];
+ var current=0,score=0,answered=false,responses=[],liveAgg={},mixed=[],evalCorrectPositions=balancedCorrectPositions(ev.questions.length,4);
  detail.innerHTML='<style>.answer.partial{border-color:#d29a2e!important;background:#fff8e8!important}.feedback.credit{font-weight:800}</style>'+ 
   '<div class="content-head"><button type="button" class="btn light" id="bac-back-eval">← Retour aux évaluations</button></div>'+ 
   '<div class="content-box"><h2>'+esc(ev.title)+'</h2>'+ 
@@ -1174,7 +1218,7 @@ function openEvaluation(ev,forceRedo){
   liveAgg=currentAttemptIndicatorAggregate(ev.questions,responses,true);
  }
  function renderQ(){
-  answered=false;var q=ev.questions[current];mixed=shuffledGraduatedEvaluationOptions(q);
+  answered=false;var q=ev.questions[current];mixed=mixedWeightedEvaluationOptions(q,evalCorrectPositions[current]);
   $("bac-eval-counter").textContent="Question "+(current+1)+" / "+ev.questions.length;
   $("bac-eval-progress").style.width=Math.round(current/ev.questions.length*100)+"%";
   qbox.innerHTML='<div class="q-card"><span class="question-skill">Compétence évaluée : '+esc((q.comps||[]).join(" · "))+'</span>'+questionIndicatorRefsHTML(q)+'<strong>'+esc(q.q)+'</strong><div class="answers">'+mixed.map(function(o){return '<button type="button" class="answer" data-choice="'+o.originalIndex+'" data-credit="'+o.percent+'">'+esc(o.label)+'</button>';}).join("")+'</div><div class="feedback hidden"></div></div>';

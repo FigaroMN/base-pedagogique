@@ -1184,20 +1184,39 @@ function shuffleArray(arr){
   Avec 5 questions, les 4 positions sont utilisées au moins une fois.
 */
 function balancedCorrectPositions(questionCount,answerCount){
- answerCount=answerCount||4;
- var positions=[];
+ answerCount=Math.max(1,Number(answerCount)||4);
+ var positions=[],previous=-1;
 
  while(positions.length<questionCount){
   var cycle=[];
   for(var i=0;i<answerCount;i++)cycle.push(i);
   cycle=shuffleArray(cycle);
+  if(answerCount>1&&previous===cycle[0]){
+   var swapIndex=1;
+   while(swapIndex<cycle.length&&cycle[swapIndex]===previous)swapIndex++;
+   if(swapIndex<cycle.length){var temp=cycle[0];cycle[0]=cycle[swapIndex];cycle[swapIndex]=temp;}
+  }
 
   for(var j=0;j<cycle.length && positions.length<questionCount;j++){
    positions.push(cycle[j]);
+   previous=cycle[j];
   }
  }
 
- return shuffleArray(positions);
+ return positions;
+}
+function balancedCorrectPositionsForQuestions(questions){
+ var out=new Array((questions||[]).length),groups={};
+ (questions||[]).forEach(function(q,index){
+  var count=Math.max(1,(q.a||[]).length);
+  if(!groups[count])groups[count]=[];
+  groups[count].push(index);
+ });
+ Object.keys(groups).forEach(function(key){
+  var count=Number(key),indices=groups[key],positions=balancedCorrectPositions(indices.length,count);
+  indices.forEach(function(qIndex,i){out[qIndex]=positions[i];});
+ });
+ return out;
 }
 
 /*
@@ -2841,7 +2860,7 @@ function printBlankExercise(index){
  var ex=DATA.exercises[index];
  if(!ex)return;
 
- var correctPositions=balancedCorrectPositions(ex.questions.length,4);
+ var correctPositions=balancedCorrectPositionsForQuestions(ex.questions);
 
  var questionsHTML=ex.questions.map(function(q,qi){
   var options=mixedAnswerOptions(q,correctPositions[qi]);
@@ -3246,7 +3265,7 @@ function openExercise(index,forceRedo){
  var responses=[];
  var detail=sections.exerciseDetail;
 
- var exCorrectPositions=balancedCorrectPositions(ex.questions.length,4);
+ var exCorrectPositions=balancedCorrectPositionsForQuestions(ex.questions);
 
  var qhtml=ex.questions.map(function(q,qi){
   var mixedOptions=mixedAnswerOptions(q,exCorrectPositions[qi]);
