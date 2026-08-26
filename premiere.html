@@ -162,5 +162,63 @@
 })();
 </script>
 
+
+<script>
+/* FigaroMN V24.52 — cahier de texte élève toujours synchronisé avec l'historique enseignant */
+(function(){
+  function getMaster(){
+    return document.getElementById('fmn-level-master') || document.getElementById('capmn26-master');
+  }
+  function getView(){
+    return document.getElementById('fmn-view-logbook') || document.getElementById('capmn26-logbook');
+  }
+  function logbookIsVisible(){
+    var v=getView();
+    return !!(v && !v.classList.contains('hidden'));
+  }
+  var refreshTimer=0;
+  function refreshLogbook(){
+    clearTimeout(refreshTimer);
+    refreshTimer=setTimeout(function(){
+      if(window.FigaroMNStudentLogbook && typeof window.FigaroMNStudentLogbook.reload==='function'){
+        window.FigaroMNStudentLogbook.reload();
+      }
+    },180);
+  }
+  function installRefreshButton(){
+    var v=getView();
+    if(!v || v.querySelector('[data-fmn-logbook-refresh]')) return;
+    var hero=v.querySelector('.fmn-logbook-hero');
+    if(!hero) return;
+    var b=document.createElement('button');
+    b.type='button';
+    b.setAttribute('data-fmn-logbook-refresh','1');
+    b.textContent='↻ Actualiser';
+    b.style.cssText='margin-left:auto;border:0;border-radius:10px;padding:9px 12px;background:#e8f2f5;color:#18323f;font-weight:800;cursor:pointer;';
+    b.addEventListener('click',function(e){e.preventDefault();refreshLogbook();});
+    hero.appendChild(b);
+  }
+  function init(){
+    var master=getMaster(), v=getView();
+    if(!master || !v) return;
+    var tab=master.querySelector('.nav button[data-view="logbook"]');
+    if(tab){
+      /* Le module historique V24.16 gardait les anciennes données en mémoire.
+         À chaque ouverture, on relit maintenant Supabase. */
+      tab.addEventListener('click',function(){refreshLogbook();},true);
+    }
+    new MutationObserver(function(){installRefreshButton();}).observe(v,{childList:true,subtree:true});
+    installRefreshButton();
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden && logbookIsVisible()) refreshLogbook();
+    });
+    window.addEventListener('focus',function(){
+      if(logbookIsVisible()) refreshLogbook();
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
+
 </body>
 </html>
