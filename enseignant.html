@@ -2073,10 +2073,28 @@ function renderIntegrityAlerts(){
   return '<article class="integrity-row '+cls+'"><div class="integrity-row-head"><div><strong>'+esc(r.student_name||"Élève")+' · '+esc(integrityLevelLabel(r.student_level))+'</strong><div class="integrity-meta">'+esc(classLabel)+' · '+esc(r.evaluation_title||"Évaluation")+' · '+esc(integrityQuestionLabel(r))+'<br>Détecté '+esc(fmtDate(r.detected_at))+' · Motif : '+esc(r.reason||"sortie détectée")+'</div></div><span class="integrity-status '+cls+'">'+esc(integrityStatusLabel(r.status))+'</span></div><div class="integrity-actions">'+
    (r.status==="new"?'<button type="button" class="btn good integrityAuthorize" data-id="'+esc(r.id)+'">✅ Autoriser à recommencer</button>':'')+
    (r.status!=="handled"?'<button type="button" class="btn light integrityHandle" data-id="'+esc(r.id)+'">✓ Marquer traité</button>':'')+
+   '<button type="button" class="btn bad integrityDelete" data-id="'+esc(r.id)+'">🗑️ Supprimer</button>'+
    '</div></article>';
  }).join("");
  document.querySelectorAll(".integrityAuthorize").forEach(b=>b.onclick=()=>updateIntegrityAlert(b.dataset.id,"authorized",b));
  document.querySelectorAll(".integrityHandle").forEach(b=>b.onclick=()=>updateIntegrityAlert(b.dataset.id,"handled",b));
+ document.querySelectorAll(".integrityDelete").forEach(b=>b.onclick=()=>deleteIntegrityAlert(b.dataset.id,b));
+}
+async function deleteIntegrityAlert(id,button){
+ if(!id)return;
+ var row=integrityAlerts.find(function(r){return String(r.id)===String(id);});
+ var label=row?((row.student_name||"Élève")+" · "+(row.evaluation_title||"Évaluation")):"ce signalement";
+ if(!confirm("Supprimer définitivement le signalement anti-triche de "+label+" ?"))return;
+ if(button){button.disabled=true;button.textContent="Suppression…";}
+ try{
+  await FigaroCloud.table("evaluation_integrity_alerts","id=eq."+encodeURIComponent(id),{method:"DELETE",headers:{"Prefer":"return=minimal"}});
+  integrityAlerts=integrityAlerts.filter(function(r){return String(r.id)!==String(id);});
+  renderIntegrityAlerts();
+  await loadLive();
+ }catch(e){
+  alert("Impossible de supprimer le signalement : "+e.message);
+  if(button){button.disabled=false;button.textContent="🗑️ Supprimer";}
+ }
 }
 async function updateIntegrityAlert(id,status,button){
  if(!id)return;if(button){button.disabled=true;button.textContent="Enregistrement…";}

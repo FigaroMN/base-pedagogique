@@ -1059,7 +1059,7 @@ function rebuildEvaluations(){
      '<button type="button" class="btn blue" data-check-eval-auth="'+ev.sequence+'">↻ Vérifier l’autorisation enseignant</button>'+
      '<button type="button" class="btn red" data-redo-eval="'+ev.sequence+'">🔓 Recommencer avec le code enseignant</button></div>':
      '<div><div class="eval-lock"><input type="password" maxlength="20" placeholder="Code enseignant" aria-label="Code pour '+esc(ev.title)+'">'+
-     '<button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">Accéder</button></div>'+
+     '<button type="button" class="btn orange" data-unlock-eval="'+ev.sequence+'">▶ Faire l’évaluation</button></div>'+
      '<div class="msg" aria-live="polite"></div></div>'))+
    '</article>';
  }).join("");
